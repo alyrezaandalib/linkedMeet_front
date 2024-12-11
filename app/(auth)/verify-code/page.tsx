@@ -1,6 +1,6 @@
 export default function VerifyCodePage(){
     return (
-        <div>
+        <div className={"text-white"}>
             verify code page
         </div>
     )
