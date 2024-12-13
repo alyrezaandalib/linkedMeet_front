@@ -1,12 +1,23 @@
+"use client"
 import Linkedin from "@/public/tsx-icons/linkedin";
+import Link from "next/link";
+import {Button} from "@nextui-org/button";
+import useService, {Inputs} from "./service";
+import {useForm} from "react-hook-form";
 
 export default function SignUpPage() {
+    const {onSubmit} = useService();
+    const {
+        register,
+        handleSubmit,
+        formState: {errors},
+    } = useForm<Inputs>()
     return (
         <div className={"flex flex-col h-screen"}>
             <div
-                className="text-center flex justify-center items-center text-3xl font-bold h-[9%] text-white">LinkedMeet
+                className="text-center flex justify-center items-center text-3xl font-bold h-[10%] text-white">LinkedMeet
             </div>
-            <div className="flex relative items-center h-[91%] justify-center">
+            <div className="flex relative items-center h-[90%] justify-center">
                 <div className={"w-[90%] bg-gray-500 h-full absolute bottom-0 rounded-3xl"}></div>
                 <div
                     className="absolute flex flex-col gap-3.5 bottom-0 w-full h-[97.5%] max-w-md bg-white rounded-t-3xl shadow-lg p-8">
@@ -17,68 +28,59 @@ export default function SignUpPage() {
                     </div>
 
                     {/* Form */}
-                    <form className={"flex flex-col gap-3"}>
+                    <form className={"flex flex-col gap-3"} onSubmit={handleSubmit(onSubmit)}>
 
                         <div>
-                            <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700"
-                                   htmlFor="name">
+                            <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">
                                 Name
                             </label>
                             <input
-                                id="name"
-                                name="email"
-                                placeholder="test@gmail.com"
+                                {...register("name", {required: "Name is required."})}
                                 className="form-input"
                             />
+                            {errors.name && <p className={"text-red-500 text-xs mt-1"}>{errors.name.message}</p>}
                         </div>
 
                         <div>
-                            <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700"
-                                   htmlFor="email">
+                            <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">
                                 Email
                             </label>
                             <input
+                                {...register("email", {required: "Email is required."})}
                                 type="email"
-                                id="email"
-                                name="email"
                                 placeholder="test@gmail.com"
                                 className="form-input"
                             />
+                            {errors.email && <p className={"text-red-500 text-xs mt-1"}>{errors.email.message}</p>}
                         </div>
 
                         <div>
-                            <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700"
-                                   htmlFor="password">
+                            <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">
                                 Password
                             </label>
                             <input
+                                {...register("password", {
+                                    required: "Password is required.",
+                                    minLength: {
+                                        value: 8,
+                                        message: "Password must be at least 8 characters long.",
+                                    },
+                                    maxLength: {
+                                        value: 10,
+                                        message: "Password must be at lest 10 characters long."
+                                    }
+                                })}
                                 type="password"
-                                id="password"
-                                name="password"
                                 className="form-input"
                             />
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                id="keepLoggedIn"
-                                className="form-checkbox text-black"
-                            />
-                            <label htmlFor="keepLoggedIn" className="mb-0 text-sm text-gray-600">
-                                Keep me logged in
-                            </label>
+                            {errors.password &&
+                                <p className={"text-red-500 text-xs mt-1"}>{errors.password.message}</p>}
                         </div>
 
                         <p className="text-xs text-gray-400">By clicking Agree & Join or Continue, you agree to the
                             LinkedIn User Agreement, Privacy Policy, and Cookie Policy.</p>
 
-                        <button
-                            type="submit"
-                            className="w-full btn btn-primary mt-1"
-                        >
-                          Agree & Join
-                        </button>
+                        <Button color={"primary"} radius={"sm"} type={"submit"}>Agree & Join</Button>
                     </form>
 
                     {/* OR Divider */}
@@ -88,7 +90,7 @@ export default function SignUpPage() {
                         <div className="flex-grow border-t border-gray-300"></div>
                     </div>
 
-                    {/* LinkedIn Login */}
+                    LinkedIn Login
                     <button
                         className="w-full flex items-center justify-center gap-1.5 border border-gray-300 py-4 px-4 rounded-lg hover:bg-gray-100"
                     >
@@ -101,9 +103,9 @@ export default function SignUpPage() {
                         <p className="text-gray-400 ">
                             Already on LinkedIn? Sign in ?
                         </p>
-                        <button className="border rounded-lg bg-gray-100 text-gray-600 px-2 py-1.5">
+                        <Link href={"/sign-in"} className="border rounded-lg bg-gray-100 text-gray-600 px-2 py-1.5">
                             Sign In
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>
