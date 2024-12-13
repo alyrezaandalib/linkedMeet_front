@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Linkedin from "@/public/icons/linkedin";
+import Linkedin from "@/public/tsx-icons/linkedin";
 
 export default function SignInPage() {
     return (
