@@ -8,7 +8,7 @@ import useService, {Inputs} from "./service";
 
 export default function SignInPage() {
 
-    const {onSubmit} = useService();
+    const {onSubmit , signInUser} = useService();
     const {
         register,
         handleSubmit,

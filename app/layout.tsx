@@ -1,12 +1,14 @@
-import type { Metadata, Viewport } from "next";
+import type {Metadata, Viewport} from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+
+// next ui provider
 import {NextUIProvider} from "@nextui-org/react";
 
 const geistSans = localFont({
-  src: "../public/fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
+    src: "../public/fonts/GeistVF.woff",
+    variable: "--font-geist-sans",
+    weight: "100 900",
 });
 
 const APP_NAME = "LinkedMeet";
@@ -50,24 +52,22 @@ export const metadata: Metadata = {
     },
 };
 
-export const viewport: Viewport = {
-    themeColor: "#FFFFFF",
-};
-
 export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
+                                       children,
+                                   }: Readonly<{
+    children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} antialiased md:hidden`}
-      >
-      <NextUIProvider>
-        {children}
-      </NextUIProvider>
-      </body>
-    </html>
-  );
+
+
+    return (
+        <html lang="en">
+        <body
+            className={`${geistSans.variable} antialiased md:hidden`}
+        >
+        <NextUIProvider>
+            {children}
+        </NextUIProvider>
+        </body>
+        </html>
+    );
 }
