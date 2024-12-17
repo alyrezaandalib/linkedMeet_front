@@ -12,7 +12,12 @@ export default function ActivityTypePage() {
         formState: {errors},
         setValue,
         watch,
-    } = useForm<Inputs>();
+    } = useForm<Inputs>({
+        defaultValues: {
+            activity_types: [],
+        },
+        mode: "onBlur",
+    });
 
     const {isPending} = sendUserActivityType;
 
@@ -37,15 +42,11 @@ export default function ActivityTypePage() {
                 LinkedMeet
             </div>
             <div className="flex relative items-center h-[90%] justify-center">
-                <div
-                    className={"w-[90%] bg-gray-500 h-full absolute bottom-0 rounded-3xl"}
-                ></div>
+                <div className={"w-[90%] bg-gray-500 h-full absolute bottom-0 rounded-3xl"}></div>
                 <div
                     className="absolute flex flex-col gap-3.5 bottom-0 w-full h-[97.5%] max-w-md bg-white rounded-t-3xl shadow-lg p-8">
                     <div className={"flex flex-col gap-1.5"}>
-                        <h2 className="text-2xl font-semibold text-black">
-                            Company Activity Type
-                        </h2>
+                        <h2 className="text-2xl font-semibold text-black">Company Activity Type</h2>
                         <p className="text-sm text-gray-400 max-w-[90%]">
                             Select the type of activity of your company from the options below
                         </p>
@@ -57,6 +58,9 @@ export default function ActivityTypePage() {
                         <Controller
                             name="activity_types"
                             control={control}
+                            rules={{
+                                required: "Please select at least one activity type.",
+                            }}
                             defaultValue={[]}
                             render={() => (
                                 <div className={"flex flex-col gap-5"}>
@@ -65,7 +69,7 @@ export default function ActivityTypePage() {
                                             handleCheckboxChange(e.target.checked, "Producer / Manufacturer")
                                         }
                                         radius={"sm"}
-                                        classNames={{label: "font- text-sm"}}
+                                        classNames={{label: "text-sm"}}
                                     >
                                         Producer / Manufacturer
                                     </Checkbox>
@@ -75,7 +79,7 @@ export default function ActivityTypePage() {
                                             handleCheckboxChange(e.target.checked, "Distributor")
                                         }
                                         radius={"sm"}
-                                        classNames={{label: "font- text-sm"}}
+                                        classNames={{label: "text-sm"}}
                                     >
                                         Distributor
                                     </Checkbox>
@@ -85,7 +89,7 @@ export default function ActivityTypePage() {
                                             handleCheckboxChange(e.target.checked, "Wholesaler")
                                         }
                                         radius={"sm"}
-                                        classNames={{label: "font- text-sm"}}
+                                        classNames={{label: "text-sm"}}
                                     >
                                         Wholesaler
                                     </Checkbox>
@@ -95,25 +99,27 @@ export default function ActivityTypePage() {
                                             handleCheckboxChange(e.target.checked, "Dealer / Franchise")
                                         }
                                         radius={"sm"}
-                                        classNames={{label: "font- text-sm"}}
+                                        classNames={{label: "text-sm"}}
                                     >
                                         Dealer / Franchise
-                                    </Checkbox> <Checkbox
-                                    onChange={(e) =>
-                                        handleCheckboxChange(e.target.checked, "Importer")
-                                    }
-                                    radius={"sm"}
-                                    classNames={{label: "font- text-sm"}}
-                                >
-                                    Importer
-                                </Checkbox>
+                                    </Checkbox>
+
+                                    <Checkbox
+                                        onChange={(e) =>
+                                            handleCheckboxChange(e.target.checked, "Importer")
+                                        }
+                                        radius={"sm"}
+                                        classNames={{label: "text-sm"}}
+                                    >
+                                        Importer
+                                    </Checkbox>
 
                                     <Checkbox
                                         onChange={(e) =>
                                             handleCheckboxChange(e.target.checked, "Retail")
                                         }
                                         radius={"sm"}
-                                        classNames={{label: "font- text-sm"}}
+                                        classNames={{label: "text-sm"}}
                                     >
                                         Retail
                                     </Checkbox>
@@ -123,7 +129,7 @@ export default function ActivityTypePage() {
                                             handleCheckboxChange(e.target.checked, "Raw Materials Supplier")
                                         }
                                         radius={"sm"}
-                                        classNames={{label: "font- text-sm"}}
+                                        classNames={{label: "text-sm"}}
                                     >
                                         Raw Materials Supplier
                                     </Checkbox>
@@ -133,28 +139,31 @@ export default function ActivityTypePage() {
                                             handleCheckboxChange(e.target.checked, "Service Provider")
                                         }
                                         radius={"sm"}
-                                        classNames={{label: "font- text-sm"}}
+                                        classNames={{label: "text-sm"}}
                                     >
                                         Service Provider
                                     </Checkbox>
 
                                     <Checkbox
                                         onChange={(e) =>
-                                            handleCheckboxChange(e.target.checked, "Consulting  Training")
+                                            handleCheckboxChange(e.target.checked, "Consulting Training")
                                         }
                                         radius={"sm"}
-                                        classNames={{label: "font- text-sm"}}
+                                        classNames={{label: "text-sm"}}
                                     >
                                         Consulting Training
                                     </Checkbox>
 
                                     <Checkbox
                                         onChange={(e) =>
-                                            handleCheckboxChange(e.target.checked, " Public Institutions / Association / non-Profit Organisation")
+                                            handleCheckboxChange(
+                                                e.target.checked,
+                                                "Public Institutions / Association / non-Profit Organisation"
+                                            )
                                         }
                                         radius={"sm"}
                                         className={"max-w-[80%]"}
-                                        classNames={{label: "font- text-sm"}}
+                                        classNames={{label: "text-sm"}}
                                     >
                                         Public Institutions / Association / non-Profit Organisation
                                     </Checkbox>
@@ -162,15 +171,24 @@ export default function ActivityTypePage() {
                             )}
                         />
 
-                        <Button
-                            color={"primary"}
-                            className={"mt-4"}
-                            isLoading={isPending}
-                            radius={"sm"}
-                            type={"submit"}
-                        >
-                            OK
-                        </Button>
+                        <div className={"w-full"}>
+                            <Button
+                                color={"primary"}
+                                className={"mt-3 w-full"}
+                                isLoading={isPending}
+                                radius={"sm"}
+                                type={"submit"}
+                            >
+                                OK
+                            </Button>
+
+                            {errors.activity_types && (
+                                <p className="text-red-500 text-xs mt-1">
+                                    {errors.activity_types.message}
+                                </p>
+                            )}
+                        </div>
+
                     </form>
                 </div>
             </div>
