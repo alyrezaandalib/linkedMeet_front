@@ -164,6 +164,7 @@ export default function ActivityTypePage() {
 
                         <Button
                             color={"primary"}
+                            className={"mt-4"}
                             isLoading={isPending}
                             radius={"sm"}
                             type={"submit"}
