@@ -1,0 +1,97 @@
+"use client"
+import {
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerBody,
+    DrawerFooter,
+    Button,
+    useDisclosure,
+} from "@nextui-org/react";
+import {useRouter} from "next/navigation";
+
+// icons
+import { CiUser } from "react-icons/ci";
+import { HiMiniChatBubbleOvalLeftEllipsis } from "react-icons/hi2";
+import { IoExit } from "react-icons/io5";
+import { PiInfoFill } from "react-icons/pi";
+import { TiUser } from "react-icons/ti";
+import { LuMenu } from "react-icons/lu";
+
+export default function DrawerMenu() {
+    const {isOpen, onOpen, onOpenChange} = useDisclosure();
+
+    const router = useRouter()
+
+    return (
+        <>
+            <Button isIconOnly onPress={onOpen} variant={"light"}><LuMenu className={"text-2xl"}/></Button>
+            <Drawer
+                size={"xs"}
+                placement="left"
+                radius={"none"}
+                backdrop={"blur"}
+                isOpen={isOpen}
+                motionProps={{
+                    variants: {
+                        enter: {
+                            opacity: 1,
+                            x: 0,
+                            // @ts-ignore
+                            duration: 0.3,
+                        },
+                        exit: {
+                            x: 100,
+                            opacity: 0,
+                            // @ts-ignore
+                            duration: 0.3,
+                        },
+                    },
+                }}
+                onOpenChange={onOpenChange}
+            >
+                <DrawerContent>
+                    {(onClose) => (
+                        <>
+                            <DrawerHeader className="flex flex-col gap-2 justify-center items-center m-10 mb-0">
+                                <div className={"w-fit rounded-full p-3 justify-center bg-gray-200 border border-gray-300"}>
+                                    <CiUser className={"text-3xl"}/>
+                                </div>
+                                <div>Alireza Andalib</div>
+                                <div className={"text-gray-500 text-sm font-light"}>alireza.andalib.1400@gmail.com</div>
+                            </DrawerHeader>
+                            <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-3"></div>
+
+
+                            <DrawerBody>
+                                <Button className={"justify-start"} variant={"light"} radius={"sm"}
+                                        onPress={() => router.push("/chat")}>
+                                    <HiMiniChatBubbleOvalLeftEllipsis className={"text-xl"}/>
+                                    Chat
+                                </Button>
+                                <Button className={"justify-start"} variant={"light"} radius={"sm"}
+                                        onPress={() => router.push("/profile")}>
+                                    <TiUser className={"text-xl"}/>
+                                    Profile
+                                </Button>
+                                <Button className={"justify-start"} variant={"light"} radius={"sm"}
+                                        onPress={() => router.push("/about-us")}>
+                                    <PiInfoFill className={"text-xl"}/>
+                                    About Us
+                                </Button>
+                                <Button className={"justify-start text-red-500"} variant={"light"} radius={"sm"} onPress={() => ""}>
+                                    <IoExit className={"text-xl"}/>
+                                    Exit
+                                </Button>
+                            </DrawerBody>
+
+                            <DrawerFooter className={"justify-start text-xs text-gray-400"}>
+                                Version 1.2.4
+                            </DrawerFooter>
+                        </>
+                    )}
+                </DrawerContent>
+            </Drawer>
+        </>
+    );
+}
