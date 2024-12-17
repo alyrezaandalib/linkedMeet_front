@@ -6,12 +6,15 @@ import useService, {Inputs} from "./service";
 import {useForm} from "react-hook-form";
 
 export default function SignUpPage() {
-    const {onSubmit} = useService();
+    const {onSubmit, signUpUser} = useService();
     const {
         register,
         handleSubmit,
         formState: {errors},
     } = useForm<Inputs>()
+
+    const {isPending, isError, data} = signUpUser
+
     return (
         <div className={"flex flex-col h-screen"}>
             <div
@@ -80,7 +83,7 @@ export default function SignUpPage() {
                         <p className="text-xs text-gray-400">By clicking Agree & Join or Continue, you agree to the
                             LinkedIn User Agreement, Privacy Policy, and Cookie Policy.</p>
 
-                        <Button color={"primary"} radius={"sm"} type={"submit"}>Agree & Join</Button>
+                        <Button color={"primary"} isLoading={isPending} radius={"sm"} type={"submit"}>Agree & Join</Button>
                     </form>
 
                     {/* OR Divider */}

@@ -8,13 +8,15 @@ import useService, {Inputs} from "./service";
 
 export default function SignInPage() {
 
-    const {onSubmit , signInUser} = useService();
+    const {onSubmit, signInUser} = useService();
     const {
         register,
         handleSubmit,
         control,
         formState: {errors},
     } = useForm<Inputs>()
+
+    const {isPending, isError, data} = signInUser
 
     return (
         <div className={"flex flex-col h-screen"}>
@@ -91,7 +93,7 @@ export default function SignInPage() {
                         <p className="text-xs text-gray-400">By clicking Continue, you agree to MYAPP User
                             Agreement, Privacy Policy, and Cookie Policy.</p>
 
-                        <Button color={"primary"} radius={"sm"} type={"submit"}>Sign In</Button>
+                        <Button color={"primary"} isLoading={isPending} radius={"sm"} type={"submit"}>Sign In</Button>
                     </form>
 
                     {/* OR Divider */}

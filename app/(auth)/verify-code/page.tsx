@@ -3,10 +3,12 @@ import {InputOtp} from "@nextui-org/react";
 import {Button} from "@nextui-org/button";
 import {Controller, useForm} from "react-hook-form";
 import useService, {Inputs} from "./service"
+import {usePathname, useRouter} from "next/navigation";
+import {useEffect} from "react";
 
 export default function VerifyCodePage() {
 
-    const {onSubmit} = useService()
+    const {onSubmit , verifyCode} = useService()
     const {
         register,
         handleSubmit,
@@ -14,6 +16,14 @@ export default function VerifyCodePage() {
         formState: {errors},
     } = useForm<Inputs>()
 
+    const {data , isError , isPending} = verifyCode
+
+    const router = useRouter()
+    const pathname = usePathname()
+
+    useEffect(() => {
+        console.log(pathname)
+    }, []);
     return (
         <div className={"flex flex-col h-screen"}>
             <div
@@ -58,8 +68,8 @@ export default function VerifyCodePage() {
                                 </div>
                             </div>
                         </div>
-                        <Button color={"primary"} radius={"sm"} type={"submit"} className={"w-full"}>Ok</Button>
-                        <Button color={"primary"} variant={"bordered"} radius={"sm"} className={"w-full"}>Edit
+                        <Button color={"primary"} isLoading={isPending} radius={"sm"} type={"submit"} className={"w-full"}>Ok</Button>
+                        <Button color={"primary"} onPress={ ()=> router.push("/sign-in")} variant={"bordered"} radius={"sm"} className={"w-full"}>Edit
                             Email</Button>
                     </form>
                 </div>
