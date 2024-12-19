@@ -4,6 +4,7 @@ import "./globals.css";
 
 // next ui provider
 import {NextUIProvider} from "@nextui-org/react";
+import CustomProvider from "@/app/provider";
 
 const geistSans = localFont({
     src: "../public/fonts/GeistVF.woff",
@@ -65,7 +66,9 @@ export default function RootLayout({
             className={`${geistSans.variable} antialiased md:hidden`}
         >
         <NextUIProvider>
-            {children}
+            <CustomProvider>
+                {children}
+            </CustomProvider>
         </NextUIProvider>
         </body>
         </html>

@@ -22,10 +22,10 @@ export default function TitleJobPage() {
     };
 
     return (
-        <div className="h-screen bg-white flex flex-col text-black p-4">
+        <div className="h-screen bg-white flex flex-col text-black py-4 px-2">
             {/* Header */}
-            <div className="flex items-center px-2">
-                <button className="rounded-lg p-2 hover:bg-gray-200">
+            <div className="flex items-center px-4">
+                <button className="rounded-lg btn !p-2 !shadow !border-none hover:bg-gray-200">
                     <IoIosArrowBack className={"text-lg"}/>
                 </button>
                 <h1 className="ml-2 text-lg font-bold">Title Job</h1>
