@@ -26,7 +26,7 @@ export default function ProfilePage() {
                 </Link>
                 <h1 className="ml-2 text-lg font-bold">Edit Profile</h1>
             </div>
-            <div className={"h-full flex flex-col"}>
+            <div className={"h-full flex flex-col mt-7"}>
                 <div className={"flex flex-col justify-center items-center gap-2"}>
                     <div className={"w-24 h-24 bg-gray-200 shadow rounded-full"}></div>
                     <div className={"font-mono"}>Alireza Andalib</div>
