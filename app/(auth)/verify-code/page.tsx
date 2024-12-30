@@ -4,26 +4,27 @@ import {Button} from "@nextui-org/button";
 import {Controller, useForm} from "react-hook-form";
 import useService, {Inputs} from "./service"
 import {usePathname, useRouter} from "next/navigation";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
+import Counter from "@/services/counter";
 
 export default function VerifyCodePage() {
 
-    const {onSubmit , verifyCode} = useService()
+    const {onSubmit, verifyCode} = useService()
     const {
         register,
         handleSubmit,
+        resetField,
         control,
         formState: {errors},
     } = useForm<Inputs>()
 
-    const {data , isError , isPending} = verifyCode
+    const {data, isError, isPending} = verifyCode
 
     const router = useRouter()
     const pathname = usePathname()
 
-    useEffect(() => {
-        console.log(pathname)
-    }, []);
+    const [resendSMS, setResendSMS] : any = useState();
+
     return (
         <div className={"flex flex-col h-screen"}>
             <div
@@ -63,13 +64,29 @@ export default function VerifyCodePage() {
 
                             <div className={"text-gray-400 text-sm w-full flex justify-between"}>
                                 Resend the code:
-                                <div>
-                                    00:59
+                                <div className={"text-neutral text-[14px] mb-8"}>
+                                    {resendSMS === 0 ? (
+                                        <button
+                                            onClick={() => {
+                                                resetField("otp");
+                                                setResendSMS(null);
+                                            }}
+                                            className={"cursor-pointer"}
+                                        >
+                                            Receive verification code again
+                                        </button>
+                                    ) : (
+                                        <div className={"text-right text-[13px] flex items-center"}>
+                                            <span className={"ml-1"}><Counter setResendSMS={setResendSMS}/></span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
-                        <Button color={"primary"} isLoading={isPending} radius={"sm"} type={"submit"} className={"w-full"}>Ok</Button>
-                        <Button color={"primary"} onPress={ ()=> router.push("/sign-in")} variant={"bordered"} radius={"sm"} className={"w-full"}>Edit
+                        <Button color={"primary"} isLoading={isPending} radius={"sm"} type={"submit"}
+                                className={"w-full"}>Ok</Button>
+                        <Button color={"primary"} onPress={() => router.push("/sign-in")} variant={"bordered"}
+                                radius={"sm"} className={"w-full"}>Edit
                             Email</Button>
                     </form>
                 </div>

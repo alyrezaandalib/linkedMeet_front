@@ -1,8 +1,6 @@
 "use client"
-
 import {useRouter} from "next/navigation";
 import {Input, Button} from "@nextui-org/react";
-
 // icons
 import {RiSendPlaneFill} from "react-icons/ri";
 import {FaUserCircle} from "react-icons/fa";
@@ -13,7 +11,7 @@ const ChatPage = () => {
     return (
         <div className="h-screen flex flex-col bg-gray-100">
             {/* Header */}
-            <header className="flex items-center bg-white px-4 py-3 shadow-md">
+            <header className="flex items-center bg-white px-4 py-3 shadow-sm fixed top-0 w-full">
                 <button
                     onClick={() => router.back()}
                     className="rounded-lg btn !shadow !p-2 !border-none hover:bg-gray-200">
@@ -32,17 +30,17 @@ const ChatPage = () => {
             </header>
 
             {/* Chat Messages */}
-            <main className="flex flex-col gap-4 flex-1 overflow-y-auto px-4 py-6 bg-gray-50">
+            <main className="flex flex-col gap-4 flex-1 overflow-y-auto px-4 py-6 bg-gray-50 mt-16">
                 {/* Received Message */}
                 <div className="flex flex-col gap-1 items-start">
-                    <div className="bg-white max-w-[80%] text-gray-700 px-4 py-3 rounded-lg shadow-sm">
+                    <div className="bg-white max-w-[80%] text-gray-700 px-4 py-3 rounded-lg shadow-sm rounded-bl-none">
                         Hello, good time <br/> May I know your field of work?
                     </div>
                     <p className="text-xs text-gray-400 mt-1">5:32</p>
                 </div>
                 {/* Sent Message */}
                 <div className="flex flex-col gap-1 items-end">
-                    <div className="bg-blue-500 max-w-[80%] text-white px-4 py-3 rounded-lg shadow-sm">
+                    <div className="bg-primary max-w-[80%] text-white px-4 py-3 rounded-lg shadow-sm rounded-br-none">
                         Hi <br/> I am a UI/UX designer
                     </div>
                     <p className="text-xs text-gray-400 mt-1 text-right">5:32</p>
@@ -50,7 +48,7 @@ const ChatPage = () => {
             </main>
 
             {/* Message Input */}
-            <footer className="flex items-center bg-white gap-2 px-4 py-3 border-t">
+            <footer className="flex items-center bg-white gap-2 px-4 py-3 border-t fixed bottom-0 w-full">
                 <Input placeholder={"Write a message..."} variant={"bordered"}/>
                 <Button isIconOnly radius={"full"} variant={"light"}><RiSendPlaneFill className={"text-2xl"}/></Button>
             </footer>
