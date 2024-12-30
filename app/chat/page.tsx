@@ -1,3 +1,4 @@
+"use client"
 import Link from "next/link";
 import {IoIosArrowBack} from "react-icons/io";
 import {Input} from "@nextui-org/react";
@@ -7,8 +8,11 @@ import useService, {Chats} from "./service";
 import {CiSearch} from "react-icons/ci";
 import {Button} from "@nextui-org/button";
 import React from "react";
+import {useRouter} from "next/navigation";
 
 export default function ChatPage() {
+
+    const router = useRouter();
 
     const {getChatsList} = useService()
     // const {data, isLoading, isError} = getChatsList
@@ -56,7 +60,7 @@ export default function ChatPage() {
                         <>
                             <Button
                                 key={index}
-                                // onPress={() => handleSelectJob(job)}
+                                onPress={() => router.push(`/chat/${item.id}`)}
                                 variant={"light"}
                                 size={"lg"}
                                 radius={"sm"}
@@ -65,8 +69,8 @@ export default function ChatPage() {
                                 <div className={"w-10 h-10 rounded-full bg-red-100"}></div>
                                 <div className={"capitalize "}>{item.first_name + " " + item.last_name}</div>
                             </Button>
-                            {/*<div*/}
-                            {/*    className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>*/}
+                            <div
+                                className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
                         </>
                     ))
                 }
