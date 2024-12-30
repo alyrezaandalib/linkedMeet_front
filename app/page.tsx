@@ -167,11 +167,11 @@ export default function Home() {
                                                             </span>
                                                     </div>
                                                     <div
-                                                        className={"text-lg font-medium text-gray-800"}>{user.first_name + " " + user.last_name}
+                                                        className={"font-medium text-gray-800"}>{user.first_name + " " + user.last_name}
                                                     </div>
 
                                                     <div
-                                                        className={"text-sm text-gray-500"}>{user.job_title + " / " + user.industry}
+                                                        className={"text-xs text-gray-500"}>{user.job_title + " / " + user.industry}
                                                     </div>
 
                                                     <div className={"flex gap-1"}>

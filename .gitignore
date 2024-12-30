@@ -8,6 +8,12 @@
 .pnp.js
 .yarn/install-state.gz
 
+# pwa
+/public/sw.js
+/public/sw.js.map
+/public/workbox-7144475a.js
+/public/workbox-7144475a.js.map
+
 # testing
 /coverage
 

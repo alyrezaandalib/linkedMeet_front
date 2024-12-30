@@ -2,7 +2,7 @@ import connectionManager from "../conection-manager";
 
 let isAlertShowing = false;
 
-export async function fetchService(url: string) {
+export async function fetchService({url}: {url: string}) {
     const token = connectionManager();
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}${url}`, {

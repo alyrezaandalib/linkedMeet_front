@@ -1,24 +1,26 @@
-import { SubmitHandler } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
-import { createService } from "@/services/crud-services/create-service";
+import {useMutation, useQuery} from "@tanstack/react-query";
+import {fetchService} from "@/services/crud-services/fetch-service";
 
-export interface Inputs {
-    email: string;
-    password: string;
-    keepLoggedIn: boolean;
+export interface Chats {
+    id : number
+    first_name: string
+    last_name: string
+    image: any
 }
 
 export default function useService() {
-    const signInUser = useMutation({
-        mutationFn: async (body: Inputs) => {
-            await createService("/test", body);
-        },
+
+    const getChatsList = () => useQuery({
+        queryKey: [""],
+        queryFn: ({queryKey, signal}) =>
+            fetchService({url: queryKey.join("")}),
+        refetchOnMount: false,
+        refetchInterval: false,
+        refetchIntervalInBackground: false,
+        refetchOnReconnect: false,
+        refetchOnWindowFocus: false,
+        enabled: true,
     });
 
-    const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
-        console.log(data);
-        signInUser.mutate(data);
-    };
-
-    return { onSubmit, signInUser };
+    return {getChatsList};
 }

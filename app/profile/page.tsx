@@ -19,8 +19,8 @@ export default function ProfilePage() {
     const {isPending, isError, data} = editUserInfo
 
     return (
-        <div className={"px-2 pt-4 h-screen flex flex-col"}>
-            <div className="flex items-center px-3">
+        <div className={"px-5 pt-4 h-screen flex flex-col"}>
+            <div className="flex items-center">
                 <Link href={"/"} className="rounded-lg btn !shadow !p-2 !border-none hover:bg-gray-200">
                     <IoIosArrowBack className={"text-lg"}/>
                 </Link>
