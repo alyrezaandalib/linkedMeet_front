@@ -4,6 +4,7 @@
 /node_modules
 .env
 .idea
+.idea/
 /.pnp
 .pnp.js
 .yarn/install-state.gz
