@@ -4,21 +4,20 @@ import {Button} from "@nextui-org/button";
 import {Controller, useForm} from "react-hook-form";
 import useService, {Inputs} from "./service"
 import {usePathname, useRouter} from "next/navigation";
-import {useEffect, useState} from "react";
+import { useState} from "react";
 import Counter from "@/services/counter";
 
 export default function VerifyCodePage() {
 
     const {onSubmit, verifyCode} = useService()
     const {
-        register,
         handleSubmit,
         resetField,
         control,
         formState: {errors},
     } = useForm<Inputs>()
 
-    const {data, isError, isPending} = verifyCode
+    const {data, isPending} = verifyCode
 
     const router = useRouter()
     const pathname = usePathname()
@@ -50,18 +49,23 @@ export default function VerifyCodePage() {
                             <Controller
                                 name="otp"
                                 control={control}
-                                render={({field: {onChange, onBlur, ref}}) => (
-                                    <InputOtp
-                                        onChange={onChange}
-                                        onBlur={onBlur}
-                                        ref={ref}
-                                        length={6}
-                                        size={"lg"}
-                                        variant={"bordered"}
-                                    />
+                                rules={{
+                                    required: "OTP is required", // Validation rule for required
+                                }}
+                                render={({ field: { onChange, onBlur, ref }, fieldState: { error } }) => (
+                                    <div>
+                                        <InputOtp
+                                            onChange={onChange}
+                                            onBlur={onBlur}
+                                            ref={ref}
+                                            length={6}
+                                            size={"lg"}
+                                            variant={"bordered"}
+                                        />
+                                        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+                                    </div>
                                 )}
                             />
-
                             <div className={"text-gray-400 text-sm w-full flex justify-between"}>
                                 Resend the code:
                                 <div className={"text-neutral text-[14px] mb-8"}>

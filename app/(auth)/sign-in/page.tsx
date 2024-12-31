@@ -2,21 +2,38 @@
 import Linkedin from "@/public/tsx-icons/linkedin";
 import Link from "next/link";
 import {Button, Checkbox} from "@nextui-org/react";
-import {useForm, Controller} from "react-hook-form";
+import {useForm, Controller, SubmitHandler} from "react-hook-form";
 import useService, {Inputs} from "./service";
+import {useRouter} from "next/navigation";
 
 
 export default function SignInPage() {
 
-    const {onSubmit, signInUser} = useService();
+    const router = useRouter();
+
     const {
         register,
         handleSubmit,
         control,
         formState: {errors},
+        reset
     } = useForm<Inputs>()
 
-    const {isPending, isError, data} = signInUser
+    const { signInUser} = useService();
+
+    const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
+        signInUser.mutate(data , {
+            onSuccess: () => {
+                router.push(`/verify-code?email=${data.email}`);
+                reset()
+            },
+            onError: (error) => {
+                console.error("Error during mutation:", error);
+            },
+        });
+    };
+
+    const {isPending} = signInUser
 
     return (
         <div className={"flex flex-col h-screen"}>

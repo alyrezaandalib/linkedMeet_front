@@ -3,17 +3,34 @@ import Linkedin from "@/public/tsx-icons/linkedin";
 import Link from "next/link";
 import {Button} from "@nextui-org/button";
 import useService, {Inputs} from "./service";
-import {useForm} from "react-hook-form";
+import {SubmitHandler, useForm} from "react-hook-form";
+import {useRouter} from "next/navigation";
 
 export default function SignUpPage() {
-    const {onSubmit, signUpUser} = useService();
     const {
         register,
         handleSubmit,
         formState: {errors},
+        reset
     } = useForm<Inputs>()
 
-    const {isPending, isError, data} = signUpUser
+    const router = useRouter();
+
+    const { signUpUser} = useService();
+
+    const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
+        signUpUser.mutate(data, {
+            onSuccess: () => {
+                router.push("/verify-code?email=" + data.email);
+                reset()
+            },
+            onError: (error) => {
+                console.error("Error during mutation:", error);
+            },
+        });
+    };
+
+    const {isPending} = signUpUser
 
     return (
         <div className={"flex flex-col h-screen"}>
@@ -80,7 +97,7 @@ export default function SignUpPage() {
                                 <p className={"text-red-500 text-xs mt-1"}>{errors.password.message}</p>}
                         </div>
 
-                        <p className="text-xs text-gray-400">By clicking Agree & Join or Continue, you agree to the
+                        <p className="text-xs text-gray-400 max-w-[90%]">By clicking Agree & Join or Continue, you agree to the
                             LinkedIn User Agreement, Privacy Policy, and Cookie Policy.</p>
 
                         <Button color={"primary"} isLoading={isPending} radius={"sm"} type={"submit"}>Agree & Join</Button>
@@ -93,12 +110,11 @@ export default function SignUpPage() {
                         <div className="flex-grow border-t border-gray-300"></div>
                     </div>
 
-                    LinkedIn Login
                     <button
                         className="w-full flex items-center justify-center gap-1.5 border border-gray-300 py-4 px-4 rounded-lg hover:bg-gray-100"
                     >
                         <Linkedin/>
-                        <span className="text-sm text-gray-600">Linkedin</span>
+                        <span className="text-sm text-gray-600"> Linkedin</span>
                     </button>
 
                     {/* Footer */}
