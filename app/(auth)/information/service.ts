@@ -4,7 +4,7 @@ import {createService} from "@/services/crud-services/create-service";
 
 export interface Inputs {
     industry: string;
-    job_title: string;
+    job_title: string ;
 
 }
 
