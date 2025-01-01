@@ -1,36 +1,39 @@
 import connectionManager from "../conection-manager";
 
-let isAlertShowing = false;
+export async function deleteService(url: string): Promise<any> {
+    try {
+        const token = connectionManager();
 
-export async function deleteService(url: string) {
-    const token = connectionManager();
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}${url}`, {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json',
+            },
+        });
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}${url}`, {
-        method: "DELETE",
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json'
-        }
-    });
-
-    if (!response.ok) {
-        const error = new Error();
-
-        if (!isAlertShowing) {
-            isAlertShowing = true;
-            console.error(error)
+        if (response.status === 401) {
+            if (typeof window !== "undefined") {
+                window.location.href = "/sign-in";
+            }
+            throw new Error("Unauthorized access - Redirecting to sign-in");
         }
 
-        return error;
-    }
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData?.message || `HTTP Error: ${response.status}`);
+        }
 
-    const contentType = response?.headers?.get("content-type");
+        const contentType = response.headers?.get("content-type") || "";
 
-    if (contentType == null) {
-        return response;
-    } else {
+        if (!contentType.includes("application/json")) {
+            return response;
+        }
+
         return await response.json();
+    } catch (error) {
+        console.error("Error in deleteService:", error);
+        throw error;
     }
 }
-

@@ -1,35 +1,43 @@
 import connectionManager from "../conection-manager";
 
-let isAlertShowing = false;
+interface FetchServiceParams {
+    url: string;
+}
 
-export async function fetchService({url}: {url: string}) {
-    const token = connectionManager();
+export async function fetchService({ url }: FetchServiceParams): Promise<any> {
+    try {
+        const token = connectionManager();
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}${url}`, {
-        method: "GET",
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json'
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}${url}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json',
+            },
+        });
+
+        if (response.status === 401) {
+            if (typeof window !== "undefined") {
+                window.location.href = "/sign-in";
+            }
+            throw new Error("Unauthorized access - Redirecting to sign-in");
         }
-    });
 
-    if (!response.ok) {
-        const error = new Error();
-
-        if (!isAlertShowing) {
-            isAlertShowing = true;
-            console.error(error)
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData?.message || `HTTP Error: ${response.status}`);
         }
 
-        return error
-    }
+        const contentType = response.headers?.get("content-type") || "";
 
-    const contentType = response?.headers?.get("content-type");
+        if (!contentType.includes("application/json")) {
+            return response;
+        }
 
-    if (contentType == null) {
-        return response;
-    } else {
         return await response.json();
+    } catch (error) {
+        console.error("Error in fetchService:", error);
+        throw error;
     }
 }

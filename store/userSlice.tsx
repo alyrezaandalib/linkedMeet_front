@@ -31,14 +31,14 @@ const userSlice = createSlice({
             };
 
             // Save data to cookies
-            setCookie("isAuthenticated", payload.isAuthenticated, { maxAge: 7 * 24 * 60 * 60 });
-            setCookie("token", payload.token, { maxAge: 7 * 24 * 60 * 60 });
-            setCookie("name", payload.name, { maxAge: 7 * 24 * 60 * 60 });
-            setCookie("email", payload.email, { maxAge: 7 * 24 * 60 * 60 });
-            setCookie("avatar", payload.avatar, { maxAge: 7 * 24 * 60 * 60 });
-            setCookie("industry", payload.industry, { maxAge: 7 * 24 * 60 * 60 });
-            setCookie("job_title", payload.job_title, { maxAge: 7 * 24 * 60 * 60 });
-            setCookie("company_activity_types", payload.company_activity_types, { maxAge: 7 * 24 * 60 * 60 });
+            setCookie("isAuthenticated", payload.isAuthenticated);
+            setCookie("token", payload.token);
+            setCookie("name", payload.name);
+            setCookie("email", payload.email);
+            setCookie("avatar", payload.avatar);
+            setCookie("industry", payload.industry);
+            setCookie("job_title", payload.job_title);
+            setCookie("company_activity_types", payload.company_activity_types);
         },
         Logout: (state) => {
             state.isAuthenticated = false;

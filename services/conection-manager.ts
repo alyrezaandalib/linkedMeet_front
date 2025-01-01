@@ -1,12 +1,11 @@
-import tokenManager from './token-manager';
 import refreshToken from './refresh-token';
+import {getCookie} from "cookies-next";
 
 export default function connectionManager() {
 
-    const token = tokenManager();
+    const token = getCookie("token")
 
-    // @ts-ignore
-    !token === null && refreshToken();
+    // !token === null && refreshToken();
 
     return token;
 }

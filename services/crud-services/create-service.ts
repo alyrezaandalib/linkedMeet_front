@@ -1,35 +1,40 @@
 import connectionManager from "../conection-manager";
 
-let isAlertShowing = false;
+export async function createService(url: string, data: any): Promise<any> {
+    try {
+        const token = connectionManager();
 
-export async function createService(url: string, data: any) {
-    const token = connectionManager();
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}${url}`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}${url}`, {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify(data)
-    });
-
-    if (!response.ok) {
-        const error = new Error();
-
-        if (!isAlertShowing) {
-            isAlertShowing = true;
-            console.error(error)
+        if (response.status === 401) {
+            if (typeof window !== "undefined") {
+                window.location.href = "/sign-in";
+            }
+            throw new Error("Unauthorized access - Redirecting to sign-in");
         }
-        return error;
-    }
 
-    const contentType = response?.headers?.get("content-type");
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData?.message || `HTTP Error: ${response.status}`);
+        }
 
-    if (contentType === null) {
-        return response;
-    } else {
+        const contentType = response.headers?.get("content-type") || "";
+
+        if (!contentType.includes("application/json")) {
+            return response;
+        }
+
         return await response.json();
+    } catch (error) {
+        console.error("Error in createService:", error);
+        throw error;
     }
 }
