@@ -1,28 +1,43 @@
 "use client"
 import {InputOtp} from "@nextui-org/react";
 import {Button} from "@nextui-org/button";
-import {Controller, useForm} from "react-hook-form";
+import {Controller, SubmitHandler, useForm} from "react-hook-form";
 import useService, {Inputs} from "./service"
-import {usePathname, useRouter} from "next/navigation";
-import { useState} from "react";
+import {useRouter} from "next/navigation";
+import {useState} from "react";
 import Counter from "@/services/counter";
 
-export default function VerifyCodePage() {
+export default function VerifyCodePage({searchParams}: { searchParams: { email: string } }) {
 
-    const {onSubmit, verifyCode} = useService()
+    const router = useRouter()
+
     const {
         handleSubmit,
         resetField,
         control,
         formState: {errors},
+        reset
     } = useForm<Inputs>()
+
+    const {verifyCode} = useService()
+
+    const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
+        data.email = searchParams.email;
+        verifyCode.mutate(data , {
+            onSuccess: () => {
+                router.push(`/sign-in`);
+                reset()
+            },
+            onError: (error) => {
+                console.error("Error during mutation:", error);
+            },
+        });
+    };
 
     const {data, isPending} = verifyCode
 
-    const router = useRouter()
-    const pathname = usePathname()
 
-    const [resendSMS, setResendSMS] : any = useState();
+    const [resendSMS, setResendSMS]: any = useState();
 
     return (
         <div className={"flex flex-col h-screen"}>
@@ -47,12 +62,12 @@ export default function VerifyCodePage() {
                     <form className={"flex flex-col gap-4 items-center"} onSubmit={handleSubmit(onSubmit)}>
                         <div className={"flex flex-col w-fit gap-2 pt-7 pb-12"}>
                             <Controller
-                                name="otp"
+                                name="verification_code"
                                 control={control}
                                 rules={{
                                     required: "OTP is required", // Validation rule for required
                                 }}
-                                render={({ field: { onChange, onBlur, ref }, fieldState: { error } }) => (
+                                render={({field: {onChange, onBlur, ref}, fieldState: {error}}) => (
                                     <div>
                                         <InputOtp
                                             onChange={onChange}
@@ -72,7 +87,7 @@ export default function VerifyCodePage() {
                                     {resendSMS === 0 ? (
                                         <button
                                             onClick={() => {
-                                                resetField("otp");
+                                                resetField("verification_code");
                                                 setResendSMS(null);
                                             }}
                                             className={"cursor-pointer"}
@@ -89,7 +104,7 @@ export default function VerifyCodePage() {
                         </div>
                         <Button color={"primary"} isLoading={isPending} radius={"sm"} type={"submit"}
                                 className={"w-full"}>Ok</Button>
-                        <Button color={"primary"} onPress={() => router.push("/sign-in")} variant={"bordered"}
+                        <Button color={"primary"} onPress={() => router.push("/sign-up")} variant={"bordered"}
                                 radius={"sm"} className={"w-full"}>Edit
                             Email</Button>
                     </form>

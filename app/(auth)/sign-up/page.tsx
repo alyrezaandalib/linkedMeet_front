@@ -21,7 +21,7 @@ export default function SignUpPage() {
     const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
         signUpUser.mutate(data, {
             onSuccess: () => {
-                router.push("/verify-code?email=" + data.email);
+                router.push(`/verify-code?email=${data.email}`);
                 reset()
             },
             onError: (error) => {

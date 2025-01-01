@@ -5,11 +5,19 @@ import {Button, Checkbox} from "@nextui-org/react";
 import {useForm, Controller, SubmitHandler} from "react-hook-form";
 import useService, {Inputs} from "./service";
 import {useRouter} from "next/navigation";
+import {useSelector} from "react-redux";
+
 
 
 export default function SignInPage() {
 
     const router = useRouter();
+    const {signInUser} = useService()
+
+    const isAuthenticated = useSelector((state: any) => state.user.isAuthenticated);
+    const hasCompanyActivityTypes = useSelector((state: any) => state.user.company_activity_types);
+    const hasIndustry = useSelector((state: any) => state.user.industry);
+    const hasJobTitle = useSelector((state: any) => state.user.job_title);
 
     const {
         register,
@@ -19,12 +27,11 @@ export default function SignInPage() {
         reset
     } = useForm<Inputs>()
 
-    const { signInUser} = useService();
-
     const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
-        signInUser.mutate(data , {
+        signInUser.mutate(data, {
             onSuccess: () => {
-                router.push(`/verify-code?email=${data.email}`);
+                if (!hasCompanyActivityTypes) router.push("/activity-type");
+                else if (!hasIndustry && !hasJobTitle) router.push("/information");
                 reset()
             },
             onError: (error) => {
@@ -34,6 +41,8 @@ export default function SignInPage() {
     };
 
     const {isPending} = signInUser
+
+    if (isAuthenticated) router.push("/");
 
     return (
         <div className={"flex flex-col h-screen"}>
