@@ -2,7 +2,7 @@
 import {InputOtp} from "@nextui-org/react";
 import {Button} from "@nextui-org/button";
 import {Controller, SubmitHandler, useForm} from "react-hook-form";
-import useService, {Inputs} from "./service"
+import useService, {Inputs , IResendVerificationCode} from "./service"
 import {useRouter} from "next/navigation";
 import {useState} from "react";
 import Counter from "@/services/counter";
@@ -19,11 +19,11 @@ export default function VerifyCodePage({searchParams}: { searchParams: { email: 
         reset
     } = useForm<Inputs>()
 
-    const {verifyCode} = useService()
+    const {verifyCode, resendVerificationCode} = useService()
 
     const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
         data.email = searchParams.email;
-        verifyCode.mutate(data , {
+        verifyCode.mutate(data, {
             onSuccess: () => {
                 router.push(`/sign-in`);
                 reset()
@@ -81,14 +81,25 @@ export default function VerifyCodePage({searchParams}: { searchParams: { email: 
                                     </div>
                                 )}
                             />
+
+                            {/* handle resend verification code */}
                             <div className={"text-gray-400 text-sm w-full flex justify-between"}>
                                 Resend the code:
                                 <div className={"text-neutral text-[14px] mb-8"}>
                                     {resendSMS === 0 ? (
                                         <button
                                             onClick={() => {
-                                                resetField("verification_code");
-                                                setResendSMS(null);
+                                                resendVerificationCode.mutate({email : searchParams.email}, {
+                                                    onSuccess: (res) => {
+                                                        resetField("verification_code");
+                                                        setResendSMS(null);
+                                                    },
+                                                    onError : (error)=> {
+                                                        console.log(error)
+                                                        // to do hot toast
+                                                        toast.error("This didn't work.")
+                                                    }
+                                                })
                                             }}
                                             className={"cursor-pointer"}
                                         >

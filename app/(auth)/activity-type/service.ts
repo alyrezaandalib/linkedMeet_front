@@ -1,15 +1,31 @@
 import {SubmitHandler} from "react-hook-form";
-import {useMutation} from "@tanstack/react-query";
-import {createService} from "@/services/crud-services/create-service";
+import {useMutation, useQuery} from "@tanstack/react-query";
+import {updateService} from "@/services/crud-services/update-service";
+import {fetchService} from "@/services/crud-services/fetch-service";
 
 export interface Inputs {
-    activity_types : string[];
+    activity_type_ids: string[];
 }
 
 export default function useService() {
+
+    const getCompanyActivityTypes = () => useQuery({
+        queryKey: ["/app/company-activity-types"],
+        queryFn: ({queryKey, signal}) =>
+            fetchService({
+                url: queryKey.join(""),
+            }),
+        refetchOnMount: false,
+        refetchInterval: false,
+        refetchIntervalInBackground: false,
+        refetchOnReconnect: false,
+        refetchOnWindowFocus: false,
+        enabled: true,
+    })
+
     const sendUserActivityType = useMutation({
         mutationFn: async (body: Inputs) => {
-            await createService("/test", body);
+            await updateService("/user/company-activity-types", body);
         },
     });
 
@@ -18,5 +34,5 @@ export default function useService() {
         sendUserActivityType.mutate(data);
     };
 
-    return {onSubmit, sendUserActivityType};
+    return {getCompanyActivityTypes, onSubmit, sendUserActivityType};
 }

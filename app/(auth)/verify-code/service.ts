@@ -1,9 +1,12 @@
-import {SubmitHandler} from "react-hook-form";
 import {useMutation} from "@tanstack/react-query";
 import {createService} from "@/services/crud-services/create-service";
 
 export interface Inputs {
     verification_code: number;
+    email: string;
+}
+
+export interface IResendVerificationCode {
     email: string;
 }
 
@@ -14,5 +17,11 @@ export default function useService() {
         },
     });
 
-    return { verifyCode};
+    const resendVerificationCode = useMutation({
+        mutationFn: async (data: IResendVerificationCode) => {
+            await createService("/auth/resend-verification-code", data);
+        }
+    })
+
+    return {verifyCode, resendVerificationCode};
 }

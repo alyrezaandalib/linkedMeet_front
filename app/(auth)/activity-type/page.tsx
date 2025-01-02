@@ -2,10 +2,15 @@
 import {Button} from "@nextui-org/button";
 import useService, {Inputs} from "./service";
 import {Controller, useForm} from "react-hook-form";
-import {Checkbox} from "@nextui-org/react";
+import {Checkbox, Spinner} from "@nextui-org/react";
 
 export default function ActivityTypePage() {
-    const {onSubmit, sendUserActivityType} = useService();
+    const {getCompanyActivityTypes, onSubmit, sendUserActivityType} = useService();
+
+    // get company activity types
+    const {data, isLoading} = getCompanyActivityTypes()
+
+    // handle form | useForm
     const {
         handleSubmit,
         control,
@@ -14,7 +19,7 @@ export default function ActivityTypePage() {
         watch,
     } = useForm<Inputs>({
         defaultValues: {
-            activity_types: [],
+            activity_type_ids: [],
         },
         mode: "onBlur",
     });
@@ -22,15 +27,15 @@ export default function ActivityTypePage() {
     const {isPending} = sendUserActivityType;
 
     // Watch to see selected activity types
-    const selectedActivityTypes = watch("activity_types", []);
+    const selectedActivityTypes = watch("activity_type_ids", []);
 
     const handleCheckboxChange = (checked: boolean, value: string) => {
         const currentValues = selectedActivityTypes || [];
         if (checked) {
-            setValue("activity_types", [...currentValues, value]);
+            setValue("activity_type_ids", [...currentValues, value]);
         } else {
             setValue(
-                "activity_types",
+                "activity_type_ids",
                 currentValues.filter((item: string) => item !== value)
             );
         }
@@ -51,145 +56,152 @@ export default function ActivityTypePage() {
                             Select the type of activity of your company from the options below
                         </p>
                     </div>
+                    {isLoading
+                        ?
+                       <div className={"h-full flex justify-center items-center"}>
+                           <Spinner color={"primary"}/>
+                       </div>
+                        :
+                        <form className={"flex flex-col gap-3"} onSubmit={handleSubmit(onSubmit)}>
+                            {/* Checkboxes */}
+                            <Controller
+                                name="activity_type_ids"
+                                control={control}
+                                rules={{
+                                    required: "Please select at least one activity type.",
+                                }}
+                                defaultValue={[]}
+                                render={() => (
+                                    <div className={"flex flex-col gap-5"}>
+                                        <Checkbox
+                                            onChange={(e) =>
+                                                handleCheckboxChange(e.target.checked, "Producer / Manufacturer")
+                                            }
+                                            radius={"sm"}
+                                            classNames={{label: "text-sm"}}
+                                        >
+                                            Producer / Manufacturer
+                                        </Checkbox>
 
+                                        <Checkbox
+                                            onChange={(e) =>
+                                                handleCheckboxChange(e.target.checked, "Distributor")
+                                            }
+                                            radius={"sm"}
+                                            classNames={{label: "text-sm"}}
+                                        >
+                                            Distributor
+                                        </Checkbox>
+
+                                        <Checkbox
+                                            onChange={(e) =>
+                                                handleCheckboxChange(e.target.checked, "Wholesaler")
+                                            }
+                                            radius={"sm"}
+                                            classNames={{label: "text-sm"}}
+                                        >
+                                            Wholesaler
+                                        </Checkbox>
+
+                                        <Checkbox
+                                            onChange={(e) =>
+                                                handleCheckboxChange(e.target.checked, "Dealer / Franchise")
+                                            }
+                                            radius={"sm"}
+                                            classNames={{label: "text-sm"}}
+                                        >
+                                            Dealer / Franchise
+                                        </Checkbox>
+
+                                        <Checkbox
+                                            onChange={(e) =>
+                                                handleCheckboxChange(e.target.checked, "Importer")
+                                            }
+                                            radius={"sm"}
+                                            classNames={{label: "text-sm"}}
+                                        >
+                                            Importer
+                                        </Checkbox>
+
+                                        <Checkbox
+                                            onChange={(e) =>
+                                                handleCheckboxChange(e.target.checked, "Retail")
+                                            }
+                                            radius={"sm"}
+                                            classNames={{label: "text-sm"}}
+                                        >
+                                            Retail
+                                        </Checkbox>
+
+                                        <Checkbox
+                                            onChange={(e) =>
+                                                handleCheckboxChange(e.target.checked, "Raw Materials Supplier")
+                                            }
+                                            radius={"sm"}
+                                            classNames={{label: "text-sm"}}
+                                        >
+                                            Raw Materials Supplier
+                                        </Checkbox>
+
+                                        <Checkbox
+                                            onChange={(e) =>
+                                                handleCheckboxChange(e.target.checked, "Service Provider")
+                                            }
+                                            radius={"sm"}
+                                            classNames={{label: "text-sm"}}
+                                        >
+                                            Service Provider
+                                        </Checkbox>
+
+                                        <Checkbox
+                                            onChange={(e) =>
+                                                handleCheckboxChange(e.target.checked, "Consulting Training")
+                                            }
+                                            radius={"sm"}
+                                            classNames={{label: "text-sm"}}
+                                        >
+                                            Consulting Training
+                                        </Checkbox>
+
+                                        <Checkbox
+                                            onChange={(e) =>
+                                                handleCheckboxChange(
+                                                    e.target.checked,
+                                                    "Public Institutions / Association / non-Profit Organisation"
+                                                )
+                                            }
+                                            radius={"sm"}
+                                            className={"max-w-[80%]"}
+                                            classNames={{label: "text-sm"}}
+                                        >
+                                            Public Institutions / Association / non-Profit Organisation
+                                        </Checkbox>
+                                    </div>
+                                )}
+                            />
+
+                            <div className={"w-full"}>
+                                <Button
+                                    color={"primary"}
+                                    className={"mt-3 w-full"}
+                                    isLoading={isPending}
+                                    radius={"sm"}
+                                    type={"submit"}
+                                >
+                                    OK
+                                </Button>
+
+                                {errors.activity_type_ids && (
+                                    <p className="text-red-500 text-xs mt-1">
+                                        {errors.activity_type_ids.message}
+                                    </p>
+                                )}
+                            </div>
+
+                        </form>
+                    }
                     {/* Form */}
-                    <form className={"flex flex-col gap-3"} onSubmit={handleSubmit(onSubmit)}>
-                        {/* Checkboxes */}
-                        <Controller
-                            name="activity_types"
-                            control={control}
-                            rules={{
-                                required: "Please select at least one activity type.",
-                            }}
-                            defaultValue={[]}
-                            render={() => (
-                                <div className={"flex flex-col gap-5"}>
-                                    <Checkbox
-                                        onChange={(e) =>
-                                            handleCheckboxChange(e.target.checked, "Producer / Manufacturer")
-                                        }
-                                        radius={"sm"}
-                                        classNames={{label: "text-sm"}}
-                                    >
-                                        Producer / Manufacturer
-                                    </Checkbox>
 
-                                    <Checkbox
-                                        onChange={(e) =>
-                                            handleCheckboxChange(e.target.checked, "Distributor")
-                                        }
-                                        radius={"sm"}
-                                        classNames={{label: "text-sm"}}
-                                    >
-                                        Distributor
-                                    </Checkbox>
-
-                                    <Checkbox
-                                        onChange={(e) =>
-                                            handleCheckboxChange(e.target.checked, "Wholesaler")
-                                        }
-                                        radius={"sm"}
-                                        classNames={{label: "text-sm"}}
-                                    >
-                                        Wholesaler
-                                    </Checkbox>
-
-                                    <Checkbox
-                                        onChange={(e) =>
-                                            handleCheckboxChange(e.target.checked, "Dealer / Franchise")
-                                        }
-                                        radius={"sm"}
-                                        classNames={{label: "text-sm"}}
-                                    >
-                                        Dealer / Franchise
-                                    </Checkbox>
-
-                                    <Checkbox
-                                        onChange={(e) =>
-                                            handleCheckboxChange(e.target.checked, "Importer")
-                                        }
-                                        radius={"sm"}
-                                        classNames={{label: "text-sm"}}
-                                    >
-                                        Importer
-                                    </Checkbox>
-
-                                    <Checkbox
-                                        onChange={(e) =>
-                                            handleCheckboxChange(e.target.checked, "Retail")
-                                        }
-                                        radius={"sm"}
-                                        classNames={{label: "text-sm"}}
-                                    >
-                                        Retail
-                                    </Checkbox>
-
-                                    <Checkbox
-                                        onChange={(e) =>
-                                            handleCheckboxChange(e.target.checked, "Raw Materials Supplier")
-                                        }
-                                        radius={"sm"}
-                                        classNames={{label: "text-sm"}}
-                                    >
-                                        Raw Materials Supplier
-                                    </Checkbox>
-
-                                    <Checkbox
-                                        onChange={(e) =>
-                                            handleCheckboxChange(e.target.checked, "Service Provider")
-                                        }
-                                        radius={"sm"}
-                                        classNames={{label: "text-sm"}}
-                                    >
-                                        Service Provider
-                                    </Checkbox>
-
-                                    <Checkbox
-                                        onChange={(e) =>
-                                            handleCheckboxChange(e.target.checked, "Consulting Training")
-                                        }
-                                        radius={"sm"}
-                                        classNames={{label: "text-sm"}}
-                                    >
-                                        Consulting Training
-                                    </Checkbox>
-
-                                    <Checkbox
-                                        onChange={(e) =>
-                                            handleCheckboxChange(
-                                                e.target.checked,
-                                                "Public Institutions / Association / non-Profit Organisation"
-                                            )
-                                        }
-                                        radius={"sm"}
-                                        className={"max-w-[80%]"}
-                                        classNames={{label: "text-sm"}}
-                                    >
-                                        Public Institutions / Association / non-Profit Organisation
-                                    </Checkbox>
-                                </div>
-                            )}
-                        />
-
-                        <div className={"w-full"}>
-                            <Button
-                                color={"primary"}
-                                className={"mt-3 w-full"}
-                                isLoading={isPending}
-                                radius={"sm"}
-                                type={"submit"}
-                            >
-                                OK
-                            </Button>
-
-                            {errors.activity_types && (
-                                <p className="text-red-500 text-xs mt-1">
-                                    {errors.activity_types.message}
-                                </p>
-                            )}
-                        </div>
-
-                    </form>
                 </div>
             </div>
         </div>

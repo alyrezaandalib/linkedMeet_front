@@ -15,6 +15,7 @@ import users_image from "../public/images/users.png"
 import {FaPowerOff} from "react-icons/fa6";
 import SendIcon from "@/public/tsx-icons/send";
 import {IoDocumentTextOutline} from "react-icons/io5";
+import {getCookie} from "cookies-next";
 
 
 export default function Home() {
