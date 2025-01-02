@@ -5,7 +5,7 @@ import {fetchService} from "@/services/crud-services/fetch-service";
 
 export interface Inputs {
     industry: string;
-    job_title: string ;
+    job_title: string;
 
 }
 
@@ -50,5 +50,5 @@ export default function useService() {
         sendUserInformation.mutate(data);
     };
 
-    return {onSubmit, sendUserInformation};
+    return {getIndustriesList, getJobTitlesList, onSubmit, sendUserInformation};
 }
