@@ -1,4 +1,3 @@
-import {SubmitHandler} from "react-hook-form";
 import {useMutation, useQuery} from "@tanstack/react-query";
 import {updateService} from "@/services/crud-services/update-service";
 import {fetchService} from "@/services/crud-services/fetch-service";
@@ -29,10 +28,5 @@ export default function useService() {
         },
     });
 
-    const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
-        console.log(data);
-        sendUserActivityType.mutate(data);
-    };
-
-    return {getCompanyActivityTypes, onSubmit, sendUserActivityType};
+    return {getCompanyActivityTypes, sendUserActivityType};
 }

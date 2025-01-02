@@ -40,6 +40,14 @@ const userSlice = createSlice({
             setCookie("job_title", payload.job_title);
             setCookie("company_activity_types", payload.company_activity_types);
         },
+
+        UpdateCompanyActivityTypes: (state, { payload }) => {
+            state.user.company_activity_types = payload;
+
+            // Save data to cookies
+            setCookie("company_activity_types", payload);
+        },
+
         Logout: (state) => {
             state.isAuthenticated = false;
             state.token = "";
@@ -65,5 +73,5 @@ const userSlice = createSlice({
     },
 });
 
-export const { Authentication, Logout } = userSlice.actions;
+export const { Authentication, UpdateCompanyActivityTypes, Logout } = userSlice.actions;
 export default userSlice.reducer;

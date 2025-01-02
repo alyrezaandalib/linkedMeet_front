@@ -1,207 +1,136 @@
 "use client";
 import {Button} from "@nextui-org/button";
 import useService, {Inputs} from "./service";
-import {Controller, useForm} from "react-hook-form";
+import {Controller, SubmitHandler, useForm} from "react-hook-form";
 import {Checkbox, Spinner} from "@nextui-org/react";
+import {useDispatch, useSelector} from "react-redux";
+import {useRouter} from "next/navigation";
+import toast from "react-hot-toast";
+import { UpdateCompanyActivityTypes} from "@/store/userSlice";
+import {useState} from "react";
 
 export default function ActivityTypePage() {
-    const {getCompanyActivityTypes, onSubmit, sendUserActivityType} = useService();
 
-    // get company activity types
-    const {data, isLoading} = getCompanyActivityTypes()
+    const dispatch = useDispatch();
+    const [selectedCompanyActivityTypes, setSelectedActivityTypes] = useState<any>([])
 
-    // handle form | useForm
-    const {
-        handleSubmit,
-        control,
-        formState: {errors},
-        setValue,
-        watch,
-    } = useForm<Inputs>({
-        defaultValues: {
-            activity_type_ids: [],
-        },
+    const isAuthenticated = useSelector((state: any) => state.user.isAuthenticated);
+    const hasCompanyActivityTypes = useSelector((state: any) => state.user.company_activity_types);
+    const hasIndustry = useSelector((state: any) => state.user.industry);
+    const hasJobTitle = useSelector((state: any) => state.user.job_title);
+    const router = useRouter();
+
+    // service
+    const {getCompanyActivityTypes, sendUserActivityType} = useService();
+
+    // company activity types list
+    const {data, isLoading, isError} = getCompanyActivityTypes();
+
+    const {handleSubmit, control, reset, formState: {errors}, setValue, watch} = useForm<Inputs>({
+        defaultValues: {activity_type_ids: []},
         mode: "onBlur",
     });
 
+    // handle sending activity types
     const {isPending} = sendUserActivityType;
-
-    // Watch to see selected activity types
     const selectedActivityTypes = watch("activity_type_ids", []);
 
-    const handleCheckboxChange = (checked: boolean, value: string) => {
+    const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
+        sendUserActivityType.mutate(data, {
+            onSuccess: () => {
+                dispatch(UpdateCompanyActivityTypes(selectedCompanyActivityTypes));
+                if (isAuthenticated && !hasIndustry && !hasJobTitle) router.push("/information")
+                reset()
+            },
+            onError: (error) => {
+                toast.error(error.message);
+            }
+        });
+    };
+
+    const handleCheckboxChange = (checked: boolean, id: string, name: string) => {
         const currentValues = selectedActivityTypes || [];
         if (checked) {
-            setValue("activity_type_ids", [...currentValues, value]);
+            setValue("activity_type_ids", [...currentValues, id]);
+            setSelectedActivityTypes((prevState: any[]) => [...prevState, name]);
         } else {
-            setValue(
-                "activity_type_ids",
-                currentValues.filter((item: string) => item !== value)
-            );
+            setValue("activity_type_ids", currentValues.filter((item: string) => item !== id));
+            setSelectedActivityTypes((prevState: any[]) => prevState.filter((item) => item !== name));
         }
     };
 
+    // check if the user has company activity type
+    if ( !!hasCompanyActivityTypes) router.push("/")
+
     return (
-        <div className={"flex flex-col h-screen"}>
+        <div className="flex flex-col h-screen">
             <div className="text-center flex justify-center items-center text-3xl font-bold h-[10%] text-white">
                 LinkedMeet
             </div>
             <div className="flex relative items-center h-[90%] justify-center">
-                <div className={"w-[90%] bg-gray-500 h-full absolute bottom-0 rounded-3xl"}></div>
+                <div className="w-[90%] bg-gray-500 h-full absolute bottom-0 rounded-3xl"></div>
                 <div
                     className="absolute flex flex-col gap-3.5 bottom-0 w-full h-[97.5%] max-w-md bg-white rounded-t-3xl shadow-lg p-8">
-                    <div className={"flex flex-col gap-1.5"}>
+                    <div className="flex flex-col gap-1.5">
                         <h2 className="text-2xl font-semibold text-black">Company Activity Type</h2>
                         <p className="text-sm text-gray-400 max-w-[90%]">
                             Select the type of activity of your company from the options below
                         </p>
                     </div>
-                    {isLoading
-                        ?
-                       <div className={"h-full flex justify-center items-center"}>
-                           <Spinner color={"primary"}/>
-                       </div>
-                        :
-                        <form className={"flex flex-col gap-3"} onSubmit={handleSubmit(onSubmit)}>
-                            {/* Checkboxes */}
-                            <Controller
-                                name="activity_type_ids"
-                                control={control}
-                                rules={{
-                                    required: "Please select at least one activity type.",
-                                }}
-                                defaultValue={[]}
-                                render={() => (
-                                    <div className={"flex flex-col gap-5"}>
-                                        <Checkbox
-                                            onChange={(e) =>
-                                                handleCheckboxChange(e.target.checked, "Producer / Manufacturer")
-                                            }
-                                            radius={"sm"}
-                                            classNames={{label: "text-sm"}}
-                                        >
-                                            Producer / Manufacturer
-                                        </Checkbox>
-
-                                        <Checkbox
-                                            onChange={(e) =>
-                                                handleCheckboxChange(e.target.checked, "Distributor")
-                                            }
-                                            radius={"sm"}
-                                            classNames={{label: "text-sm"}}
-                                        >
-                                            Distributor
-                                        </Checkbox>
-
-                                        <Checkbox
-                                            onChange={(e) =>
-                                                handleCheckboxChange(e.target.checked, "Wholesaler")
-                                            }
-                                            radius={"sm"}
-                                            classNames={{label: "text-sm"}}
-                                        >
-                                            Wholesaler
-                                        </Checkbox>
-
-                                        <Checkbox
-                                            onChange={(e) =>
-                                                handleCheckboxChange(e.target.checked, "Dealer / Franchise")
-                                            }
-                                            radius={"sm"}
-                                            classNames={{label: "text-sm"}}
-                                        >
-                                            Dealer / Franchise
-                                        </Checkbox>
-
-                                        <Checkbox
-                                            onChange={(e) =>
-                                                handleCheckboxChange(e.target.checked, "Importer")
-                                            }
-                                            radius={"sm"}
-                                            classNames={{label: "text-sm"}}
-                                        >
-                                            Importer
-                                        </Checkbox>
-
-                                        <Checkbox
-                                            onChange={(e) =>
-                                                handleCheckboxChange(e.target.checked, "Retail")
-                                            }
-                                            radius={"sm"}
-                                            classNames={{label: "text-sm"}}
-                                        >
-                                            Retail
-                                        </Checkbox>
-
-                                        <Checkbox
-                                            onChange={(e) =>
-                                                handleCheckboxChange(e.target.checked, "Raw Materials Supplier")
-                                            }
-                                            radius={"sm"}
-                                            classNames={{label: "text-sm"}}
-                                        >
-                                            Raw Materials Supplier
-                                        </Checkbox>
-
-                                        <Checkbox
-                                            onChange={(e) =>
-                                                handleCheckboxChange(e.target.checked, "Service Provider")
-                                            }
-                                            radius={"sm"}
-                                            classNames={{label: "text-sm"}}
-                                        >
-                                            Service Provider
-                                        </Checkbox>
-
-                                        <Checkbox
-                                            onChange={(e) =>
-                                                handleCheckboxChange(e.target.checked, "Consulting Training")
-                                            }
-                                            radius={"sm"}
-                                            classNames={{label: "text-sm"}}
-                                        >
-                                            Consulting Training
-                                        </Checkbox>
-
-                                        <Checkbox
-                                            onChange={(e) =>
-                                                handleCheckboxChange(
-                                                    e.target.checked,
-                                                    "Public Institutions / Association / non-Profit Organisation"
-                                                )
-                                            }
-                                            radius={"sm"}
-                                            className={"max-w-[80%]"}
-                                            classNames={{label: "text-sm"}}
-                                        >
-                                            Public Institutions / Association / non-Profit Organisation
-                                        </Checkbox>
-                                    </div>
-                                )}
-                            />
-
-                            <div className={"w-full"}>
+                    {isLoading ? (
+                        <div className="h-full flex justify-center items-center">
+                            <Spinner color="primary"/>
+                        </div>
+                    ) : (
+                        <form className="flex flex-col gap-3" onSubmit={handleSubmit(onSubmit)}>
+                            {
+                                data.data ? data?.data?.map((activity_type: any) => (
+                                    <Controller
+                                        key={activity_type.id}
+                                        name="activity_type_ids"
+                                        control={control}
+                                        rules={{required: "Please select at least one activity type."}}
+                                        defaultValue={[]}
+                                        render={() => (
+                                            <div className="flex flex-col gap-5">
+                                                <Checkbox
+                                                    onChange={(e: any) =>
+                                                        handleCheckboxChange(
+                                                            e.target.checked,
+                                                            activity_type.id,
+                                                            activity_type.name
+                                                        )
+                                                    }
+                                                    radius="sm"
+                                                    className="max-w-[80%]"
+                                                    classNames={{label: "text-sm"}}
+                                                >
+                                                    {activity_type.name}
+                                                </Checkbox>
+                                            </div>
+                                        )}
+                                    />
+                                )) : <div className={"text-sm text-danger"}>An error occurred while retrieving
+                                    data.</div>
+                            }
+                            <div className={`w-full ${!data.data && "hidden"}`}>
                                 <Button
-                                    color={"primary"}
-                                    className={"mt-3 w-full"}
+                                    color="primary"
+                                    className="mt-3 w-full"
                                     isLoading={isPending}
-                                    radius={"sm"}
-                                    type={"submit"}
+                                    radius="sm"
+                                    type="submit"
                                 >
                                     OK
                                 </Button>
-
                                 {errors.activity_type_ids && (
                                     <p className="text-red-500 text-xs mt-1">
                                         {errors.activity_type_ids.message}
                                     </p>
                                 )}
                             </div>
-
                         </form>
-                    }
-                    {/* Form */}
-
+                    )}
                 </div>
             </div>
         </div>

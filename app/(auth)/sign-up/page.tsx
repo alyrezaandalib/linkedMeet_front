@@ -5,6 +5,7 @@ import {Button} from "@nextui-org/button";
 import useService, {Inputs} from "./service";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {useRouter} from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function SignUpPage() {
     const {
@@ -25,7 +26,7 @@ export default function SignUpPage() {
                 reset()
             },
             onError: (error) => {
-                console.error("Error during mutation:", error);
+               toast.error(error.message);
             },
         });
     };

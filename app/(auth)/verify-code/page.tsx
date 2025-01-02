@@ -1,72 +1,71 @@
-"use client"
+"use client";
+
 import {InputOtp} from "@nextui-org/react";
 import {Button} from "@nextui-org/button";
 import {Controller, SubmitHandler, useForm} from "react-hook-form";
-import useService, {Inputs , IResendVerificationCode} from "./service"
-import {useRouter} from "next/navigation";
-import {useState} from "react";
+import useService, {Inputs} from "./service";
+import {useRouter, useSearchParams} from "next/navigation";
+import { useState} from "react";
 import Counter from "@/services/counter";
+import toast from "react-hot-toast";
 
-export default function VerifyCodePage({searchParams}: { searchParams: { email: string } }) {
+export default function VerifyCodePage() {
+    const searchParams = useSearchParams()
+    const email = searchParams.get("email")
 
-    const router = useRouter()
+    const router = useRouter();
 
     const {
         handleSubmit,
         resetField,
         control,
         formState: {errors},
-        reset
-    } = useForm<Inputs>()
+        reset,
+    } = useForm<Inputs>();
 
-    const {verifyCode, resendVerificationCode} = useService()
+    const {verifyCode, resendVerificationCode} = useService();
 
     const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
-        data.email = searchParams.email;
+        if (email) {
+            data.email = email;
+        }
         verifyCode.mutate(data, {
             onSuccess: () => {
                 router.push(`/sign-in`);
-                reset()
+                reset();
             },
             onError: (error) => {
-                console.error("Error during mutation:", error);
+                toast.error(error.message)
             },
         });
     };
 
-    const {data, isPending} = verifyCode
-
-
-    const [resendSMS, setResendSMS]: any = useState();
+    const [resendSMS, setResendSMS] = useState<number | null>(null);
 
     return (
-        <div className={"flex flex-col h-screen"}>
-            <div
-                className="text-center flex justify-center items-center text-3xl font-bold h-[30%] text-white">LinkedMeet
+        <div className="flex flex-col h-screen">
+            <div className="text-center flex justify-center items-center text-3xl font-bold h-[30%] text-white">
+                LinkedMeet
             </div>
             <div className="flex relative items-center h-[70%] justify-center">
-                <div className={"w-[90%] bg-gray-500 h-full absolute bottom-0 rounded-3xl"}></div>
+                <div className="w-[90%] bg-gray-500 h-full absolute bottom-0 rounded-3xl"></div>
                 <div
                     className="absolute flex flex-col bottom-0 w-full h-[97.5%] max-w-md bg-white rounded-t-3xl shadow-lg p-8">
-
-                    <div className={"flex flex-col gap-1.5"}>
+                    <div className="flex flex-col gap-1.5">
                         <h2 className="text-2xl font-semibold text-black">Code Sent</h2>
                         <div className="text-sm text-gray-400">
-                            We have sent a 6-digit code to your email <span
-                            className={"text-black/80"}>mehranwashere@gmail.com </span>
-                            <div> please enter the code sent</div>
+                            We have sent a 6-digit code to your email{" "}
+                            <span className="text-black/80">{email || "No email provided"}</span>
+                            <div> Please enter the code sent</div>
                         </div>
                     </div>
 
-                    {/* Form */}
-                    <form className={"flex flex-col gap-4 items-center"} onSubmit={handleSubmit(onSubmit)}>
-                        <div className={"flex flex-col w-fit gap-2 pt-7 pb-12"}>
+                    <form className="flex flex-col gap-4 items-center" onSubmit={handleSubmit(onSubmit)}>
+                        <div className="flex flex-col w-fit gap-2 pt-7 pb-12">
                             <Controller
                                 name="verification_code"
                                 control={control}
-                                rules={{
-                                    required: "OTP is required", // Validation rule for required
-                                }}
+                                rules={{required: "OTP is required"}}
                                 render={({field: {onChange, onBlur, ref}, fieldState: {error}}) => (
                                     <div>
                                         <InputOtp
@@ -74,53 +73,66 @@ export default function VerifyCodePage({searchParams}: { searchParams: { email: 
                                             onBlur={onBlur}
                                             ref={ref}
                                             length={6}
-                                            size={"lg"}
-                                            variant={"bordered"}
+                                            size="lg"
+                                            variant="bordered"
                                         />
                                         {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
                                     </div>
                                 )}
                             />
 
-                            {/* handle resend verification code */}
-                            <div className={"text-gray-400 text-sm w-full flex justify-between"}>
+                            <div className="text-gray-400 text-sm w-full flex justify-between">
                                 Resend the code:
-                                <div className={"text-neutral text-[14px] mb-8"}>
+                                <div className="text-neutral text-[14px] mb-8">
                                     {resendSMS === 0 ? (
                                         <button
+                                            type={"button"}
                                             onClick={() => {
-                                                resendVerificationCode.mutate({email : searchParams.email}, {
-                                                    onSuccess: (res) => {
-                                                        resetField("verification_code");
-                                                        setResendSMS(null);
-                                                    },
-                                                    onError : (error)=> {
-                                                        console.log(error)
-                                                        // to do hot toast
-                                                        toast.error("This didn't work.")
-                                                    }
-                                                })
+                                                if (email) {
+                                                    resendVerificationCode.mutate(
+                                                        {email: email},
+                                                        {
+                                                            onSuccess: () => {
+                                                                resetField("verification_code");
+                                                                setResendSMS(null);
+                                                            },
+                                                            onError: (error) => {
+                                                                toast.error(error.message)
+                                                            },
+                                                        }
+                                                    );
+                                                }
                                             }}
-                                            className={"cursor-pointer"}
+                                            className="cursor-pointer"
                                         >
                                             Receive verification code again
                                         </button>
                                     ) : (
-                                        <div className={"text-right text-[13px] flex items-center"}>
-                                            <span className={"ml-1"}><Counter setResendSMS={setResendSMS}/></span>
+                                        <div className="text-right text-[13px] flex items-center">
+                                            <span className="ml-1">
+                                                <Counter setResendSMS={setResendSMS}/>
+                                            </span>
                                         </div>
                                     )}
                                 </div>
                             </div>
                         </div>
-                        <Button color={"primary"} isLoading={isPending} radius={"sm"} type={"submit"}
-                                className={"w-full"}>Ok</Button>
-                        <Button color={"primary"} onPress={() => router.push("/sign-up")} variant={"bordered"}
-                                radius={"sm"} className={"w-full"}>Edit
-                            Email</Button>
+                        <Button color="primary" isLoading={verifyCode.isPending} radius="sm" type="submit"
+                                className="w-full">
+                            Ok
+                        </Button>
+                        <Button
+                            color="primary"
+                            onPress={() => router.push("/sign-up")}
+                            variant="bordered"
+                            radius="sm"
+                            className="w-full"
+                        >
+                            Edit Email
+                        </Button>
                     </form>
                 </div>
             </div>
         </div>
-    )
+    );
 }

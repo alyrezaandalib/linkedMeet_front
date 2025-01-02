@@ -6,7 +6,7 @@ import {useForm, Controller, SubmitHandler} from "react-hook-form";
 import useService, {Inputs} from "./service";
 import {useRouter} from "next/navigation";
 import {useSelector} from "react-redux";
-
+import toast from "react-hot-toast";
 
 
 export default function SignInPage() {
@@ -31,11 +31,11 @@ export default function SignInPage() {
         signInUser.mutate(data, {
             onSuccess: () => {
                 if (!hasCompanyActivityTypes) router.push("/activity-type");
-                else if (!hasIndustry && !hasJobTitle) router.push("/information");
+                if (!hasIndustry && !hasJobTitle) router.push("/information");
                 reset()
             },
             onError: (error) => {
-                console.error("Error during mutation:", error);
+                toast.error(error.message);
             },
         });
     };
