@@ -15,26 +15,31 @@ import users_image from "../public/images/users.png"
 import {FaPowerOff} from "react-icons/fa6";
 import SendIcon from "@/public/tsx-icons/send";
 import {IoDocumentTextOutline} from "react-icons/io5";
-import {getCookie} from "cookies-next";
+import toast from "react-hot-toast";
+import { SubmitHandler} from "react-hook-form";
+import SelectableModal from "@/components/selectableModal";
 
 
 export default function Home() {
 
-    const {onSubmitLocation, sendUserLocation} = service()
+    const {sendUserLocation , getNearbyUsers , getJobTitlesList , getIndustriesList} = service()
     const [location, setLocation]: any = useState("off")
 
-    useEffect(() => {
-        if (location === "on") {
-            onSubmitLocation({
-                latitude: "test",
-                longitude: "test",
-            })
-        }
-    }, [location]);
+    const onSubmitLocation: SubmitHandler<Location> = (data: Location) => {
+        console.log(data);
+        sendUserLocation.mutate(data, {
+            onSuccess: (response) => {
+                toast.success("Location successfully created!");
+                setLocation("on")
+            },
+            onError: (error) => {
+                toast.error(error.message);
+            }
+        });
+    };
 
-    // const {data, isPending, isError} = sendUserLocation
+    // const getNearbyUserResponse = getNearbyUsers()
     const isPending = false
-    // const data: any = []
     const data = [
         {
             first_name: "ali",
@@ -75,15 +80,28 @@ export default function Home() {
         },
     ]
 
+    // get industries and job-titles list
+    const getIndustriesListResponse = getIndustriesList()
+    const getJobTitlesListResponse = getJobTitlesList()
+
+    const [selectedIndustry, setSelectedIndustry] = useState<any>(null);
+    const [selectedJob, setSelectedJob] = useState<any>(null);
+
+    // modals
+    const [isIndustryModalOpen, setIndustryModalOpen] = useState(false);
+    const [isJobTitleModalOpen, setJobTitleModalOpen] = useState(false);
+
+
     return (
         <div className={"w-full h-screen"}>
             <div className={"flex items-center justify-between px-5 py-3"}>
                 <DrawerMenu/>
                 {
                     location === "on" &&
-                    <Tabs aria-label="location" onSelectionChange={setLocation} radius={"sm"} classNames={{
-                        tabList: "bg-primary",
-                    }}>
+                    <Tabs aria-label="location"
+                          onSelectionChange={setLocation}
+                          radius={"sm"} classNames={{tabList: "bg-primary",}}
+                    >
                         <Tab key="on" title={<FaPowerOff/>} className={"px-5"}/>
                         <Tab key="off" title="off" className={"px-5"}/>
                     </Tabs>
@@ -105,7 +123,26 @@ export default function Home() {
                                         sharing.
                                     </div>
                                     <Tabs aria-label="location" size={"lg"} radius={"sm"}
-                                          onSelectionChange={setLocation}>
+                                          onSelectionChange={
+                                        () => {
+                                            if ("geolocation" in navigator) {
+                                                navigator.geolocation.getCurrentPosition(
+                                                    (position) => {
+                                                        const {latitude, longitude} = position.coords;
+                                                        onSubmitLocation({latitude, longitude});
+                                                    },
+                                                    (error) => {
+                                                        toast.error(`Error fetching location: ${error.message}`);
+                                                        setLocation("off")
+                                                    }
+                                                );
+                                            } else {
+                                                toast.error("Geolocation is not supported by this browser.");
+                                                setLocation("off")
+                                            }
+                                        }
+                                    }
+                                    >
                                         <Tab key="off" title="off" className={"px-10"}/>
                                         <Tab key="on" title={<FaPowerOff/>} className={"px-10"}/>
                                     </Tabs>
@@ -136,29 +173,24 @@ export default function Home() {
                                         </div>
                                         <div className={"w-full flex justify-between items-center gap-2"}>
                                             <input
-                                                type="text"
                                                 placeholder="Title job"
-                                                className="w-full p-2 border border-gray-300 rounded text-gray-700"
+                                                className="form-input form-input-sm !m-0"
+                                                value={selectedJob?.name || ""}
+                                                onClick={() => setJobTitleModalOpen(true)}
                                             />
                                             <input
-                                                type="text"
                                                 placeholder="Industry"
-                                                className="w-full p-2 border border-gray-300 rounded text-gray-700"
+                                                className="form-input form-input-sm !m-0"
+                                                value={selectedIndustry?.name || ""}
+                                                onClick={() => setIndustryModalOpen(true)}
                                             />
-                                            <select
-                                                className="w-full p-2 border border-gray-300 rounded text-gray-700"
-                                            >
-                                                <option value="all">All</option>
-                                                <option value="design">Design</option>
-                                                <option value="development">Development</option>
-                                            </select>
                                         </div>
                                         <div className={"grid grid-cols-2 gap-2.5 w-full"}>
                                             {data.map((user: User, index: number) => (
                                                 <div
                                                     key={index}
                                                     className={
-                                                        "bg-white shadow-sm flex flex-col items-center justify-center gap-2 p-4 rounded-lg border"
+                                                        "bg-white shadow-sm flex flex-col items-center justify-center gap-2 p-4 rounded-lg"
                                                     }
                                                 >
                                                     <div
@@ -191,6 +223,37 @@ export default function Home() {
                         </>
                 }
             </div>
+            {
+                getIndustriesListResponse.data?.data && (
+                    <>
+                        {/* Industry Modal */}
+                        <SelectableModal
+                            title="Industry"
+                            items={getIndustriesListResponse.data?.data || []}
+                            selectedItem={selectedIndustry}
+                            isOpen={isIndustryModalOpen}
+                            onClose={() => setIndustryModalOpen(false)}
+                            onSelect={(item) => {
+                                setSelectedIndustry(item);
+                                setIndustryModalOpen(false);
+                            }}
+                        />
+
+                        {/* Job Title Modal */}
+                        <SelectableModal
+                            title="Job Title"
+                            items={getJobTitlesListResponse.data?.data || []}
+                            selectedItem={selectedJob}
+                            isOpen={isJobTitleModalOpen}
+                            onClose={() => setJobTitleModalOpen(false)}
+                            onSelect={(item) => {
+                                setSelectedJob(item);
+                                setJobTitleModalOpen(false);
+                            }}
+                        />
+                    </>
+                )
+            }
         </div>
     );
 }

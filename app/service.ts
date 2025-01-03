@@ -1,10 +1,10 @@
-import {SubmitHandler} from "react-hook-form";
-import {useMutation} from "@tanstack/react-query";
+import {useMutation, useQuery} from "@tanstack/react-query";
 import {createService} from "@/services/crud-services/create-service";
+import {fetchService} from "@/services/crud-services/fetch-service";
 
 export interface Location {
-    latitude: string;
-    longitude: string;
+    latitude: number | null;
+    longitude: number | null;
 }
 
 export interface User {
@@ -18,14 +18,51 @@ export interface User {
 export default function useService() {
     const sendUserLocation = useMutation({
         mutationFn: async (body: Location) => {
-            await createService("/test", body);
+            await createService("/user/location", body);
         },
     });
 
-    const onSubmitLocation: SubmitHandler<Location> = (data: Location) => {
-        console.log(data);
-        sendUserLocation.mutate(data);
-    };
+    const getNearbyUsers =() => useQuery({
+        queryKey: ["/user/nearby-users"],
+        queryFn: ({queryKey, signal}) =>
+            fetchService({
+                url: queryKey.join(""),
+            }),
+        refetchOnMount: false,
+        refetchInterval: false,
+        refetchIntervalInBackground: false,
+        refetchOnReconnect: false,
+        refetchOnWindowFocus: false,
+        enabled: true,
+    })
 
-    return {onSubmitLocation, sendUserLocation};
+    const getIndustriesList = () => useQuery({
+        queryKey: ["/app/industries"],
+        queryFn: ({queryKey}) =>
+            fetchService({
+                url: queryKey.join(""),
+            }),
+        refetchOnMount: false,
+        refetchInterval: false,
+        refetchIntervalInBackground: false,
+        refetchOnReconnect: false,
+        refetchOnWindowFocus: false,
+        enabled: true,
+    })
+
+    const getJobTitlesList = () => useQuery({
+        queryKey: ["/app/job-titles"],
+        queryFn: ({queryKey}) =>
+            fetchService({
+                url: queryKey.join(""),
+            }),
+        refetchOnMount: false,
+        refetchInterval: false,
+        refetchIntervalInBackground: false,
+        refetchOnReconnect: false,
+        refetchOnWindowFocus: false,
+        enabled: true,
+    })
+
+    return {sendUserLocation , getNearbyUsers , getIndustriesList , getJobTitlesList};
 }
