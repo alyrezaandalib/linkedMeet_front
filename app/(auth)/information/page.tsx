@@ -1,12 +1,9 @@
 "use client"
 import {useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
-import {Modal, ModalContent, ModalHeader, ModalBody, Button} from "@nextui-org/react";
+import {Button} from "@nextui-org/react";
 import useService, {Inputs} from "./service";
-import {IoMdCheckmark} from "react-icons/io";
-
-const jobTitles = ["Research Skills", "Analyst", "Legal Research", "Oil And Gas", "Sales Operations", "Sales Management", "Social Media"];
-const industries = ["Technology", "Finance", "Healthcare", "Education", "Retail", "Energy"];
+import SelectableModal from "@/components/selectableModal";
 
 export default function InformationPage() {
     // service
@@ -58,7 +55,7 @@ export default function InformationPage() {
                                 {...register("industry", {required: "Industry is required."})}
                                 readOnly
                                 className="form-input"
-                                value={selectedIndustry.name|| ""}
+                                value={selectedIndustry?.name || ""}
                                 onClick={() => setIndustryModalOpen(true)} // Open Industry Modal
                             />
                             {errors.industry && <p className="text-red-500 text-xs mt-1">{errors.industry.message}</p>}
@@ -71,7 +68,7 @@ export default function InformationPage() {
                                 {...register("job_title", {required: "Job title is required."})}
                                 readOnly
                                 className="form-input"
-                                value={selectedJob.name || ""}
+                                value={selectedJob?.name || ""}
                                 onClick={() => setJobTitleModalOpen(true)} // Open Job Title Modal
                             />
                             {errors.job_title &&
@@ -83,10 +80,10 @@ export default function InformationPage() {
                 </div>
             </div>
 
-            {/* Industry Modal */}
             {
                 getIndustriesListResponse.data?.data && (
                     <>
+                        {/* Industry Modal */}
                         <SelectableModal
                             title="Industry"
                             items={getIndustriesListResponse.data?.data || []}
@@ -118,52 +115,3 @@ export default function InformationPage() {
     );
 }
 
-interface SelectableModalProps {
-    title: string;
-    items: string[];
-    selectedItem: string | null;
-    isOpen: boolean;
-    onClose: () => void;
-    onSelect: (item: string) => void;
-}
-
-function SelectableModal({title, items, selectedItem, isOpen, onClose, onSelect}: SelectableModalProps) {
-    return (
-        <Modal size="full" isOpen={isOpen} onOpenChange={onClose}>
-            <ModalContent>
-                {(onCloseModal) => (
-                    <>
-                        <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
-                        <div
-                            className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mt-3"></div>
-                        <ModalBody>
-                            <div className="flex flex-col">
-                                {items?.map((item : any, index) => (
-                                    <div key={index}>
-                                        <Button
-                                            onPress={() => {
-                                                onSelect(item);
-                                                onCloseModal();
-                                            }}
-                                            variant="light"
-                                            size="lg"
-                                            radius="sm"
-                                            className={"flex justify-between py-6 w-full"}
-                                        >
-                                            {item.name}
-                                            {selectedItem === item && (
-                                                <IoMdCheckmark className="text-blue-500 text-xl"/>
-                                            )}
-                                        </Button>
-                                        <div
-                                            className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
-                                    </div>
-                                ))}
-                            </div>
-                        </ModalBody>
-                    </>
-                )}
-            </ModalContent>
-        </Modal>
-    );
-}

@@ -12,7 +12,7 @@ import toast from "react-hot-toast";
 export default function SignInPage() {
 
     const router = useRouter();
-    const {signInUser} = useService()
+    const {signInUser, linkedinRedirect} = useService()
 
     const isAuthenticated = useSelector((state: any) => state.user.isAuthenticated);
     const hasCompanyActivityTypes = useSelector((state: any) => state.user.company_activity_types);
@@ -131,10 +131,25 @@ export default function SignInPage() {
 
                     {/* LinkedIn Login */}
                     <button
+                        onClick={() => {
+                            fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/auth/linkedin`)
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error(`HTTP error! status: ${response.status}`);
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    window.location.replace(data.url)
+                                })
+                                .catch(error => {
+                                    toast.error(`Error fetching LinkedIn auth URL: ${error}`);
+                                });
+                        }}
                         className="w-full flex items-center justify-center gap-1.5 border border-gray-300 py-4 px-4 rounded-lg hover:bg-gray-100"
                     >
                         <Linkedin/>
-                        <span className="text-sm text-gray-600">Linkedin</span>
+                        <div className="text-sm text-gray-600">Linkedin</div>
                     </button>
 
                     {/* Footer */}

@@ -1,7 +1,8 @@
-import {useMutation} from "@tanstack/react-query";
+import {useMutation, useQuery} from "@tanstack/react-query";
 import {createService} from "@/services/crud-services/create-service";
 import {Authentication} from "@/store/userSlice";
 import {useDispatch} from "react-redux";
+import {fetchService} from "@/services/crud-services/fetch-service";
 
 export interface Inputs {
     email: string;
@@ -31,5 +32,13 @@ export default function useService() {
         },
     });
 
-    return {signInUser};
+    const linkedinRedirect = () => useQuery({
+        queryKey: ["/auth/linkedin"],
+        queryFn: ({queryKey}) =>
+            fetchService({
+                url: queryKey.join(""),
+            }),
+    })
+
+    return {signInUser , linkedinRedirect};
 }
