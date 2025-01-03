@@ -3,6 +3,7 @@ import {createService} from "@/services/crud-services/create-service";
 import {Authentication} from "@/store/userSlice";
 import {useDispatch} from "react-redux";
 import {fetchService} from "@/services/crud-services/fetch-service";
+import toast from "react-hot-toast";
 
 export interface Inputs {
     email: string;
@@ -27,7 +28,7 @@ export default function useService() {
                     company_activity_types: response.user.company_activity_types,
                 }));
             } else {
-                console.error("Invalid response structure:", response);
+                toast.error(`Invalid response structure: ${response}`);
             }
         },
     });
