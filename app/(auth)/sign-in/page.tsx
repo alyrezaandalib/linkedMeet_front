@@ -15,9 +15,9 @@ export default function SignInPage() {
     const {signInUser, linkedinRedirect} = useService()
 
     const isAuthenticated = useSelector((state: any) => state.user.isAuthenticated);
-    const hasCompanyActivityTypes = useSelector((state: any) => state.user.company_activity_types);
-    const hasIndustry = useSelector((state: any) => state.user.industry);
-    const hasJobTitle = useSelector((state: any) => state.user.job_title);
+    const hasCompanyActivityTypes = useSelector((state: any) => state.user.user.company_activity_types);
+    const hasIndustry = useSelector((state: any) => state.user.user.industry);
+    const hasJobTitle = useSelector((state: any) => state.user.user.job_title);
 
     const {
         register,

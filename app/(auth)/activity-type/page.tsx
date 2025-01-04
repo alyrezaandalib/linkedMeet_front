@@ -6,7 +6,7 @@ import {Checkbox, Spinner} from "@nextui-org/react";
 import {useDispatch, useSelector} from "react-redux";
 import {useRouter} from "next/navigation";
 import toast from "react-hot-toast";
-import { UpdateCompanyActivityTypes} from "@/store/userSlice";
+import {UpdateCompanyActivityTypes} from "@/store/userSlice";
 import {useState} from "react";
 
 export default function ActivityTypePage() {
@@ -15,9 +15,9 @@ export default function ActivityTypePage() {
     const [selectedCompanyActivityTypes, setSelectedActivityTypes] = useState<any>([])
 
     const isAuthenticated = useSelector((state: any) => state.user.isAuthenticated);
-    const hasCompanyActivityTypes = useSelector((state: any) => state.user.company_activity_types);
-    const hasIndustry = useSelector((state: any) => state.user.industry);
-    const hasJobTitle = useSelector((state: any) => state.user.job_title);
+    const hasCompanyActivityTypes = useSelector((state: any) => state.user.user.company_activity_types);
+    const hasIndustry = useSelector((state: any) => state.user.user.industry);
+    const hasJobTitle = useSelector((state: any) => state.user.user.job_title);
     const router = useRouter();
 
     // service
@@ -60,7 +60,7 @@ export default function ActivityTypePage() {
     };
 
     // check if the user has company activity type
-    if ( !!hasCompanyActivityTypes) router.push("/")
+    if (hasCompanyActivityTypes !== null && hasCompanyActivityTypes !== undefined) router.push("/")
 
     return (
         <div className="flex flex-col h-screen">

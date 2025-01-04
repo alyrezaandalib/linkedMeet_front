@@ -16,17 +16,25 @@ import {FaPowerOff} from "react-icons/fa6";
 import SendIcon from "@/public/tsx-icons/send";
 import {IoDocumentTextOutline} from "react-icons/io5";
 import toast from "react-hot-toast";
-import { SubmitHandler} from "react-hook-form";
+import {SubmitHandler} from "react-hook-form";
 import SelectableModal from "@/components/selectableModal";
+import {useSelector} from "react-redux";
+import {useRouter} from "next/navigation";
 
 
 export default function Home() {
 
-    const {sendUserLocation , getNearbyUsers , getJobTitlesList , getIndustriesList} = service()
+    const router = useRouter()
+
+    // get from redux
+    const hasCompanyActivityTypes = useSelector((state: any) => state.user.user.company_activity_types);
+    const hasIndustry = useSelector((state: any) => state.user.user.industry);
+    const hasJobTitle = useSelector((state: any) => state.user.user.job_title);
+
+    const {sendUserLocation, getNearbyUsers, getJobTitlesList, getIndustriesList} = service()
     const [location, setLocation]: any = useState("off")
 
     const onSubmitLocation: SubmitHandler<Location> = (data: Location) => {
-        console.log(data);
         sendUserLocation.mutate(data, {
             onSuccess: (response) => {
                 toast.success("Location successfully created!");
@@ -92,6 +100,10 @@ export default function Home() {
     const [isJobTitleModalOpen, setJobTitleModalOpen] = useState(false);
 
 
+    if (!hasCompanyActivityTypes) router.push("/activity-type");
+
+    if (!hasIndustry && !hasJobTitle) router.push("/information");
+
     return (
         <div className={"w-full h-screen"}>
             <div className={"flex items-center justify-between px-5 py-3"}>
@@ -122,26 +134,27 @@ export default function Home() {
                                     <div className={"text-center"}>To find nearby people, please enable location
                                         sharing.
                                     </div>
-                                    <Tabs aria-label="location" size={"lg"} radius={"sm"}
+                                    <Tabs aria-label="location" defaultSelectedKey="off" size={"lg"} radius={"sm"}
                                           onSelectionChange={
-                                        () => {
-                                            if ("geolocation" in navigator) {
-                                                navigator.geolocation.getCurrentPosition(
-                                                    (position) => {
-                                                        const {latitude, longitude} = position.coords;
-                                                        onSubmitLocation({latitude, longitude});
-                                                    },
-                                                    (error) => {
-                                                        toast.error(`Error fetching location: ${error.message}`);
-                                                        setLocation("off")
-                                                    }
-                                                );
-                                            } else {
-                                                toast.error("Geolocation is not supported by this browser.");
-                                                setLocation("off")
-                                            }
-                                        }
-                                    }
+                                              () => {
+                                                  console.log("clicked")
+                                                  if ("geolocation" in navigator) {
+                                                      navigator.geolocation.getCurrentPosition(
+                                                          (position) => {
+                                                              const {latitude, longitude} = position.coords;
+                                                              onSubmitLocation({latitude, longitude});
+                                                          },
+                                                          (error) => {
+                                                              toast.error(`Error fetching location: ${error.message}`);
+                                                              setLocation("off")
+                                                          }
+                                                      );
+                                                  } else {
+                                                      toast.error("Geolocation is not supported by this browser.");
+                                                      setLocation("off")
+                                                  }
+                                              }
+                                          }
                                     >
                                         <Tab key="off" title="off" className={"px-10"}/>
                                         <Tab key="on" title={<FaPowerOff/>} className={"px-10"}/>
@@ -194,7 +207,7 @@ export default function Home() {
                                                     }
                                                 >
                                                     <div
-                                                        className={"w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center"}>
+                                                        className={"w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center"}>
                                                             <span className="text-lg text-gray-600 font-semibold">
                                                                 {user.first_name[0].toUpperCase() + user.last_name[0].toUpperCase()}
                                                             </span>

@@ -1,35 +1,72 @@
 "use client"
 import {useEffect, useState} from "react";
-import {useForm} from "react-hook-form";
+import {SubmitHandler, useForm} from "react-hook-form";
 import {Button} from "@nextui-org/react";
 import useService, {Inputs} from "./service";
 import SelectableModal from "@/components/selectableModal";
+import toast from "react-hot-toast";
+import {useRouter} from "next/navigation";
+import {useDispatch, useSelector} from "react-redux";
+import { UpdateIndustryAndJobTitle} from "@/store/userSlice";
+
+type ItemType = {
+    id: string;
+    name: string;
+};
 
 export default function InformationPage() {
+    const router = useRouter();
+    const hasCompanyActivityTypes = useSelector((state: any) => state.user.user.company_activity_types);
+    const hasIndustry = useSelector((state: any) => state.user.user.industry);
+    const hasJobTitle = useSelector((state: any) => state.user.user.job_title);
+
     // service
-    const {getIndustriesList, getJobTitlesList, sendUserInformation, onSubmit,} = useService()
+    const {getIndustriesList, getJobTitlesList, sendUserInformation,} = useService()
 
     // get industries and job-titles list
     const getIndustriesListResponse = getIndustriesList()
     const getJobTitlesListResponse = getJobTitlesList()
 
-    useEffect(() => {
-        console.log(getIndustriesListResponse.data?.data)
-    }, [getIndustriesListResponse]);
-
     const {
         register,
         handleSubmit,
-        formState: {errors}
+        formState: {errors},
+        setValue,
+        reset
     } = useForm<Inputs>();
 
-    const [selectedIndustry, setSelectedIndustry] = useState<any>(null);
-    const [selectedJob, setSelectedJob] = useState<any>(null);
+    const [selectedIndustry, setSelectedIndustry] = useState<ItemType|any>(null);
+    const [selectedJob, setSelectedJob] = useState<ItemType | any>(null);
 
     // modals
     const [isIndustryModalOpen, setIndustryModalOpen] = useState(false);
     const [isJobTitleModalOpen, setJobTitleModalOpen] = useState(false);
 
+    const sendUserInformationMutation = sendUserInformation
+
+
+    const dispatch = useDispatch();
+
+    const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
+        const updatedData = {
+            ...data,
+            industry_id: selectedIndustry?.id,
+            job_title_id: selectedJob?.id,
+        };
+        sendUserInformation.mutate(updatedData , {
+            onSuccess: () => {
+                dispatch(UpdateIndustryAndJobTitle({industry : selectedIndustry.name , job_title : selectedJob.name}));
+                reset()
+                if (!hasCompanyActivityTypes) router.push("/activity-type");
+                router.push("/")
+            },
+            onError: (error) => {
+                toast.error(error.message);
+            }
+        });
+    };
+
+    if (hasIndustry && hasJobTitle) router.push("/")
 
     return (
         <div className="flex flex-col h-screen">
@@ -52,30 +89,31 @@ export default function InformationPage() {
                             <label
                                 className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">Industry</label>
                             <input
-                                {...register("industry", {required: "Industry is required."})}
+                                {...register("industry_id", {required: "Industry is required."})}
                                 readOnly
                                 className="form-input"
                                 value={selectedIndustry?.name || ""}
                                 onClick={() => setIndustryModalOpen(true)} // Open Industry Modal
                             />
-                            {errors.industry && <p className="text-red-500 text-xs mt-1">{errors.industry.message}</p>}
+                            {errors.industry_id &&
+                                <p className="text-red-500 text-xs mt-1">{errors.industry_id.message}</p>}
                         </div>
 
                         <div>
                             <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">Job
                                 Title</label>
                             <input
-                                {...register("job_title", {required: "Job title is required."})}
+                                {...register("job_title_id", {required: "Job title is required."})}
                                 readOnly
                                 className="form-input"
                                 value={selectedJob?.name || ""}
                                 onClick={() => setJobTitleModalOpen(true)} // Open Job Title Modal
                             />
-                            {errors.job_title &&
-                                <p className="text-red-500 text-xs mt-1">{errors.job_title.message}</p>}
+                            {errors.job_title_id &&
+                                <p className="text-red-500 text-xs mt-1">{errors.job_title_id.message}</p>}
                         </div>
 
-                        <Button className="mt-10" color="primary" radius="sm" type="submit">Ok</Button>
+                        <Button isLoading={sendUserInformationMutation.isPending} className="mt-10" color="primary" radius="sm" type="submit">Ok</Button>
                     </form>
                 </div>
             </div>
@@ -90,24 +128,26 @@ export default function InformationPage() {
                             selectedItem={selectedIndustry}
                             isOpen={isIndustryModalOpen}
                             onClose={() => setIndustryModalOpen(false)}
-                            onSelect={(item) => {
+                            onSelect={(item : any) => {
                                 setSelectedIndustry(item);
+                                setValue("industry_id", item.id);
                                 setIndustryModalOpen(false);
                             }}
                         />
 
-                        {/* Job Title Modal */}
                         <SelectableModal
                             title="Job Title"
                             items={getJobTitlesListResponse.data?.data || []}
                             selectedItem={selectedJob}
                             isOpen={isJobTitleModalOpen}
                             onClose={() => setJobTitleModalOpen(false)}
-                            onSelect={(item) => {
+                            onSelect={(item: any) => {
                                 setSelectedJob(item);
+                                setValue("job_title_id", item.id);
                                 setJobTitleModalOpen(false);
                             }}
                         />
+
                     </>
                 )
             }

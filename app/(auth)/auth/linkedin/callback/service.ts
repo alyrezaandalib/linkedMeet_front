@@ -3,8 +3,8 @@ import {fetchService} from "@/services/crud-services/fetch-service";
 
 export default function useService() {
 
-    const getUserInformationFromLinkedin = (code) => useQuery({
-        queryKey: [`/auth/linkedin/callback?${code}`],
+    const getUserInformationFromLinkedin = (code: any) => useQuery({
+        queryKey: [`/auth/linkedin/callback?code=${code}`],
         queryFn: ({queryKey, signal}) =>
             fetchService({
                 url: queryKey.join(""),

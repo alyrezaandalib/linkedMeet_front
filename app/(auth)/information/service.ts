@@ -1,11 +1,11 @@
-import {SubmitHandler} from "react-hook-form";
 import {useMutation, useQuery} from "@tanstack/react-query";
 import {createService} from "@/services/crud-services/create-service";
 import {fetchService} from "@/services/crud-services/fetch-service";
+import {patchService} from "@/services/crud-services/patch-service";
 
 export interface Inputs {
-    industry: string;
-    job_title: string;
+    industry_id: string | number;
+    job_title_id: string | number;
 
 }
 
@@ -41,14 +41,9 @@ export default function useService() {
 
     const sendUserInformation = useMutation({
         mutationFn: async (body: Inputs) => {
-            await createService("/test", body);
+            await patchService("/user/information", body);
         },
     });
 
-    const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
-        console.log(data);
-        sendUserInformation.mutate(data);
-    };
-
-    return {getIndustriesList, getJobTitlesList, onSubmit, sendUserInformation};
+    return {getIndustriesList, getJobTitlesList, sendUserInformation};
 }

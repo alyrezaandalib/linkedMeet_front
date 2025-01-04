@@ -1,5 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { setCookie, getCookie, deleteCookie } from "cookies-next";
+import {createSlice} from "@reduxjs/toolkit";
+import {setCookie, getCookie, deleteCookie} from "cookies-next";
 
 const initialState = {
     isAuthenticated: !!(getCookie("isAuthenticated") ?? false),
@@ -18,7 +18,7 @@ const userSlice = createSlice({
     name: "user",
     initialState,
     reducers: {
-        Authentication: (state, { payload }) => {
+        Authentication: (state, {payload}) => {
             state.isAuthenticated = !!payload.isAuthenticated;
             state.token = payload.token;
             state.user = {
@@ -41,11 +41,23 @@ const userSlice = createSlice({
             setCookie("company_activity_types", payload.company_activity_types);
         },
 
-        UpdateCompanyActivityTypes: (state, { payload }) => {
+        UpdateCompanyActivityTypes: (state, {payload}) => {
             state.user.company_activity_types = payload;
 
             // Save data to cookies
             setCookie("company_activity_types", payload);
+        },
+
+        UpdateIndustryAndJobTitle: (state, {payload}) => {
+            state.user = {
+                ...state.user,
+                industry: payload.industry,
+                job_title: payload.job_title,
+            };
+
+            // Save data to cookies
+            setCookie("industry", payload.industry);
+            setCookie("job_title", payload.job_title);
         },
 
         Logout: (state) => {
@@ -73,5 +85,5 @@ const userSlice = createSlice({
     },
 });
 
-export const { Authentication, UpdateCompanyActivityTypes, Logout } = userSlice.actions;
+export const {Authentication, UpdateCompanyActivityTypes, UpdateIndustryAndJobTitle, Logout} = userSlice.actions;
 export default userSlice.reducer;

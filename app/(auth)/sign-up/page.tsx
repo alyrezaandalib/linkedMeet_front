@@ -6,8 +6,12 @@ import useService, {Inputs} from "./service";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {useRouter} from "next/navigation";
 import toast from "react-hot-toast";
+import {useSelector} from "react-redux";
 
 export default function SignUpPage() {
+
+    const isAuthenticated = useSelector((state: any) => state.user.isAuthenticated);
+
     const {
         register,
         handleSubmit,
@@ -17,7 +21,7 @@ export default function SignUpPage() {
 
     const router = useRouter();
 
-    const { signUpUser} = useService();
+    const {signUpUser} = useService();
 
     const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
         signUpUser.mutate(data, {
@@ -26,12 +30,14 @@ export default function SignUpPage() {
                 reset()
             },
             onError: (error) => {
-               toast.error(error.message);
+                toast.error(error.message);
             },
         });
     };
 
     const {isPending} = signUpUser
+
+    if (isAuthenticated) router.push("/");
 
     return (
         <div className={"flex flex-col h-screen"}>
@@ -98,10 +104,12 @@ export default function SignUpPage() {
                                 <p className={"text-red-500 text-xs mt-1"}>{errors.password.message}</p>}
                         </div>
 
-                        <p className="text-xs text-gray-400 max-w-[90%]">By clicking Agree & Join or Continue, you agree to the
+                        <p className="text-xs text-gray-400 max-w-[90%]">By clicking Agree & Join or Continue, you agree
+                            to the
                             LinkedIn User Agreement, Privacy Policy, and Cookie Policy.</p>
 
-                        <Button color={"primary"} isLoading={isPending} radius={"sm"} type={"submit"}>Agree & Join</Button>
+                        <Button color={"primary"} isLoading={isPending} radius={"sm"} type={"submit"}>Agree &
+                            Join</Button>
                     </form>
 
                     {/* OR Divider */}
@@ -112,10 +120,25 @@ export default function SignUpPage() {
                     </div>
 
                     <button
+                        onClick={() => {
+                            fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/auth/linkedin`)
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error(`HTTP error! status: ${response.status}`);
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    window.location.replace(data.url)
+                                })
+                                .catch(error => {
+                                    toast.error(`Error fetching LinkedIn auth URL: ${error}`);
+                                });
+                        }}
                         className="w-full flex items-center justify-center gap-1.5 border border-gray-300 py-4 px-4 rounded-lg hover:bg-gray-100"
                     >
                         <Linkedin/>
-                        <span className="text-sm text-gray-600"> Linkedin</span>
+                        <div className="text-sm text-gray-600"> Linkedin</div>
                     </button>
 
                     {/* Footer */}
