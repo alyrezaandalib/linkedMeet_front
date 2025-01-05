@@ -13,13 +13,13 @@ export interface IResendVerificationCode {
 export default function useService() {
     const verifyCode = useMutation({
         mutationFn: async (body: Inputs) => {
-            await createService("/auth/verify-email", body);
+            await createService("/v1/auth/verify-email", body);
         },
     });
 
     const resendVerificationCode = useMutation({
         mutationFn: async (data: IResendVerificationCode) => {
-            await createService("/auth/resend-verification-code", data);
+            await createService("/v1/auth/resend-verification-code", data);
         }
     })
 

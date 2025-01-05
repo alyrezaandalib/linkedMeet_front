@@ -18,12 +18,12 @@ export interface User {
 export default function useService() {
     const sendUserLocation = useMutation({
         mutationFn: async (body: Location) => {
-            await createService("/user/location", body);
+            await createService("/v1/user/location", body);
         },
     });
 
     const getNearbyUsers =() => useQuery({
-        queryKey: ["/user/nearby-users"],
+        queryKey: ["/v1/user/nearby-users"],
         queryFn: ({queryKey, signal}) =>
             fetchService({
                 url: queryKey.join(""),
@@ -37,7 +37,7 @@ export default function useService() {
     })
 
     const getIndustriesList = () => useQuery({
-        queryKey: ["/app/industries"],
+        queryKey: ["/v1/app/industries"],
         queryFn: ({queryKey}) =>
             fetchService({
                 url: queryKey.join(""),
@@ -51,7 +51,7 @@ export default function useService() {
     })
 
     const getJobTitlesList = () => useQuery({
-        queryKey: ["/app/job-titles"],
+        queryKey: ["/v1/app/job-titles"],
         queryFn: ({queryKey}) =>
             fetchService({
                 url: queryKey.join(""),

@@ -15,7 +15,7 @@ export default function useService() {
     const dispatch = useDispatch();
     const signInUser = useMutation({
         mutationFn: async (body: Inputs) => {
-            const response = await createService("/auth/login", body);
+            const response = await createService("/v1/auth/login", body);
             if (response?.token && response?.user) {
                 dispatch(Authentication({
                     isAuthenticated: true,
@@ -34,7 +34,7 @@ export default function useService() {
     });
 
     const linkedinRedirect = () => useQuery({
-        queryKey: ["/auth/linkedin"],
+        queryKey: ["/v1/auth/linkedin"],
         queryFn: ({queryKey}) =>
             fetchService({
                 url: queryKey.join(""),

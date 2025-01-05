@@ -1,4 +1,5 @@
 import connectionManager from "../conection-manager";
+import toast from "react-hot-toast";
 
 export async function createService(url: string, data: any): Promise<any> {
     try {
@@ -18,11 +19,13 @@ export async function createService(url: string, data: any): Promise<any> {
             if (typeof window !== "undefined") {
                 window.location.href = "/sign-in";
             }
+            toast.error("Unauthorized access - Redirecting to sign-in");
             throw new Error("Unauthorized access - Redirecting to sign-in");
         }
 
         if (!response.ok) {
             const errorData = await response.json();
+            toast.error(errorData?.message || `HTTP Error: ${response.status}`);
             throw new Error(errorData?.message || `HTTP Error: ${response.status}`);
         }
 

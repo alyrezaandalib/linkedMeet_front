@@ -121,7 +121,7 @@ export default function SignUpPage() {
 
                     <button
                         onClick={() => {
-                            fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/auth/linkedin`)
+                            fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/linkedin`)
                                 .then(response => {
                                     if (!response.ok) {
                                         throw new Error(`HTTP error! status: ${response.status}`);

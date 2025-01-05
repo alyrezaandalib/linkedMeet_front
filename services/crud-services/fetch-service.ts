@@ -1,4 +1,5 @@
 import connectionManager from "../conection-manager";
+import toast from "react-hot-toast";
 
 interface FetchServiceParams {
     url: string;
@@ -21,11 +22,13 @@ export async function fetchService({ url }: FetchServiceParams): Promise<any> {
             if (typeof window !== "undefined") {
                 window.location.href = "/sign-in";
             }
+            toast.error("Unauthorized access - Redirecting to sign-in");
             throw new Error("Unauthorized access - Redirecting to sign-in");
         }
 
         if (!response.ok) {
             const errorData = await response.json();
+            toast.error(errorData?.message || `HTTP Error: ${response.status}`);
             throw new Error(errorData?.message || `HTTP Error: ${response.status}`);
         }
 

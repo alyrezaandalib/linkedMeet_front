@@ -10,7 +10,7 @@ export interface Inputs {
 export default function useService() {
     const signUpUser = useMutation({
         mutationFn: async (body: Inputs) => {
-            await createService("/auth/register", body);
+            await createService("/v1/auth/register", body);
         },
     });
 

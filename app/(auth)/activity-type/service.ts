@@ -9,7 +9,7 @@ export interface Inputs {
 export default function useService() {
 
     const getCompanyActivityTypes = () => useQuery({
-        queryKey: ["/app/company-activity-types"],
+        queryKey: ["/v1/app/company-activity-types"],
         queryFn: ({queryKey, signal}) =>
             fetchService({
                 url: queryKey.join(""),
@@ -24,7 +24,7 @@ export default function useService() {
 
     const sendUserActivityType = useMutation({
         mutationFn: async (body: Inputs) => {
-            await updateService("/user/company-activity-types", body);
+            await updateService("/v1/user/company-activity-types", body);
         },
     });
 
