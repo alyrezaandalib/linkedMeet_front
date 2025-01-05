@@ -60,6 +60,20 @@ const userSlice = createSlice({
             setCookie("job_title", payload.job_title);
         },
 
+        UpdateProfile: (state, {payload}) => {
+            state.user = {
+                ...state.user,
+                name: payload.name,
+                industry: payload.industry,
+                job_title: payload.job_title,
+            };
+
+            // Save data to cookies
+            setCookie("name", payload.name);
+            setCookie("industry", payload.industry);
+            setCookie("job_title", payload.job_title);
+        },
+
         Logout: (state) => {
             state.isAuthenticated = false;
             state.token = "";
@@ -85,5 +99,11 @@ const userSlice = createSlice({
     },
 });
 
-export const {Authentication, UpdateCompanyActivityTypes, UpdateIndustryAndJobTitle, Logout} = userSlice.actions;
+export const {
+    Authentication,
+    UpdateCompanyActivityTypes,
+    UpdateIndustryAndJobTitle,
+    UpdateProfile,
+    Logout
+} = userSlice.actions;
 export default userSlice.reducer;

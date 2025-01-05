@@ -2,19 +2,66 @@
 import Link from "next/link";
 import {Button} from "@nextui-org/button";
 import useService, {Inputs} from "./service";
-import {useForm} from "react-hook-form";
+import {SubmitHandler, useForm} from "react-hook-form";
 // icons
 import {IoIosArrowBack} from "react-icons/io";
+import {useDispatch, useSelector} from "react-redux";
+import SelectableModal from "@/components/selectableModal";
+import {useState} from "react";
+import toast from "react-hot-toast";
+import {UpdateProfile} from "@/store/userSlice";
+import {useRouter} from "next/navigation";
 
+type ItemType = {
+    id: string;
+    name: string;
+};
 
 export default function ProfilePage() {
 
-    const {onSubmit, editUserInfo} = useService();
+    const user = useSelector((state: any) => state.user.user);
+    const dispatch = useDispatch();
+    const router = useRouter();
+
+    // service
+    const {editUserInfo, getIndustriesList, getJobTitlesList} = useService();
+
+    // get industries and job-titles list
+    const getIndustriesListResponse = getIndustriesList()
+    const getJobTitlesListResponse = getJobTitlesList()
+
+    const [selectedIndustry, setSelectedIndustry] = useState<ItemType | any>(null);
+    const [selectedJob, setSelectedJob] = useState<ItemType | any>(null);
+
+    // modals
+    const [isIndustryModalOpen, setIndustryModalOpen] = useState(false);
+    const [isJobTitleModalOpen, setJobTitleModalOpen] = useState(false);
+
     const {
         register,
         handleSubmit,
         formState: {errors},
     } = useForm<Inputs>()
+
+    const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
+        const updatedData = {
+            ...data,
+            industry_id: selectedIndustry?.id,
+            job_title_id: selectedJob?.id,
+        };
+        editUserInfo.mutate(updatedData, {
+            onSuccess: () => {
+                dispatch(UpdateProfile({
+                    name: data.name,
+                    industry: selectedIndustry.name ?? user.industry,
+                    job_title: selectedJob.name ?? user.job_title,
+                }));
+            },
+            onError: (error) => {
+                toast.error(error.message);
+            }
+        });
+    };
 
     const {isPending, isError, data} = editUserInfo
 
@@ -28,8 +75,8 @@ export default function ProfilePage() {
             </div>
             <div className={"h-full flex flex-col mt-7"}>
                 <div className={"flex flex-col justify-center items-center gap-2"}>
-                    <div className={"w-24 h-24 bg-gray-200 shadow rounded-full"}></div>
-                    <div className={"font-mono"}>Alireza Andalib</div>
+                    <img src={user.avatar} alt={user.name} width={90} height={90}/>
+                    <div className={"font-mono capitalize"}>{user.name}</div>
                     <div className={"flex gap-1"}>
                         <Button radius={"full"}>Upload new picture</Button>
                         <Button radius={"full"}>Delete</Button>
@@ -43,6 +90,7 @@ export default function ProfilePage() {
                                 Name
                             </label>
                             <input
+                                value={user.name}
                                 {...register("name", {required: "Name is required."})}
                                 className="form-input"
                             />
@@ -53,33 +101,37 @@ export default function ProfilePage() {
                                 Email
                             </label>
                             <input
-                                {...register("email", {required: "Email is required."})}
-                                type="email"
-                                className="form-input"
+                                value={user.email}
+                                readOnly
+                                className="form-input bg-gray-200/50"
                             />
-                            {errors.email && <p className={"text-red-500 text-xs mt-1"}>{errors.email.message}</p>}
                         </div>
                         <div>
-                            <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">
-                                Job Title
-                            </label>
+                            <label
+                                className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">Industry</label>
                             <input
-                                {...register("job_title", {required: "Job Title is required."})}
+                                {...register("industry_id", {required: "Industry is required."})}
+                                readOnly
                                 className="form-input"
+                                value={selectedIndustry?.name || (user.industry === "null" ? "" : user.industry)}
+                                onClick={() => setIndustryModalOpen(true)}
                             />
-                            {errors.job_title &&
-                                <p className={"text-red-500 text-xs mt-1"}>{errors.job_title.message}</p>}
+                            {errors.industry_id &&
+                                <p className="text-red-500 text-xs mt-1">{errors.industry_id.message}</p>}
                         </div>
+
                         <div>
-                            <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">
-                                Industry
-                            </label>
+                            <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">Job
+                                Title</label>
                             <input
-                                {...register("industry", {required: "Industry is required."})}
+                                {...register("job_title_id", {required: "Job title is required."})}
+                                readOnly
                                 className="form-input"
+                                value={selectedJob?.name || (user.job_title === "null" ? "" : user.job_title)}
+                                onClick={() => setJobTitleModalOpen(true)}
                             />
-                            {errors.industry &&
-                                <p className={"text-red-500 text-xs mt-1"}>{errors.industry.message}</p>}
+                            {errors.job_title_id &&
+                                <p className="text-red-500 text-xs mt-1">{errors.job_title_id.message}</p>}
                         </div>
                     </div>
 
@@ -91,6 +143,39 @@ export default function ProfilePage() {
                     </Button>
                 </form>
             </div>
+
+            {
+                getIndustriesListResponse.data?.data && getJobTitlesListResponse.data?.data && (
+                    <>
+                        {/* Industry Modal */}
+                        <SelectableModal
+                            title="Industry"
+                            items={getIndustriesListResponse.data?.data || []}
+                            selectedItem={selectedIndustry}
+                            isOpen={isIndustryModalOpen}
+                            onClose={() => setIndustryModalOpen(false)}
+                            onSelect={(item: any) => {
+                                setSelectedIndustry(item);
+                                setIndustryModalOpen(false);
+                            }}
+                        />
+
+                        <SelectableModal
+                            title="Job Title"
+                            items={getJobTitlesListResponse.data?.data || []}
+                            selectedItem={selectedJob}
+                            isOpen={isJobTitleModalOpen}
+                            onClose={() => setJobTitleModalOpen(false)}
+                            onSelect={(item: any) => {
+                                setSelectedJob(item);
+                                setJobTitleModalOpen(false);
+                            }}
+                        />
+
+                    </>
+                )
+            }
+
         </div>
     )
 }

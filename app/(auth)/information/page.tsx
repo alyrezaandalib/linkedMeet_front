@@ -7,7 +7,7 @@ import SelectableModal from "@/components/selectableModal";
 import toast from "react-hot-toast";
 import {useRouter} from "next/navigation";
 import {useDispatch, useSelector} from "react-redux";
-import { UpdateIndustryAndJobTitle} from "@/store/userSlice";
+import {UpdateIndustryAndJobTitle} from "@/store/userSlice";
 
 type ItemType = {
     id: string;
@@ -35,7 +35,7 @@ export default function InformationPage() {
         reset
     } = useForm<Inputs>();
 
-    const [selectedIndustry, setSelectedIndustry] = useState<ItemType|any>(null);
+    const [selectedIndustry, setSelectedIndustry] = useState<ItemType | any>(null);
     const [selectedJob, setSelectedJob] = useState<ItemType | any>(null);
 
     // modals
@@ -53,9 +53,9 @@ export default function InformationPage() {
             industry_id: selectedIndustry?.id,
             job_title_id: selectedJob?.id,
         };
-        sendUserInformation.mutate(updatedData , {
+        sendUserInformation.mutate(updatedData, {
             onSuccess: () => {
-                dispatch(UpdateIndustryAndJobTitle({industry : selectedIndustry.name , job_title : selectedJob.name}));
+                dispatch(UpdateIndustryAndJobTitle({industry: selectedIndustry.name, job_title: selectedJob.name}));
                 reset()
                 if (Array.isArray(hasCompanyActivityTypes) && hasCompanyActivityTypes.length === 0) router.push("/activity-type");
                 router.push("/")
@@ -113,13 +113,14 @@ export default function InformationPage() {
                                 <p className="text-red-500 text-xs mt-1">{errors.job_title_id.message}</p>}
                         </div>
 
-                        <Button isLoading={sendUserInformationMutation.isPending} className="mt-10" color="primary" radius="sm" type="submit">Ok</Button>
+                        <Button isLoading={sendUserInformationMutation.isPending} className="mt-10" color="primary"
+                                radius="sm" type="submit">Ok</Button>
                     </form>
                 </div>
             </div>
 
             {
-                getIndustriesListResponse.data?.data && (
+                getIndustriesListResponse.data?.data && getJobTitlesListResponse.data?.data && (
                     <>
                         {/* Industry Modal */}
                         <SelectableModal
@@ -128,7 +129,7 @@ export default function InformationPage() {
                             selectedItem={selectedIndustry}
                             isOpen={isIndustryModalOpen}
                             onClose={() => setIndustryModalOpen(false)}
-                            onSelect={(item : any) => {
+                            onSelect={(item: any) => {
                                 setSelectedIndustry(item);
                                 setValue("industry_id", item.id);
                                 setIndustryModalOpen(false);

@@ -72,7 +72,7 @@ export default function DrawerMenu() {
                                             <CiUser className={"text-3xl"}/>
                                     }
                                 </div>
-                                <div>{user.name}</div>
+                                <div className={"capitalize"}>{user.name}</div>
                                 <div className={"text-gray-500 text-sm font-light"}>{user.email}</div>
                             </DrawerHeader>
                             <div

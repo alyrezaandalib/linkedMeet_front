@@ -1,5 +1,4 @@
 import {useMutation, useQuery} from "@tanstack/react-query";
-import {createService} from "@/services/crud-services/create-service";
 import {fetchService} from "@/services/crud-services/fetch-service";
 import {patchService} from "@/services/crud-services/patch-service";
 
@@ -12,7 +11,7 @@ export interface Inputs {
 export default function useService() {
 
     const getIndustriesList = () => useQuery({
-        queryKey: ["v1/app/industries"],
+        queryKey: ["/v1/app/industries"],
         queryFn: ({queryKey}) =>
             fetchService({
                 url: queryKey.join(""),

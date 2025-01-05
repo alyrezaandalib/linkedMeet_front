@@ -1,25 +1,50 @@
-import {SubmitHandler} from "react-hook-form";
-import {useMutation} from "@tanstack/react-query";
-import {createService} from "@/services/crud-services/create-service";
+import {useMutation, useQuery} from "@tanstack/react-query";
+import {fetchService} from "@/services/crud-services/fetch-service";
+import {patchService} from "@/services/crud-services/patch-service";
 
 export interface Inputs {
     name: string;
-    email: string;
-    job_title: string;
-    industry: string;
+    job_title_id: string;
+    industry_id: string;
 }
 
 export default function useService() {
+
+    const getIndustriesList = () => useQuery({
+        queryKey: ["/v1/app/industries"],
+        queryFn: ({queryKey}) =>
+            fetchService({
+                url: queryKey.join(""),
+            }),
+        refetchOnMount: false,
+        refetchInterval: false,
+        refetchIntervalInBackground: false,
+        refetchOnReconnect: false,
+        refetchOnWindowFocus: false,
+        enabled: true,
+    })
+
+    const getJobTitlesList = () => useQuery({
+        queryKey: ["/v1/app/job-titles"],
+        queryFn: ({queryKey}) =>
+            fetchService({
+                url: queryKey.join(""),
+            }),
+        refetchOnMount: false,
+        refetchInterval: false,
+        refetchIntervalInBackground: false,
+        refetchOnReconnect: false,
+        refetchOnWindowFocus: false,
+        enabled: true,
+    })
+
     const editUserInfo = useMutation({
         mutationFn: async (body: Inputs) => {
-            await createService("/test", body);
+            await patchService("/v1/user/profile", body);
         },
     });
 
-    const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
-        console.log(data);
-        editUserInfo.mutate(data);
-    };
 
-    return {onSubmit, editUserInfo};
+
+    return { editUserInfo , getJobTitlesList , getIndustriesList};
 }
