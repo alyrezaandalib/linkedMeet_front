@@ -15,7 +15,7 @@ export default function ActivityTypePage() {
     const [selectedCompanyActivityTypes, setSelectedActivityTypes] = useState<any>([])
 
     const isAuthenticated = useSelector((state: any) => state.user.isAuthenticated);
-    const hasCompanyActivityTypes = useSelector((state: any) => state.user.user.company_activity_types);
+    const hasCompanyActivityTypes = useSelector((state: any) => JSON.parse(state.user.user.company_activity_types));
     const hasIndustry = useSelector((state: any) => state.user.user.industry);
     const hasJobTitle = useSelector((state: any) => state.user.user.job_title);
     const router = useRouter();
@@ -60,7 +60,9 @@ export default function ActivityTypePage() {
     };
 
     // check if the user has company activity type
-    if (hasCompanyActivityTypes !== null && hasCompanyActivityTypes !== undefined) router.push("/")
+    if (Array.isArray(hasCompanyActivityTypes) && hasCompanyActivityTypes.length > 0) {
+        router.push("/");
+    }
 
     return (
         <div className="flex flex-col h-screen">

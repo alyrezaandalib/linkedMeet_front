@@ -16,7 +16,7 @@ type ItemType = {
 
 export default function InformationPage() {
     const router = useRouter();
-    const hasCompanyActivityTypes = useSelector((state: any) => state.user.user.company_activity_types);
+    const hasCompanyActivityTypes = useSelector((state: any) => JSON.parse(state.user.user.company_activity_types));
     const hasIndustry = useSelector((state: any) => state.user.user.industry);
     const hasJobTitle = useSelector((state: any) => state.user.user.job_title);
 
@@ -57,7 +57,7 @@ export default function InformationPage() {
             onSuccess: () => {
                 dispatch(UpdateIndustryAndJobTitle({industry : selectedIndustry.name , job_title : selectedJob.name}));
                 reset()
-                if (!hasCompanyActivityTypes) router.push("/activity-type");
+                if (Array.isArray(hasCompanyActivityTypes) && hasCompanyActivityTypes.length === 0) router.push("/activity-type");
                 router.push("/")
             },
             onError: (error) => {
@@ -66,7 +66,7 @@ export default function InformationPage() {
         });
     };
 
-    if (hasIndustry && hasJobTitle) router.push("/")
+    if (!hasIndustry && !hasJobTitle) router.push("/")
 
     return (
         <div className="flex flex-col h-screen">

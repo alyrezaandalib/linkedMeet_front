@@ -10,7 +10,7 @@ const initialState = {
         avatar: getCookie("avatar") || "",
         industry: getCookie("industry") || "",
         job_title: getCookie("job_title") || "",
-        company_activity_types: getCookie("company_activity_types") || "",
+        company_activity_types: getCookie("company_activity_types") || "[]",
     }
 };
 
