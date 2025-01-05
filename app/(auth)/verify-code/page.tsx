@@ -30,7 +30,8 @@ export default function VerifyCodePage() {
             data.email = email;
         }
         verifyCode.mutate(data, {
-            onSuccess: () => {
+            onSuccess: (response) => {
+                toast.success("Email verified successfully.");
                 router.push(`/sign-in`);
                 reset();
             },
@@ -103,7 +104,7 @@ export default function VerifyCodePage() {
                                                     );
                                                 }
                                             }}
-                                            className="cursor-pointer"
+                                            className="cursor-pointer underline text-black/70"
                                         >
                                             Receive verification code again
                                         </button>
