@@ -7,9 +7,12 @@ import {SubmitHandler, useForm} from "react-hook-form";
 import {IoIosArrowBack} from "react-icons/io";
 import {useDispatch, useSelector} from "react-redux";
 import SelectableModal from "@/components/selectableModal";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import toast from "react-hot-toast";
-import {UpdateProfile} from "@/store/userSlice";
+import {UpdateProfile, UpdateUserAvatar} from "@/store/userSlice";
+import ImgUploader from "@/components/img-uploader";
+import {useMutation} from "@tanstack/react-query";
+import {createService} from "@/services/crud-services/create-service";
 
 type ItemType = {
     id: string;
@@ -23,6 +26,33 @@ export default function ProfilePage() {
 
     // service
     const {editUserInfo, getIndustriesList, getJobTitlesList} = useService();
+
+    const editUserAvatar = useMutation({
+        mutationFn: async (body : any) => {
+            await createService("/v1/user/avatar", body);
+        },
+    })
+    // img uploader
+    const [image, setImage] = useState<string | null>(null);
+    const onSubmitUserAvatar = (data: File | null) => {
+        if (data) {
+            const formData = new FormData();
+            formData.append("avatar", data);
+            editUserAvatar.mutate(formData, {
+                onSuccess: (data) => {
+                    toast.success("Avatar successfully updated!");
+                },
+                onError: (error) => {
+                    toast.error(error.message);
+                }
+            });
+        } else {
+            console.error("No file to upload");
+        }
+    };
+    useEffect(() => {
+        onSubmitUserAvatar(image)
+    }, [image]);
 
     // get industries and job-titles list
     const getIndustriesListResponse = getIndustriesList()
@@ -42,23 +72,31 @@ export default function ProfilePage() {
     } = useForm<Inputs>()
 
     const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
+
+        const industryId = getIndustriesListResponse.data?.data.find(item => item.name === user.industry)
+        const job_titleId = getJobTitlesListResponse.data?.data.find(item => item.name === user.job_title)
+
         const updatedData = {
             ...data,
-            industry_id: selectedIndustry?.id,
-            job_title_id: selectedJob?.id,
+            industry_id: selectedIndustry?.id ?? industryId.id,
+            job_title_id: selectedJob?.id ?? job_titleId.id,
         };
-        editUserInfo.mutate(updatedData, {
-            onSuccess: () => {
-                dispatch(UpdateProfile({
-                    name: data.name,
-                    industry: selectedIndustry.name ?? user.industry,
-                    job_title: selectedJob.name ?? user.job_title,
-                }));
-            },
-            onError: (error) => {
-                toast.error(error.message);
-            }
-        });
+
+        if (updatedData.job_title_id && updatedData.industry_id) {
+            editUserInfo.mutate(updatedData, {
+                onSuccess: () => {
+                    toast.success("profile successfully updated");
+                    dispatch(UpdateProfile({
+                        name: data.name ?? "",
+                        industry: selectedIndustry.name ? selectedIndustry.name : user.industry,
+                        job_title: selectedJob.name ? selectedJob.name : user.job_title,
+                    }));
+                },
+                onError: (error) => {
+                    toast.error(error.message);
+                }
+            });
+        }
     };
 
     const {isPending, isError, data} = editUserInfo
@@ -74,13 +112,13 @@ export default function ProfilePage() {
             <div className={"h-full flex flex-col mt-7"}>
                 <div className={"flex flex-col justify-center items-center gap-2"}>
                     <div className={"bg-gray-200 rounded-full w-20 h-20"}>
-                        <img className={"border-none rounded-full"} src={user.avatar} alt={user.name} width={90} height={90}/>
+                        <img className={"border-none rounded-full h-full w-full"}
+                             src={image ? URL.createObjectURL(image) : user.avatar}
+                             alt={user.name}/>
                     </div>
                     <div className={"font-mono capitalize"}>{user.name}</div>
                     <div className={"flex gap-1"}>
-                        <input type={"file"}/>
-                        {/*<Button radius={"full"}>Upload new picture</Button>*/}
-                        <Button radius={"full"}>Delete</Button>
+                        <ImgUploader setImage={setImage}/>
                     </div>
                 </div>
 
@@ -91,7 +129,7 @@ export default function ProfilePage() {
                                 Name
                             </label>
                             <input
-                                value={user.name}
+                                defaultValue={user.name}
                                 {...register("name", {required: "Name is required."})}
                                 className="form-input"
                             />

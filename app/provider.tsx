@@ -13,6 +13,7 @@ export default function CustomProvider({children}: { children: ReactNode }) {
                 position="top-center"
                 reverseOrder={false}
                 gutter={8}
+                duration={6000}
             />
             <Provider store={store}>
                 {children}

@@ -75,10 +75,7 @@ const userSlice = createSlice({
         },
 
         UpdateUserAvatar: (state, {payload}) => {
-            state.user = {
-                ...state.user,
-                avatar: payload.avatar,
-            }
+            state.user.avatar = payload
 
             // save data to cookie
             setCookie("avatar", payload.avatar);

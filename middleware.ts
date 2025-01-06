@@ -14,8 +14,7 @@ export async function middleware(request: NextRequest) {
     console.log('Path:', request.nextUrl.pathname);
 
     // convert company_activity_type from string to object
-    console.log('Cookies:', cookieStore.get("company_activity_types"));
-    let companyActivityTypesArray;
+    let companyActivityTypesArray = []
     const companyActivityTypesValue = cookieStore.get("company_activity_types")?.value;
     if (companyActivityTypesValue) {
         try {
@@ -41,14 +40,14 @@ export async function middleware(request: NextRequest) {
         }
     } else {
         // Redirect to main page
-        if (
-            Array.isArray(companyActivityTypesArray) &&
-            companyActivityTypesArray.length > 0 &&
-            request.nextUrl.pathname !== '/'
-        ) {
-            console.log('Redirecting to main page because conditions are met.');
-            return NextResponse.redirect(new URL('/', request.url));
-        }
+        // if (
+        //     Array.isArray(companyActivityTypesArray) &&
+        //     companyActivityTypesArray.length > 0 &&
+        //     request.nextUrl.pathname !== '/'
+        // ) {
+        //     console.log('Redirecting to main page because conditions are met.');
+        //     return NextResponse.redirect(new URL('/', request.url));
+        // }
 
         // Redirect to activity-type if the cookie exists and path is not already activity-type
         if (companyActivityTypesArray.length === 0 && request.nextUrl.pathname !== '/activity-type') {

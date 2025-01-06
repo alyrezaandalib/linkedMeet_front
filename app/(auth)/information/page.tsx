@@ -62,7 +62,9 @@ export default function InformationPage() {
         });
     };
 
-    if (!!hasIndustry && !!hasJobTitle) router.push("/")
+    useEffect(() => {
+        if (!!hasIndustry && !!hasJobTitle) router.push("/")
+    }, [hasIndustry , hasJobTitle]);
 
     return (
         <div className="flex flex-col h-screen">
