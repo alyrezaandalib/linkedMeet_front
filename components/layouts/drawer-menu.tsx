@@ -21,6 +21,7 @@ import {LuMenu} from "react-icons/lu";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import {Logout} from "@/store/userSlice";
+import {getCookie} from "cookies-next";
 
 export default function DrawerMenu() {
 
@@ -101,6 +102,11 @@ export default function DrawerMenu() {
                                         onPress={() => {
                                             fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/logout` , {
                                                 method : "POST",
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'Authorization': `Bearer ${getCookie("token")}`,
+                                                    'Accept': 'application/json',
+                                                },
                                             })
                                                 .then(response => {
                                                     if (!response.ok) {
@@ -111,6 +117,7 @@ export default function DrawerMenu() {
                                                 })
                                                 .then(data => {
                                                     dispatch(Logout())
+                                                    router.refresh()
                                                 })
                                                 .catch(error => {
                                                     toast.error(`Error fetching LinkedIn auth URL: ${error}`);

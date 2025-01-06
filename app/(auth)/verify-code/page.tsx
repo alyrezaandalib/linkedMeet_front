@@ -94,6 +94,7 @@ export default function VerifyCodePage() {
                                                         {email: email},
                                                         {
                                                             onSuccess: () => {
+                                                                toast.success("verification code sent successfully.");
                                                                 resetField("verification_code");
                                                                 setResendSMS(null);
                                                             },

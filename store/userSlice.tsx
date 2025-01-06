@@ -74,6 +74,16 @@ const userSlice = createSlice({
             setCookie("job_title", payload.job_title);
         },
 
+        UpdateUserAvatar: (state, {payload}) => {
+            state.user = {
+                ...state.user,
+                avatar: payload.avatar,
+            }
+
+            // save data to cookie
+            setCookie("avatar", payload.avatar);
+        },
+
         Logout: (state) => {
             state.isAuthenticated = false;
             state.token = "";
@@ -104,6 +114,7 @@ export const {
     UpdateCompanyActivityTypes,
     UpdateIndustryAndJobTitle,
     UpdateProfile,
+    UpdateUserAvatar,
     Logout
 } = userSlice.actions;
 export default userSlice.reducer;

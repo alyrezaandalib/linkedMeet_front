@@ -4,7 +4,7 @@ import Image from "next/image";
 import {Tab, Tabs} from "@nextui-org/tabs";
 import service, {Location, User} from "./service"
 import DrawerMenu from "@/components/layouts/drawer-menu";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {Spinner} from "@nextui-org/react";
 import {Button} from "@nextui-org/button";
 // images
@@ -18,18 +18,9 @@ import {IoDocumentTextOutline} from "react-icons/io5";
 import toast from "react-hot-toast";
 import {SubmitHandler} from "react-hook-form";
 import SelectableModal from "@/components/selectableModal";
-import {useSelector} from "react-redux";
-import {useRouter} from "next/navigation";
 
 
 export default function Home() {
-
-    const router = useRouter()
-
-    // get from redux
-    const hasCompanyActivityTypes = useSelector((state: any) => state.user.user.company_activity_types);
-    const hasIndustry = useSelector((state: any) => state.user.user.industry);
-    const hasJobTitle = useSelector((state: any) => state.user.user.job_title);
 
     const {sendUserLocation, getNearbyUsers, getJobTitlesList, getIndustriesList} = service()
     const [location, setLocation]: any = useState("off")
@@ -98,11 +89,6 @@ export default function Home() {
     // modals
     const [isIndustryModalOpen, setIndustryModalOpen] = useState(false);
     const [isJobTitleModalOpen, setJobTitleModalOpen] = useState(false);
-
-
-    if (!hasCompanyActivityTypes) router.push("/activity-type");
-
-    if (!hasIndustry && !hasJobTitle) router.push("/information");
 
     return (
         <div className={"w-full h-screen"}>

@@ -10,7 +10,6 @@ import SelectableModal from "@/components/selectableModal";
 import {useState} from "react";
 import toast from "react-hot-toast";
 import {UpdateProfile} from "@/store/userSlice";
-import {useRouter} from "next/navigation";
 
 type ItemType = {
     id: string;
@@ -21,7 +20,6 @@ export default function ProfilePage() {
 
     const user = useSelector((state: any) => state.user.user);
     const dispatch = useDispatch();
-    const router = useRouter();
 
     // service
     const {editUserInfo, getIndustriesList, getJobTitlesList} = useService();
@@ -75,10 +73,13 @@ export default function ProfilePage() {
             </div>
             <div className={"h-full flex flex-col mt-7"}>
                 <div className={"flex flex-col justify-center items-center gap-2"}>
-                    <img src={user.avatar} alt={user.name} width={90} height={90}/>
+                    <div className={"bg-gray-200 rounded-full w-20 h-20"}>
+                        <img className={"border-none rounded-full"} src={user.avatar} alt={user.name} width={90} height={90}/>
+                    </div>
                     <div className={"font-mono capitalize"}>{user.name}</div>
                     <div className={"flex gap-1"}>
-                        <Button radius={"full"}>Upload new picture</Button>
+                        <input type={"file"}/>
+                        {/*<Button radius={"full"}>Upload new picture</Button>*/}
                         <Button radius={"full"}>Delete</Button>
                     </div>
                 </div>

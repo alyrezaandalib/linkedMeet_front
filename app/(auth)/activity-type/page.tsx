@@ -11,14 +11,9 @@ import {useState} from "react";
 
 export default function ActivityTypePage() {
 
+    const router = useRouter();
     const dispatch = useDispatch();
     const [selectedCompanyActivityTypes, setSelectedActivityTypes] = useState<any>([])
-
-    const isAuthenticated = useSelector((state: any) => state.user.isAuthenticated);
-    const hasCompanyActivityTypes = useSelector((state: any) => JSON.parse(state.user.user.company_activity_types));
-    const hasIndustry = useSelector((state: any) => state.user.user.industry);
-    const hasJobTitle = useSelector((state: any) => state.user.user.job_title);
-    const router = useRouter();
 
     // service
     const {getCompanyActivityTypes, sendUserActivityType} = useService();
@@ -26,7 +21,13 @@ export default function ActivityTypePage() {
     // company activity types list
     const {data, isLoading, isError} = getCompanyActivityTypes();
 
-    const {handleSubmit, control, reset, formState: {errors}, setValue, watch} = useForm<Inputs>({
+    const {
+        handleSubmit
+        , control
+        , formState: {errors}
+        , setValue
+        , watch
+    } = useForm<Inputs>({
         defaultValues: {activity_type_ids: []},
         mode: "onBlur",
     });
@@ -39,8 +40,7 @@ export default function ActivityTypePage() {
         sendUserActivityType.mutate(data, {
             onSuccess: () => {
                 dispatch(UpdateCompanyActivityTypes(selectedCompanyActivityTypes));
-                if (isAuthenticated && !hasIndustry && !hasJobTitle) router.push("/information")
-                reset()
+                router.push("information")
             },
             onError: (error) => {
                 toast.error(error.message);
@@ -58,11 +58,6 @@ export default function ActivityTypePage() {
             setSelectedActivityTypes((prevState: any[]) => prevState.filter((item) => item !== name));
         }
     };
-
-    // check if the user has company activity type
-    if (Array.isArray(hasCompanyActivityTypes) && hasCompanyActivityTypes.length > 0) {
-        router.push("/");
-    }
 
     return (
         <div className="flex flex-col h-screen">
