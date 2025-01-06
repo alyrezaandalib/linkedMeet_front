@@ -33,8 +33,8 @@ export default function ProfilePage() {
         },
     })
     // img uploader
-    const [image, setImage] = useState<string | null>(null);
-    const onSubmitUserAvatar = (data: File | null) => {
+    const [image, setImage] = useState<any>(null);
+    const onSubmitUserAvatar = (data: any ) => {
         if (data) {
             const formData = new FormData();
             formData.append("avatar", data);
@@ -73,8 +73,8 @@ export default function ProfilePage() {
 
     const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
 
-        const industryId = getIndustriesListResponse.data?.data.find(item => item.name === user.industry)
-        const job_titleId = getJobTitlesListResponse.data?.data.find(item => item.name === user.job_title)
+        const industryId = getIndustriesListResponse.data?.data.find(( item : any) => item.name === user.industry)
+        const job_titleId = getJobTitlesListResponse.data?.data.find(( item : any) => item.name === user.job_title)
 
         const updatedData = {
             ...data,

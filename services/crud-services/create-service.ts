@@ -15,7 +15,7 @@ export async function createService(url: string, data: any): Promise<any> {
             body: JSON.stringify(data),
         });
 
-        if (response.status === 401) {
+        if (token && response.status === 401) {
             if (typeof window !== "undefined") {
                 window.location.href = "/sign-in";
             }

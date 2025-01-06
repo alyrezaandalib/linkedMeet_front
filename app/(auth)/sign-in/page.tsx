@@ -5,14 +5,16 @@ import {Button, Checkbox} from "@nextui-org/react";
 import {useForm, Controller, SubmitHandler} from "react-hook-form";
 import useService, {Inputs} from "./service";
 import {useRouter} from "next/navigation";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import toast from "react-hot-toast";
 import {useEffect} from "react";
+import {useMutation} from "@tanstack/react-query";
+import {Authentication} from "@/store/userSlice";
 
 export default function SignInPage() {
 
     const router = useRouter();
-    const {signInUser, linkedinRedirect} = useService()
+    const {getUserActivityType} = useService()
 
     const isAuthenticated = useSelector((state: any) => state.user.isAuthenticated);
 
@@ -23,15 +25,59 @@ export default function SignInPage() {
         formState: {errors},
     } = useForm<Inputs>()
 
+    const dispatch = useDispatch();
+    const signInUser = useMutation({
+        mutationFn: async (body: Inputs) => {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/login`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer null`,
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(body),
+            });
+
+            if (response.status === 403) {
+                router.push(`/verify-code?email=${body.email}`);
+            }
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData?.message || `HTTP Error: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data?.token && data?.user) {
+                dispatch(Authentication({
+                    isAuthenticated: true,
+                    token: data.token,
+                    name: data.user.name,
+                    email: data.user.email,
+                    avatar: data.user.avatar,
+                    industry: data.user.industry,
+                    job_title: data.user.job_title,
+                    company_activity_types: data.user.company_activity_types,
+                }));
+
+                toast.success("Login successful!");
+                return data;
+            } else {
+                throw new Error("Invalid response structure from server.");
+            }
+        },
+        onError: (error) => {
+            console.error("Sign-in error:", error);
+            toast.error(error.message || "An error occurred during sign-in.");
+        },
+        onSuccess: () => {
+            router.push("/")
+        },
+    });
+
     const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
-        signInUser.mutate(data, {
-            onSuccess: () => {
-                router.push("/activity-type")
-            },
-            onError: (error) => {
-                toast.error(error.message);
-            },
-        });
+        signInUser.mutate(data);
     };
 
     const {isPending} = signInUser

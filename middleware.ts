@@ -9,9 +9,20 @@ export async function middleware(request: NextRequest) {
         '/verify-code',
         '/sign-in',
         '/auth/linkedin/callback',
+        '/splash-screen'
     ];
 
     console.log('Path:', request.nextUrl.pathname);
+
+    // splash screen
+    const hasSeenSplash = cookieStore.get('has_seen_splash');
+    const splashScreenPath = '/splash-screen';
+    if (!hasSeenSplash && request.nextUrl.pathname !== splashScreenPath) {
+        const response = NextResponse.redirect(new URL(splashScreenPath, request.url));
+        response.cookies.set('has_seen_splash', 'true');
+        return response;
+    }
+
 
     // convert company_activity_type from string to object
     let companyActivityTypesArray = []
@@ -41,9 +52,8 @@ export async function middleware(request: NextRequest) {
     } else {
         // Redirect to main page
         // if (
-        //     Array.isArray(companyActivityTypesArray) &&
         //     companyActivityTypesArray.length > 0 &&
-        //     request.nextUrl.pathname !== '/'
+        //     request.nextUrl.pathname !== '/activity-type'
         // ) {
         //     console.log('Redirecting to main page because conditions are met.');
         //     return NextResponse.redirect(new URL('/', request.url));

@@ -2,7 +2,7 @@
 import { useRef } from "react";
 import { Button } from "@nextui-org/button";
 
-export default function ImgUploader({setImage}) {
+export default function ImgUploader({setImage} : any) {
     const inputRef = useRef<HTMLInputElement>(null);
 
     const handleImageClick = () => {

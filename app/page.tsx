@@ -123,7 +123,6 @@ export default function Home() {
                                     <Tabs aria-label="location" defaultSelectedKey="off" size={"lg"} radius={"sm"}
                                           onSelectionChange={
                                               () => {
-                                                  console.log("clicked")
                                                   if ("geolocation" in navigator) {
                                                       navigator.geolocation.getCurrentPosition(
                                                           (position) => {
