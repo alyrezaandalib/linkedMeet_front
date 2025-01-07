@@ -5,13 +5,11 @@ import {useDispatch, useSelector} from "react-redux";
 import {Authentication} from "@/store/userSlice";
 import toast from "react-hot-toast";
 import {useEffect} from "react";
+import {useMutation} from "@tanstack/react-query";
 
 export default function Page() {
 
     const isAuthenticated = useSelector((state: any) => state.user.isAuthenticated);
-    const hasCompanyActivityTypes = useSelector((state: any) => JSON.parse(state.user.user.company_activity_types));
-    const hasIndustry = useSelector((state: any) => state.user.user.industry);
-    const hasJobTitle = useSelector((state: any) => state.user.user.job_title);
 
     // get code from query
     const searchParams = useSearchParams()
@@ -20,44 +18,47 @@ export default function Page() {
     const router = useRouter();
     const dispatch = useDispatch()
 
-    const getUserInformationFromLinkedin = async (code: any) => {
-        fetch(`/v1/auth/linkedin/callback?code=${code}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data?.token && data?.user) {
-                    dispatch(Authentication({
-                        isAuthenticated: true,
-                        token: data.token,
-                        name: data.user.name,
-                        email: data.user.email,
-                        avatar: data.user.avatar,
-                        industry: data.user.industry,
-                        job_title: data.user.job_title,
-                        company_activity_types: data.user.company_activity_types,
-                    }));
+    const getUserInformationFromLinkedin = useMutation({
+        mutationFn: async (code: string) => {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/linkedin/callback?code=${code}`);
 
-                    if (Array.isArray(hasCompanyActivityTypes) && hasCompanyActivityTypes.length === 0) router.push("/activity-type");
-                    if (!hasIndustry && !hasJobTitle) router.push("/information");
-                    router.push("/")
-                } else {
-                    toast.error(`Invalid data structure: ${data}`);
-                    router.push("/sign-in")
-                }
-            })
-            .catch(error => {
-                toast.error(`Error fetching LinkedIn auth URL: ${error}`);
-                router.push("/sign-in")
-            });
-    }
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData?.message || `HTTP Error: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data?.token && data?.user) {
+                dispatch(Authentication({
+                    isAuthenticated: true,
+                    token: data.token,
+                    name: data.user.name,
+                    email: data.user.email,
+                    avatar: data.user.avatar,
+                    industry: data.user.industry,
+                    job_title: data.user.job_title,
+                    company_activity_types: data.user.company_activity_types,
+                }));
+
+                toast.success("Login successful!");
+                return data;
+            } else {
+                throw new Error("Invalid response structure from server.");
+            }
+        },
+        onError: (error) => {
+            toast.error(error.message || "An error occurred during sign-in.");
+            router.push("/sign-in");
+        },
+        onSuccess: () => {
+            router.push("/")
+        },
+    });
 
     useEffect(() => {
         if (code) {
-            getUserInformationFromLinkedin(code)
+            getUserInformationFromLinkedin.mutate(code)
         } else {
             toast.error("Invalid or missing LinkedIn authorization code.");
             router.push("/sign-in");
