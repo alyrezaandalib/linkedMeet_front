@@ -41,22 +41,22 @@ export default function DrawerMenu() {
                 radius={"none"}
                 backdrop={"blur"}
                 isOpen={isOpen}
-                motionProps={{
-                    variants: {
-                        enter: {
-                            opacity: 1,
-                            x: 0,
-                            // @ts-ignore
-                            duration: 0.3,
-                        },
-                        exit: {
-                            x: 100,
-                            opacity: 0,
-                            // @ts-ignore
-                            duration: 0.3,
-                        },
-                    },
-                }}
+                // motionProps={{
+                //     variants: {
+                //         enter: {
+                //             opacity: 1,
+                //             x: 0,
+                //             // @ts-ignore
+                //             duration: 0.3,
+                //         },
+                //         exit: {
+                //             x: 100,
+                //             opacity: 0,
+                //             // @ts-ignore
+                //             duration: 0.3,
+                //         },
+                //     },
+                // }}
                 onOpenChange={onOpenChange}
             >
                 <DrawerContent>
@@ -64,11 +64,11 @@ export default function DrawerMenu() {
                         <>
                             <DrawerHeader className="flex flex-col gap-2 justify-center items-center m-10 mb-0">
                                 <div
-                                    className={`w-fit rounded-full justify-center bg-gray-200 border border-gray-300 ${!user.avatar && "p-3"}`}>
+                                    className={`rounded-full h-20 w-20 justify-center bg-gray-200 border border-gray-300 ${!user.avatar && "p-3"}`}>
                                     {
                                         user.avatar
                                             ?
-                                            <img src={user.avatar} alt={user.name} width={50} height={50}/>
+                                            <img className={"rounded-full"} src={user.avatar} alt={user.name}/>
                                             :
                                             <CiUser className={"text-3xl"}/>
                                     }

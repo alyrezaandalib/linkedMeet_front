@@ -78,7 +78,7 @@ const userSlice = createSlice({
             state.user.avatar = payload
 
             // save data to cookie
-            setCookie("avatar", payload.avatar);
+            setCookie("avatar", payload);
         },
 
         Logout: (state) => {

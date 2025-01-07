@@ -11,8 +11,8 @@ import {useEffect, useState} from "react";
 import toast from "react-hot-toast";
 import {UpdateProfile, UpdateUserAvatar} from "@/store/userSlice";
 import ImgUploader from "@/components/img-uploader";
-import {useMutation} from "@tanstack/react-query";
-import {createService} from "@/services/crud-services/create-service";
+
+import {getCookie} from "cookies-next";
 
 type ItemType = {
     id: string;
@@ -27,29 +27,37 @@ export default function ProfilePage() {
     // service
     const {editUserInfo, getIndustriesList, getJobTitlesList} = useService();
 
-    const editUserAvatar = useMutation({
-        mutationFn: async (body : any) => {
-            await createService("/v1/user/avatar", body);
-        },
-    })
     // img uploader
     const [image, setImage] = useState<any>(null);
-    const onSubmitUserAvatar = (data: any ) => {
+    const onSubmitUserAvatar = (data: any) => {
         if (data) {
+            const myHeaders = new Headers();
+            myHeaders.append("Accept", "application/json");
+            myHeaders.append("Authorization", `Bearer ${getCookie("token")}`);
+
             const formData = new FormData();
-            formData.append("avatar", data);
-            editUserAvatar.mutate(formData, {
-                onSuccess: (data) => {
-                    toast.success("Avatar successfully updated!");
-                },
-                onError: (error) => {
-                    toast.error(error.message);
-                }
-            });
+            formData.append("avatar", image, "/D:/Personal/Image.jpg");
+
+            const requestOptions = {
+                method: "POST",
+                headers: myHeaders,
+                body: formData,
+            };
+
+            fetch("http://bakhtnama.ir/api/v1/user/avatar", requestOptions)
+                .then((response) => {
+                    return response.json();
+                })
+                .then((data: any) => {
+                    toast.success(data.message)
+                    dispatch(UpdateUserAvatar(data.avatar_url))
+                })
+                .catch((error) => toast.error(error.message));
         } else {
-            console.error("No file to upload");
+            console.log("No file to upload");
         }
     };
+
     useEffect(() => {
         onSubmitUserAvatar(image)
     }, [image]);
@@ -73,8 +81,8 @@ export default function ProfilePage() {
 
     const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
 
-        const industryId = getIndustriesListResponse.data?.data.find(( item : any) => item.name === user.industry)
-        const job_titleId = getJobTitlesListResponse.data?.data.find(( item : any) => item.name === user.job_title)
+        const industryId = getIndustriesListResponse.data?.data.find((item: any) => item.name === user.industry)
+        const job_titleId = getJobTitlesListResponse.data?.data.find((item: any) => item.name === user.job_title)
 
         const updatedData = {
             ...data,

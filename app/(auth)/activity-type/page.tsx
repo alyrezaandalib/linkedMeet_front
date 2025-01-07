@@ -40,7 +40,7 @@ export default function ActivityTypePage() {
         sendUserActivityType.mutate(data, {
             onSuccess: () => {
                 dispatch(UpdateCompanyActivityTypes(selectedCompanyActivityTypes));
-                router.push("information")
+                router.push("/information")
             },
             onError: (error) => {
                 toast.error(error.message);
