@@ -1,12 +1,13 @@
 "use client"
 
 import Image from "next/image";
-import {Tab, Tabs} from "@nextui-org/tabs";
 import service, {Location, User} from "./service"
 import DrawerMenu from "@/components/layouts/drawer-menu";
 import {useState} from "react";
-import {Spinner} from "@nextui-org/react";
-import {Button} from "@nextui-org/button";
+import {Tab, Tabs, Spinner, Button, Modal, ModalContent, ModalHeader, ModalBody} from "@nextui-org/react";
+import toast from "react-hot-toast";
+import {SubmitHandler} from "react-hook-form";
+import SelectableModal from "@/components/selectableModal";
 // images
 import disabled_location_image from "../public/images/disabled_location.png"
 import no_user_found_image from "../public/images/no_user_found.png"
@@ -15,15 +16,13 @@ import users_image from "../public/images/users.png"
 import {FaPowerOff} from "react-icons/fa6";
 import SendIcon from "@/public/tsx-icons/send";
 import {IoDocumentTextOutline} from "react-icons/io5";
-import toast from "react-hot-toast";
-import {SubmitHandler} from "react-hook-form";
-import SelectableModal from "@/components/selectableModal";
+import {IoMdCheckmark} from "react-icons/io";
 
 
 export default function Home() {
 
     const {sendUserLocation, getNearbyUsers, getJobTitlesList, getIndustriesList} = service()
-    const [location, setLocation]: any = useState("off")
+    const [location, setLocation]: any = useState("on")
 
     const onSubmitLocation: SubmitHandler<Location> = (data: Location) => {
         sendUserLocation.mutate(data, {
@@ -46,36 +45,6 @@ export default function Home() {
             job_title: "ui Designer",
             industry: "Front_end Developer",
             image: "none"
-        }, {
-            first_name: "ali",
-            last_name: "andalib",
-            job_title: "ui Designer",
-            industry: "Front_end Developer",
-            image: "none"
-        }, {
-            first_name: "ali",
-            last_name: "andalib",
-            job_title: "ui Designer",
-            industry: "Front_end Developer",
-            image: "none"
-        }, {
-            first_name: "ali",
-            last_name: "andalib",
-            job_title: "ui Designer",
-            industry: "Front_end Developer",
-            image: "none"
-        }, {
-            first_name: "ali",
-            last_name: "andalib",
-            job_title: "ui Designer",
-            industry: "Front_end Developer",
-            image: "none"
-        }, {
-            first_name: "ali",
-            last_name: "andalib",
-            job_title: "ui Designer",
-            industry: "Front_end Developer",
-            image: "none"
         },
     ]
 
@@ -89,6 +58,7 @@ export default function Home() {
     // modals
     const [isIndustryModalOpen, setIndustryModalOpen] = useState(false);
     const [isJobTitleModalOpen, setJobTitleModalOpen] = useState(false);
+    const [isUserInfoModalOpen, setIsUserInfoModalOpen] = useState(false)
 
     return (
         <div className={"w-full h-screen"}>
@@ -206,7 +176,7 @@ export default function Home() {
                                                     </div>
 
                                                     <div className={"flex gap-1"}>
-                                                        <Button size={'sm'} variant={"bordered"}><IoDocumentTextOutline
+                                                        <Button size={'sm'} variant={"bordered"} onPress={() => setIsUserInfoModalOpen(true)}><IoDocumentTextOutline
                                                             className={"text-lg"}/></Button>
                                                         <Button size={"sm"} variant={"bordered"}><SendIcon
                                                             className={"text-black"}/></Button>
@@ -252,6 +222,23 @@ export default function Home() {
                     </>
                 )
             }
+
+            {/* user info modal  */}
+            <Modal placement={"center"} size={"xs"} isOpen={isUserInfoModalOpen} onOpenChange={setIsUserInfoModalOpen}>
+                <ModalContent>
+                    {(onCloseModal) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">user Info</ModalHeader>
+                            <div
+                                className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mt-3"></div>
+                            <ModalBody>
+                                <div className="flex flex-col">
+                                </div>
+                            </ModalBody>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
         </div>
     );
 }
