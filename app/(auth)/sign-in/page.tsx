@@ -131,8 +131,8 @@ export default function SignInPage() {
                                         message: "Password must be at least 8 characters long.",
                                     },
                                     maxLength: {
-                                        value: 10,
-                                        message: "Password must be at lest 10 characters long."
+                                        value: 32,
+                                        message: "Password must be at lest 32 characters long."
                                     }
                                 })}
                                 type="password"
