@@ -1,13 +1,13 @@
 "use client"
 import Linkedin from "@/public/tsx-icons/linkedin";
 import Link from "next/link";
-import {Button, Checkbox} from "@nextui-org/react";
-import {useForm, Controller, SubmitHandler} from "react-hook-form";
+import {Button, Checkbox, Spinner} from "@nextui-org/react";
+import {useForm, Controller, SubmitHandler, set} from "react-hook-form";
 import useService, {Inputs} from "./service";
 import {useRouter} from "next/navigation";
 import {useDispatch, useSelector} from "react-redux";
 import toast from "react-hot-toast";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {useMutation} from "@tanstack/react-query";
 import {Authentication} from "@/store/userSlice";
 
@@ -15,6 +15,8 @@ export default function SignInPage() {
 
     const router = useRouter();
     const {getUserActivityType} = useService()
+
+    const [isLoading, setIsLoading] = useState(false)
 
     const isAuthenticated = useSelector((state: any) => state.user.isAuthenticated);
 
@@ -172,8 +174,11 @@ export default function SignInPage() {
                     </div>
 
                     {/* LinkedIn Login */}
-                    <button
-                        onClick={() => {
+                    <Button
+                        isLoading={isLoading}
+                        variant={"bordered"}
+                        onPress={() => {
+                            setIsLoading(true)
                             fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/linkedin`)
                                 .then(response => {
                                     if (!response.ok) {
@@ -183,17 +188,18 @@ export default function SignInPage() {
                                     return response.json();
                                 })
                                 .then(data => {
+                                    setIsLoading(false)
                                     window.location.replace(data.url)
                                 })
                                 .catch(error => {
                                     toast.error(`Error fetching LinkedIn auth URL: ${error}`);
                                 });
                         }}
-                        className="w-full flex items-center justify-center gap-1.5 border border-gray-300 py-4 px-4 rounded-lg hover:bg-gray-100"
+                        className="py-6"
                     >
                         <Linkedin/>
                         <div className="text-sm text-gray-600">Linkedin</div>
-                    </button>
+                    </Button>
 
                     {/* Footer */}
                     <div className="text-center text-sm flex items-center gap-2  justify-center">

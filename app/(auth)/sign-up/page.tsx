@@ -7,10 +7,13 @@ import {SubmitHandler, useForm} from "react-hook-form";
 import {useRouter} from "next/navigation";
 import toast from "react-hot-toast";
 import {useSelector} from "react-redux";
+import {useState} from "react";
 
 export default function SignUpPage() {
 
     const isAuthenticated = useSelector((state: any) => state.user.isAuthenticated);
+
+    const [isLoading, setIsLoading] = useState(false)
 
     const {
         register,
@@ -119,8 +122,11 @@ export default function SignUpPage() {
                         <div className="flex-grow border-t border-gray-300"></div>
                     </div>
 
-                    <button
-                        onClick={() => {
+                    <Button
+                        isLoading={isLoading}
+                        variant={"bordered"}
+                        onPress={() => {
+                            setIsLoading(true)
                             fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/linkedin`)
                                 .then(response => {
                                     if (!response.ok) {
@@ -130,17 +136,18 @@ export default function SignUpPage() {
                                     return response.json();
                                 })
                                 .then(data => {
+                                    setIsLoading(false)
                                     window.location.replace(data.url)
                                 })
                                 .catch(error => {
                                     toast.error(`Error fetching LinkedIn auth URL: ${error}`);
                                 });
                         }}
-                        className="w-full flex items-center justify-center gap-1.5 border border-gray-300 py-4 px-4 rounded-lg hover:bg-gray-100"
+                        className="py-6"
                     >
                         <Linkedin/>
-                        <div className="text-sm text-gray-600"> Linkedin</div>
-                    </button>
+                        <div className="text-sm text-gray-600">Linkedin</div>
+                    </Button>
 
                     {/* Footer */}
                     <div className="text-center text-sm flex items-center gap-2  justify-center">
