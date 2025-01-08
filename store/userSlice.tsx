@@ -10,7 +10,7 @@ const initialState = {
         avatar: getCookie("avatar") || "",
         industry: getCookie("industry") || "",
         job_title: getCookie("job_title") || "",
-        company_activity_types: getCookie("company_activity_types") || "[]",
+        company_activity_types: getCookie("company_activity_types") || JSON.stringify("[]"),
     }
 };
 
@@ -27,7 +27,7 @@ const userSlice = createSlice({
                 avatar: payload.avatar,
                 industry: payload.industry,
                 job_title: payload.job_title,
-                company_activity_types: payload.company_activity_types,
+                company_activity_types: JSON.stringify(payload.company_activity_types),
             };
 
             // Save data to cookies
@@ -38,14 +38,14 @@ const userSlice = createSlice({
             setCookie("avatar", payload.avatar);
             setCookie("industry", payload.industry);
             setCookie("job_title", payload.job_title);
-            setCookie("company_activity_types", payload.company_activity_types);
+            setCookie("company_activity_types", JSON.stringify(payload.company_activity_types));
         },
 
         UpdateCompanyActivityTypes: (state, {payload}) => {
-            state.user.company_activity_types = payload;
+            state.user.company_activity_types = JSON.stringify(payload);
 
             // Save data to cookies
-            setCookie("company_activity_types", payload);
+            setCookie("company_activity_types", JSON.stringify(payload));
         },
 
         UpdateIndustryAndJobTitle: (state, {payload}) => {
