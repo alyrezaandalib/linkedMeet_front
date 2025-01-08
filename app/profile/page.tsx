@@ -1,28 +1,24 @@
 "use client"
 import Link from "next/link";
-import {Button} from "@nextui-org/button";
+import {Button , Spinner} from "@nextui-org/react";
 import useService, {Inputs} from "./service";
 import {SubmitHandler, useForm} from "react-hook-form";
-// icons
-import {IoIosArrowBack} from "react-icons/io";
 import {useDispatch, useSelector} from "react-redux";
 import SelectableModal from "@/components/selectableModal";
 import {useEffect, useState} from "react";
 import toast from "react-hot-toast";
 import {UpdateProfile, UpdateUserAvatar} from "@/store/userSlice";
 import ImgUploader from "@/components/img-uploader";
-
 import {getCookie} from "cookies-next";
+// icons
+import {IoIosArrowBack} from "react-icons/io";
 
-type ItemType = {
-    id: string;
-    name: string;
-};
 
 export default function ProfilePage() {
 
     const user = useSelector((state: any) => state.user.user);
     const dispatch = useDispatch();
+    const [isLoading, setIsLoading] = useState(false)
 
     // service
     const {editUserInfo, getIndustriesList, getJobTitlesList} = useService();
@@ -44,12 +40,15 @@ export default function ProfilePage() {
                 body: formData,
             };
 
+            setIsLoading(true)
+
             fetch("http://bakhtnama.ir/api/v1/user/avatar", requestOptions)
                 .then((response) => {
                     return response.json();
                 })
                 .then((data: any) => {
                     toast.success(data.message)
+                    setIsLoading(false)
                     dispatch(UpdateUserAvatar(data.avatar_url))
                 })
                 .catch((error) => toast.error(error.message));
@@ -66,8 +65,8 @@ export default function ProfilePage() {
     const getIndustriesListResponse = getIndustriesList()
     const getJobTitlesListResponse = getJobTitlesList()
 
-    const [selectedIndustry, setSelectedIndustry] = useState<ItemType | any>(null);
-    const [selectedJob, setSelectedJob] = useState<ItemType | any>(null);
+    const [selectedIndustry, setSelectedIndustry] = useState< any>(null);
+    const [selectedJob, setSelectedJob] = useState< any>(null);
 
     // modals
     const [isIndustryModalOpen, setIndustryModalOpen] = useState(false);
@@ -81,8 +80,8 @@ export default function ProfilePage() {
 
     const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
 
-        const industryId = getIndustriesListResponse.data?.data.find((item: any) => item.name === user.industry)
-        const job_titleId = getJobTitlesListResponse.data?.data.find((item: any) => item.name === user.job_title)
+        const industryId = getIndustriesListResponse.data?.data.find((item: any) => item?.name === user.industry)
+        const job_titleId = getJobTitlesListResponse.data?.data.find((item: any) => item?.name === user.job_title)
 
         const updatedData = {
             ...data,
@@ -95,9 +94,9 @@ export default function ProfilePage() {
                 onSuccess: () => {
                     toast.success("profile successfully updated");
                     dispatch(UpdateProfile({
-                        name: data.name ?? "",
-                        industry: selectedIndustry.name ? selectedIndustry.name : user.industry,
-                        job_title: selectedJob.name ? selectedJob.name : user.job_title,
+                        name: data?.name ?? "",
+                        industry: selectedIndustry?.name ? selectedIndustry?.name : user.industry,
+                        job_title: selectedJob?.name ? selectedJob?.name : user.job_title,
                     }));
                 },
                 onError: (error) => {
@@ -119,14 +118,13 @@ export default function ProfilePage() {
             </div>
             <div className={"h-full flex flex-col mt-7"}>
                 <div className={"flex flex-col justify-center items-center gap-2"}>
-                    <div className={"bg-gray-200 rounded-full w-20 h-20"}>
-                        <img className={"border-none rounded-full h-full w-full"}
-                             src={image ? URL.createObjectURL(image) : user.avatar}
-                             alt={user.name}/>
+                    <div className={"bg-gray-200 rounded-full w-20 h-20 flex items-center justify-center"}>
+                        <img className={"border-none rounded-full h-full w-full"} src={user.avatar}
+                             alt={user?.name}/>
                     </div>
-                    <div className={"font-mono capitalize"}>{user.name}</div>
+                    <div className={"font-mono capitalize"}>{user?.name}</div>
                     <div className={"flex gap-1"}>
-                        <ImgUploader setImage={setImage}/>
+                    <ImgUploader isLoading={isLoading} setImage={setImage}/>
                     </div>
                 </div>
 
@@ -137,7 +135,7 @@ export default function ProfilePage() {
                                 Name
                             </label>
                             <input
-                                defaultValue={user.name}
+                                defaultValue={user?.name}
                                 {...register("name", {required: "Name is required."})}
                                 className="form-input"
                             />

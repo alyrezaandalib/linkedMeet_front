@@ -7,7 +7,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {useRouter} from "next/navigation";
 import toast from "react-hot-toast";
 import {UpdateCompanyActivityTypes} from "@/store/userSlice";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 export default function ActivityTypePage() {
 
@@ -16,7 +16,12 @@ export default function ActivityTypePage() {
     const [selectedCompanyActivityTypes, setSelectedActivityTypes] = useState<any>([])
 
     // service
-    const {getCompanyActivityTypes, sendUserActivityType} = useService();
+    const {getCompanyActivityTypes,
+        getUserActivityTypes ,
+        sendUserActivityType ,
+    } = useService();
+
+    const getUserActivityTypesResponse = getUserActivityTypes()
 
     // company activity types list
     const {data, isLoading, isError} = getCompanyActivityTypes();
@@ -58,6 +63,8 @@ export default function ActivityTypePage() {
             setSelectedActivityTypes((prevState: any[]) => prevState.filter((item) => item !== name));
         }
     };
+
+    if (getUserActivityTypesResponse.data?.data.length > 0) router.push("/")
 
     return (
         <div className="flex flex-col h-screen">

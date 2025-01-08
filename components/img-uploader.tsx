@@ -1,8 +1,8 @@
 "use client";
-import { useRef } from "react";
-import { Button } from "@nextui-org/button";
+import {useRef} from "react";
+import {Button} from "@nextui-org/button";
 
-export default function ImgUploader({setImage} : any) {
+export default function ImgUploader({setImage, isLoading}: any) {
     const inputRef = useRef<HTMLInputElement>(null);
 
     const handleImageClick = () => {
@@ -16,7 +16,7 @@ export default function ImgUploader({setImage} : any) {
     };
 
     return (
-        <Button onPress={handleImageClick}>
+        <Button onPress={handleImageClick} isLoading={isLoading}>
             Upload new picture
             <input
                 type="file"

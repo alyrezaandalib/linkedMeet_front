@@ -21,6 +21,19 @@ export default function useService() {
         refetchOnWindowFocus: false,
         enabled: true,
     })
+    const getUserActivityTypes = () => useQuery({
+        queryKey: ["/v1/user/company-activity-types"],
+        queryFn: ({queryKey, signal}) =>
+            fetchService({
+                url: queryKey.join(""),
+            }),
+        refetchOnMount: false,
+        refetchInterval: false,
+        refetchIntervalInBackground: false,
+        refetchOnReconnect: false,
+        refetchOnWindowFocus: false,
+        enabled: true,
+    })
 
     const sendUserActivityType = useMutation({
         mutationFn: async (body: Inputs) => {
@@ -28,5 +41,9 @@ export default function useService() {
         },
     });
 
-    return {getCompanyActivityTypes, sendUserActivityType};
+    return {
+        getCompanyActivityTypes,
+        getUserActivityTypes,
+        sendUserActivityType
+    };
 }

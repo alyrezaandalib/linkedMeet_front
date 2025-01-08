@@ -64,7 +64,7 @@ export default function DrawerMenu() {
                         <>
                             <DrawerHeader className="flex flex-col gap-2 justify-center items-center m-10 mb-0">
                                 <div
-                                    className={`rounded-full h-20 w-20 justify-center bg-gray-200 border border-gray-300 ${!user.avatar && "p-3"}`}>
+                                    className={`rounded-full h-20 w-20 flex items-center justify-center bg-gray-200 border border-gray-300 ${!user.avatar && "p-3"}`}>
                                     {
                                         user.avatar
                                             ?
