@@ -21,7 +21,6 @@ services:
   npm:
     container_name: "frontend-npm"
     image: node:lts-alpine
-    user: "${UID:-1000}:${GID:-1000}"
     volumes:
       - .:/app
     working_dir: /app
