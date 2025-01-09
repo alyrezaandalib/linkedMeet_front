@@ -1,10 +1,9 @@
 "use client"
-
 import Image from "next/image";
 import service, {Location, User} from "./service"
 import DrawerMenu from "@/components/layouts/drawer-menu";
-import {useState} from "react";
-import {Tab, Tabs, Spinner, Button, Modal, ModalContent, ModalHeader, ModalBody} from "@nextui-org/react";
+import {useEffect, useState} from "react";
+import {Button, Modal, ModalBody, ModalContent, ModalHeader, Spinner, Tab, Tabs} from "@nextui-org/react";
 import toast from "react-hot-toast";
 import {SubmitHandler} from "react-hook-form";
 import SelectableModal from "@/components/selectableModal";
@@ -16,37 +15,30 @@ import users_image from "../public/images/users.png"
 import {FaPowerOff} from "react-icons/fa6";
 import SendIcon from "@/public/tsx-icons/send";
 import {IoDocumentTextOutline} from "react-icons/io5";
-import {IoMdCheckmark} from "react-icons/io";
+import {useRouter} from "next/navigation";
 
 
 export default function Home() {
 
+    const router = useRouter()
     const {sendUserLocation, getNearbyUsers, getJobTitlesList, getIndustriesList} = service()
-    const [location, setLocation]: any = useState("on")
+    const [location, setLocation]: any = useState("off")
+    const [selectedUser, setSelectedUser] = useState<any>()
 
-    const onSubmitLocation: SubmitHandler<Location> = (data: Location) => {
+    const onSubmitLocation: SubmitHandler<Location> = (data: any) => {
         sendUserLocation.mutate(data, {
             onSuccess: (response) => {
                 toast.success("Location successfully created!");
                 setLocation("on")
             },
             onError: (error) => {
+                setLocation("off")
                 toast.error(error.message);
             }
         });
     };
 
-    // const getNearbyUserResponse = getNearbyUsers()
-    const isPending = false
-    const data = [
-        {
-            first_name: "ali",
-            last_name: "andalib",
-            job_title: "ui Designer",
-            industry: "Front_end Developer",
-            image: "none"
-        },
-    ]
+    const getNearbyUserResponse = getNearbyUsers()
 
     // get industries and job-titles list
     const getIndustriesListResponse = getIndustriesList()
@@ -75,123 +67,121 @@ export default function Home() {
                     </Tabs>
                 }
             </div>
-            <div className={"h-[calc(100%-64px)]"}>
+            <div className={"h-[calc(100%-64px)] flex justify-center"}>
+                {/* when location is off ... */}
                 {
-                    isPending ? <Spinner color={"primary"}/> :
-                        <>
-                            {/* when location is off ... */}
-                            {
-                                location === "off" &&
-                                <div className={"h-full p-10 flex flex-col justify-center items-center gap-4"}>
-                                    <Image src={disabled_location_image} width={500} alt={"disabled location image"}/>
-                                    <div className={"font-black text-xl text-center w-full"}>Location sharing is
-                                        disabled.
-                                    </div>
-                                    <div className={"text-center"}>To find nearby people, please enable location
-                                        sharing.
-                                    </div>
-                                    <Tabs aria-label="location" defaultSelectedKey="off" size={"lg"} radius={"sm"}
-                                          onSelectionChange={
-                                              () => {
-                                                  if ("geolocation" in navigator) {
-                                                      navigator.geolocation.getCurrentPosition(
-                                                          (position) => {
-                                                              const {latitude, longitude} = position.coords;
-                                                              onSubmitLocation({latitude, longitude});
-                                                          },
-                                                          (error) => {
-                                                              toast.error(`Error fetching location: ${error.message}`);
-                                                              setLocation("off")
-                                                          }
-                                                      );
-                                                  } else {
-                                                      toast.error("Geolocation is not supported by this browser.");
-                                                      setLocation("off")
-                                                  }
-                                              }
-                                          }
-                                    >
-                                        <Tab key="off" title="off" className={"px-10"}/>
-                                        <Tab key="on" title={<FaPowerOff/>} className={"px-10"}/>
-                                    </Tabs>
-                                </div>
-                            }
-                            {/* when not found user nearby ...*/}
-                            {
-                                location === "on" && data.length === 0 &&
-                                <div className={"h-full p-14 flex flex-col justify-center items-center gap-4"}>
-                                    <Image src={no_user_found_image} width={500} alt={"no user found image"}/>
-                                    <div className={"font-black text-xl text-center w-full"}>No nearby user found</div>
-                                    <div className={"text-center"}>The system is automatically scanning for nearby
-                                        users, and they will be displayed if found.
-                                    </div>
-                                </div>
-                            }
-                            {/* when found user nearby ...*/}
-                            {
-                                location === "on" && data.length > 0 && (
+                    location === "off" &&
+                    <div className={"h-full p-10 flex flex-col justify-center items-center gap-4"}>
+                        <Image src={disabled_location_image} width={500} alt={"disabled location image"}/>
+                        <div className={"font-black text-xl text-center w-full"}>Location sharing is
+                            disabled.
+                        </div>
+                        <div className={"text-center"}>To find nearby people, please enable location
+                            sharing.
+                        </div>
+                        <Tabs aria-label="location" defaultSelectedKey="off" size={"lg"} radius={"sm"}
+                              onSelectionChange={
+                                  () => {
+                                      onSubmitLocation({latitude: 37.7749, longitude: -122.4194})
+                                      // if ("geolocation" in navigator) {
+                                      //     navigator.geolocation.getCurrentPosition(
+                                      //         (position) => {
+                                      //             const {latitude, longitude} = position.coords;
+                                      //             onSubmitLocation({latitude, longitude});
+                                      //         },
+                                      //         (error) => {
+                                      //             toast.error(`Error fetching location: ${error.message}`);
+                                      //             setLocation("off")
+                                      //         }
+                                      //     );
+                                      // } else {
+                                      //     toast.error("Geolocation is not supported by this browser.");
+                                      //     setLocation("off")
+                                      // }
+                                  }}
+                        >
+                            <Tab key="off" title="off" className={"px-10"}/>
+                            <Tab key="on" title={<FaPowerOff/>} className={"px-10"}/>
+                        </Tabs>
+                    </div>
+                }
+                {/* when not found user nearby ...*/}
+                {
+                    location === "on" && getNearbyUserResponse.data?.data.length === 0 &&
+                    <div className={"h-full p-14 flex flex-col justify-center items-center gap-4"}>
+                        <Image src={no_user_found_image} width={500} alt={"no user found image"}/>
+                        <div className={"font-black text-xl text-center w-full"}>No nearby user found</div>
+                        <div className={"text-center"}>The system is automatically scanning for nearby
+                            users, and they will be displayed if found.
+                        </div>
+                    </div>
+                }
+                {/* when found user nearby ...*/}
+                {
+                    location === "on" && getNearbyUserResponse.data?.data.length > 0 && (
+                        <div
+                            className={"h-full p-4 bg-[#f9f9f9] w-full overflow-y-auto flex flex-col items-center gap-4"}>
+                            <Image src={users_image} alt={"users"}/>
+                            <div className={"font-black text-xl text-center w-full"}>Congratulations!</div>
+                            <div className={"text-center text-gray-600"}>
+                                The following people have been found near you. You can start a conversation with
+                                them by clicking on
+                                their profiles.
+                            </div>
+                            <div className={"w-full flex justify-between items-center gap-2"}>
+                                <input
+                                    readOnly
+                                    placeholder="Title job"
+                                    className="form-input form-input-sm !m-0"
+                                    value={selectedJob?.name || ""}
+                                    onClick={() => setJobTitleModalOpen(true)}
+                                />
+                                <input
+                                    readOnly
+                                    placeholder="Industry"
+                                    className="form-input form-input-sm !m-0"
+                                    value={selectedIndustry?.name || ""}
+                                    onClick={() => setIndustryModalOpen(true)}
+                                />
+                            </div>
+                            <div className={"grid grid-cols-2 gap-2.5 w-full"}>
+                                {getNearbyUserResponse.data?.data.map((user: User) => (
                                     <div
-                                        className={"h-full p-4 bg-[#f9f9f9] w-full overflow-y-auto flex flex-col items-center gap-4"}>
-                                        <Image src={users_image} alt={"users"}/>
-                                        <div className={"font-black text-xl text-center w-full"}>Congratulations!</div>
-                                        <div className={"text-center text-gray-600"}>
-                                            The following people have been found near you. You can start a conversation with
-                                            them by clicking on
-                                            their profiles.
+                                        key={user.id}
+                                        className={
+                                            "bg-white shadow-sm flex flex-col items-center justify-center gap-2 p-4 rounded-lg"
+                                        }
+                                    >
+                                        <div
+                                            className={"w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center"}>
+                                            <img alt={user.name} src={user.avatar}/>
                                         </div>
-                                        <div className={"w-full flex justify-between items-center gap-2"}>
-                                            <input
-                                                readOnly
-                                                placeholder="Title job"
-                                                className="form-input form-input-sm !m-0"
-                                                value={selectedJob?.name || ""}
-                                                onClick={() => setJobTitleModalOpen(true)}
-                                            />
-                                            <input
-                                                readOnly
-                                                placeholder="Industry"
-                                                className="form-input form-input-sm !m-0"
-                                                value={selectedIndustry?.name || ""}
-                                                onClick={() => setIndustryModalOpen(true)}
-                                            />
+                                        <div
+                                            className={"font-medium text-gray-800 capitalize"}>{user.name}
                                         </div>
-                                        <div className={"grid grid-cols-2 gap-2.5 w-full"}>
-                                            {data.map((user: User, index: number) => (
-                                                <div
-                                                    key={index}
-                                                    className={
-                                                        "bg-white shadow-sm flex flex-col items-center justify-center gap-2 p-4 rounded-lg"
-                                                    }
-                                                >
-                                                    <div
-                                                        className={"w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center"}>
-                                                            <span className="text-lg text-gray-600 font-semibold">
-                                                                {user.first_name[0].toUpperCase() + user.last_name[0].toUpperCase()}
-                                                            </span>
-                                                    </div>
-                                                    <div
-                                                        className={"font-medium text-gray-800"}>{user.first_name + " " + user.last_name}
-                                                    </div>
 
-                                                    <div
-                                                        className={"text-xs text-gray-500"}>{user.job_title + " / " + user.industry}
-                                                    </div>
+                                        <div
+                                            className={"text-xs text-gray-500"}>{user.job_title + " / " + user.industry}
+                                        </div>
 
-                                                    <div className={"flex gap-1"}>
-                                                        <Button size={'sm'} variant={"bordered"}
-                                                                onPress={() => setIsUserInfoModalOpen(true)}><IoDocumentTextOutline
-                                                            className={"text-lg"}/></Button>
-                                                        <Button size={"sm"} variant={"bordered"}><SendIcon
-                                                            className={"text-black"}/></Button>
-                                                    </div>
-                                                </div>
-                                            ))}
+                                        <div className={"flex gap-1"}>
+                                            <Button size={'sm'} variant={"bordered"}
+                                                    onPress={() => {
+                                                        setSelectedUser(user)
+                                                        setIsUserInfoModalOpen(true)
+                                                    }}>
+                                                <IoDocumentTextOutline className={"text-lg"}/>
+                                            </Button>
+                                            <Button onPress={() => router.push(`/chat/${user.id}`)} size={"sm"}
+                                                    variant={"bordered"}>
+                                                <SendIcon className={"text-black"}/>
+                                            </Button>
                                         </div>
                                     </div>
-                                )
-                            }
-
-                        </>
+                                ))}
+                            </div>
+                        </div>
+                    )
                 }
             </div>
             {
@@ -236,24 +226,31 @@ export default function Home() {
                                 className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mt-3"></div>
                             <ModalBody className={"p-3"}>
                                 <div className="flex flex-col items-center gap-4">
-                                    <div className={"h-16 w-16 border border-gray-200 bg-red-200 rounded-full"}></div>
-                                    <div className={"font-mono"}>name</div>
+                                    <div className={"h-16 w-16 border border-gray-200 rounded-full"}>
+                                        <img src={selectedUser.avatar} alt={selectedUser.name}/>
+                                    </div>
+                                    <div className={"font-mono"}>{selectedUser.name}</div>
                                     <div className={"flex flex-col gap-4 text-xs w-full"}>
                                         <div className={"flex gap-2 bg-white p-1"}>
-                                            <div className={"font-semibold w-[50%] text-nowrap"}> company activity type:</div>
-                                            <div className={"text-wrap"}>Producer / Manufacturer</div>
+                                            <div className={"font-semibold w-[50%] text-nowrap"}>
+                                                company activity type
+                                            </div>
+                                            <div
+                                                className={"text-wrap"}> {selectedUser.industry + "/" + selectedUser.industry}</div>
                                         </div>
                                         <div className={"flex gap-2"}>
                                             <div className={"font-semibold w-[50%] p-1"}> industry:</div>
-                                            <div className={"text-wrap"}>Graphic Design</div>
+                                            <div className={"text-wrap"}>{selectedUser.industry}</div>
                                         </div>
                                         <div className={"flex gap-2"}>
                                             <div className={"font-semibold w-[50%] p-1"}> title job:</div>
-                                            <div className={"text-wrap"}>analyst</div>
+                                            <div className={"text-wrap"}>{selectedUser.job_title}</div>
                                         </div>
                                     </div>
                                 </div>
-                                <Button className={"w-full mt-4"} color={"primary"}><SendIcon/>Chat</Button>
+                                <Button onPress={() => router.push(`/chat/${selectedUser.id}`)} className={"w-full mt-4"} color={"primary"}>
+                                    <SendIcon/>Chat
+                                </Button>
                             </ModalBody>
                         </>
                     )}

@@ -8,11 +8,11 @@ export interface Location {
 }
 
 export interface User {
-    first_name: string;
-    last_name: string;
+    id: number;
+    name: string;
     job_title: string;
     industry: string;
-    image : any
+    avatar: any
 }
 
 export default function useService() {
@@ -22,7 +22,7 @@ export default function useService() {
         },
     });
 
-    const getNearbyUsers =() => useQuery({
+    const getNearbyUsers = () => useQuery({
         queryKey: ["/v1/user/nearby-users"],
         queryFn: ({queryKey, signal}) =>
             fetchService({
@@ -64,5 +64,5 @@ export default function useService() {
         enabled: true,
     })
 
-    return {sendUserLocation , getNearbyUsers , getIndustriesList , getJobTitlesList};
+    return {sendUserLocation, getNearbyUsers, getIndustriesList, getJobTitlesList};
 }
