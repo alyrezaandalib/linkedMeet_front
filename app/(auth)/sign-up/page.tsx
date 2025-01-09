@@ -48,7 +48,7 @@ export default function SignUpPage() {
                 className="text-center flex justify-center items-center text-3xl font-bold h-[10%] text-white">LinkedMeet
             </div>
             <div className="flex relative items-center h-[90%] justify-center">
-                <div className={"w-[90%] bg-gray-500 h-full absolute bottom-0 rounded-3xl"}></div>
+                <div className={"w-[90%] bg-gray-500 h-full absolute bottom-0 rounded-t-3xl max-w-[400px]"}></div>
                 <div
                     className="absolute flex flex-col gap-3.5 bottom-0 w-full h-[97.5%] max-w-md bg-white rounded-t-3xl shadow-lg p-8">
 

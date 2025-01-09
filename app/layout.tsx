@@ -25,7 +25,7 @@ export default function RootLayout({
     return (
         <html lang="en">
         <body
-            className={`${geistSans.variable} antialiased md:hidden`}
+            className={`${geistSans.variable} antialiased sm:hidden`}
         >
         <NextUIProvider>
             <CustomProvider>
