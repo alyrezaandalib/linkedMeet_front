@@ -18,14 +18,16 @@ import {IoExit} from "react-icons/io5";
 import {PiInfoFill} from "react-icons/pi";
 import {TiUser} from "react-icons/ti";
 import {LuMenu} from "react-icons/lu";
-import Image from "next/image";
 import toast from "react-hot-toast";
 import {Logout} from "@/store/userSlice";
 import {getCookie} from "cookies-next";
+import {useState} from "react";
 
 export default function DrawerMenu() {
 
     const user = useSelector((state: any) => state.user.user);
+
+    const [isLoading, setIsLoading] = useState(false)
 
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
 
@@ -81,50 +83,55 @@ export default function DrawerMenu() {
 
 
                             <DrawerBody>
-                                <Button className={"justify-start"} variant={"light"} radius={"sm"}
+                                <Button isDisabled={isLoading} className={"justify-start"} variant={"light"} radius={"sm"}
                                         onPress={() => router.push("/chat")}>
                                     <HiMiniChatBubbleOvalLeftEllipsis className={"text-xl"}/>
                                     Chat
                                 </Button>
-                                <Button className={"justify-start"} variant={"light"} radius={"sm"}
+                                <Button isDisabled={isLoading} className={"justify-start"} variant={"light"} radius={"sm"}
                                         onPress={() => router.push("/profile")}>
                                     <TiUser className={"text-xl"}/>
                                     Profile
                                 </Button>
-                                <Button className={"justify-start"} variant={"light"} radius={"sm"}
+                                <Button isDisabled={isLoading} className={"justify-start"} variant={"light"} radius={"sm"}
                                         onPress={() => router.push("/about-us")}>
                                     <PiInfoFill className={"text-xl"}/>
                                     About Us
                                 </Button>
-                                <Button className={"justify-start text-red-500"}
-                                        variant={"light"}
-                                        radius={"sm"}
-                                        onPress={() => {
-                                            fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/logout` , {
-                                                method : "POST",
-                                                headers: {
-                                                    'Content-Type': 'application/json',
-                                                    'Authorization': `Bearer ${getCookie("token")}`,
-                                                    'Accept': 'application/json',
-                                                },
+                                <Button
+                                    isLoading={isLoading}
+                                    className={"justify-start text-red-500"}
+                                    variant={"light"}
+                                    radius={"sm"}
+                                    onPress={() => {
+                                        setIsLoading(true)
+                                        fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/logout`, {
+                                            method: "POST",
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                                'Authorization': `Bearer ${getCookie("token")}`,
+                                                'Accept': 'application/json',
+                                            },
+                                        })
+                                            .then(response => {
+                                                if (!response.ok) {
+                                                    toast.error(`HTTP error! status: ${response.status}`)
+                                                    throw new Error(`HTTP error! status: ${response.status}`);
+                                                }
+                                                return response.json();
                                             })
-                                                .then(response => {
-                                                    if (!response.ok) {
-                                                        toast.error(`HTTP error! status: ${response.status}`)
-                                                        throw new Error(`HTTP error! status: ${response.status}`);
-                                                    }
-                                                    return response.json();
-                                                })
-                                                .then(data => {
-                                                    dispatch(Logout())
-                                                    router.refresh()
-                                                })
-                                                .catch(error => {
-                                                    toast.error(`Error fetching LinkedIn auth URL: ${error}`);
-                                                });
-                                        }}>
+                                            .then(data => {
+                                                setIsLoading(false)
+                                                dispatch(Logout())
+                                                router.refresh()
+                                            })
+                                            .catch(error => {
+                                                toast.error(`Error fetching LinkedIn auth URL: ${error}`);
+                                                setIsLoading(false)
+                                            });
+                                    }}>
                                     <IoExit className={"text-xl"}/>
-                                    Exit
+                                    {isLoading ? "Logging out" : "Exit"}
                                 </Button>
                             </DrawerBody>
 

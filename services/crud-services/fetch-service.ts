@@ -1,5 +1,6 @@
 import connectionManager from "../conection-manager";
 import toast from "react-hot-toast";
+import {deleteCookie} from "cookies-next";
 
 interface FetchServiceParams {
     url: string;
@@ -20,6 +21,7 @@ export async function fetchService({ url }: FetchServiceParams): Promise<any> {
 
         if (response.status === 401) {
             if (typeof window !== "undefined") {
+                deleteCookie("token");
                 window.location.href = "/sign-in";
             }
             toast.error("Unauthorized access - Redirecting to sign-in");

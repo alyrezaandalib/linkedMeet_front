@@ -141,12 +141,14 @@ export default function Home() {
                                         </div>
                                         <div className={"w-full flex justify-between items-center gap-2"}>
                                             <input
+                                                readOnly
                                                 placeholder="Title job"
                                                 className="form-input form-input-sm !m-0"
                                                 value={selectedJob?.name || ""}
                                                 onClick={() => setJobTitleModalOpen(true)}
                                             />
                                             <input
+                                                readOnly
                                                 placeholder="Industry"
                                                 className="form-input form-input-sm !m-0"
                                                 value={selectedIndustry?.name || ""}
@@ -176,7 +178,8 @@ export default function Home() {
                                                     </div>
 
                                                     <div className={"flex gap-1"}>
-                                                        <Button size={'sm'} variant={"bordered"} onPress={() => setIsUserInfoModalOpen(true)}><IoDocumentTextOutline
+                                                        <Button size={'sm'} variant={"bordered"}
+                                                                onPress={() => setIsUserInfoModalOpen(true)}><IoDocumentTextOutline
                                                             className={"text-lg"}/></Button>
                                                         <Button size={"sm"} variant={"bordered"}><SendIcon
                                                             className={"text-black"}/></Button>
@@ -231,9 +234,26 @@ export default function Home() {
                             <ModalHeader className="flex flex-col gap-1">user Info</ModalHeader>
                             <div
                                 className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mt-3"></div>
-                            <ModalBody>
-                                <div className="flex flex-col">
+                            <ModalBody className={"p-3"}>
+                                <div className="flex flex-col items-center gap-4">
+                                    <div className={"h-16 w-16 border border-gray-200 bg-red-200 rounded-full"}></div>
+                                    <div className={"font-mono"}>name</div>
+                                    <div className={"flex flex-col gap-4 text-xs w-full"}>
+                                        <div className={"flex gap-2 bg-white p-1"}>
+                                            <div className={"font-semibold w-[50%] text-nowrap"}> company activity type:</div>
+                                            <div className={"text-wrap"}>Producer / Manufacturer</div>
+                                        </div>
+                                        <div className={"flex gap-2"}>
+                                            <div className={"font-semibold w-[50%] p-1"}> industry:</div>
+                                            <div className={"text-wrap"}>Graphic Design</div>
+                                        </div>
+                                        <div className={"flex gap-2"}>
+                                            <div className={"font-semibold w-[50%] p-1"}> title job:</div>
+                                            <div className={"text-wrap"}>analyst</div>
+                                        </div>
+                                    </div>
                                 </div>
+                                <Button className={"w-full mt-4"} color={"primary"}><SendIcon/>Chat</Button>
                             </ModalBody>
                         </>
                     )}

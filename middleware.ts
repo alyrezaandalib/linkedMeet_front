@@ -25,17 +25,17 @@ export async function middleware(request: NextRequest) {
 
 
     // convert company_activity_type from string to object
-    // let companyActivityTypesArray = []
-    // const companyActivityTypesValue = cookieStore.get("company_activity_types")?.value;
-    // if (companyActivityTypesValue) {
-    //     try {
-    //         companyActivityTypesArray = JSON.parse(companyActivityTypesValue);
-    //     } catch (error) {
-    //         console.error("Failed to parse company_activity_types as JSON:", error);
-    //     }
-    // } else {
-    //     console.log("No company_activity_types cookie found or it is empty.");
-    // }
+    let companyActivityTypesArray = []
+    const companyActivityTypesValue = cookieStore.get("company_activity_types")?.value;
+    if (companyActivityTypesValue) {
+        try {
+            companyActivityTypesArray = JSON.parse(companyActivityTypesValue);
+        } catch (error) {
+            console.error("Failed to parse company_activity_types as JSON:", error);
+        }
+    } else {
+        console.log("No company_activity_types cookie found or it is empty.");
+    }
 
     // Check if the device is mobile
     if (!userAgent.includes('Mobile')) {
@@ -52,20 +52,20 @@ export async function middleware(request: NextRequest) {
     } else {
 
         // Redirect to activity-type if the cookie exists and path is not already activity-type
-        // if (companyActivityTypesArray.length === 0 && request.nextUrl.pathname !== '/activity-type') {
-        //     console.log('Redirecting to activity-type.');
-        //     return NextResponse.redirect(new URL('/activity-type', request.url));
-        // }
+        if (companyActivityTypesArray.length === 0 && request.nextUrl.pathname !== '/activity-type') {
+            console.log('Redirecting to activity-type.');
+            return NextResponse.redirect(new URL('/activity-type', request.url));
+        }
 
         // Redirect to information if both cookies exist and path is not already information
-        // if (
-        //     (cookieStore.get('industry')?.value) === "null" ||
-        //     (cookieStore.get('job_title')?.value === "null") &&
-        //     request.nextUrl.pathname !== '/information'
-        // ) {
-        //     console.log('Redirecting to information.');
-        //     return NextResponse.redirect(new URL('/information', request.url));
-        // }
+        if (
+            (cookieStore.get('industry')?.value) === "null" ||
+            (cookieStore.get('job_title')?.value === "null") &&
+            request.nextUrl.pathname !== '/information'
+        ) {
+            console.log('Redirecting to information.');
+            return NextResponse.redirect(new URL('/information', request.url));
+        }
     }
 
     return NextResponse.next();

@@ -3,7 +3,7 @@ import Linkedin from "@/public/tsx-icons/linkedin";
 import Link from "next/link";
 import {Button, Checkbox, Spinner} from "@nextui-org/react";
 import {useForm, Controller, SubmitHandler, set} from "react-hook-form";
-import useService, {Inputs} from "./service";
+import  {Inputs} from "./service";
 import {useRouter} from "next/navigation";
 import {useDispatch, useSelector} from "react-redux";
 import toast from "react-hot-toast";
@@ -14,7 +14,6 @@ import {Authentication} from "@/store/userSlice";
 export default function SignInPage() {
 
     const router = useRouter();
-    const {getUserActivityType} = useService()
 
     const [isLoading, setIsLoading] = useState(false)
 
@@ -75,7 +74,6 @@ export default function SignInPage() {
         },
         onSuccess: (data) => {
             if (data.user.company_activity_types && data.user.company_activity_types.length === 0) router.push("/activity-type")
-            router.push("/")
         },
     });
 
@@ -132,8 +130,8 @@ export default function SignInPage() {
                                         message: "Password must be at least 8 characters long.",
                                     },
                                     maxLength: {
-                                        value: 32,
-                                        message: "Password must be at lest 32 characters long."
+                                        value: 10,
+                                        message: "Password must be at lest 10 characters long."
                                     }
                                 })}
                                 type="password"

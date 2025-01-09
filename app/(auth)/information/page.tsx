@@ -63,7 +63,7 @@ export default function InformationPage() {
     };
 
     useEffect(() => {
-        if (!!hasIndustry && !!hasJobTitle) router.push("/")
+        if (hasIndustry !== null && hasJobTitle !== null) router.push("/")
     }, [hasIndustry , hasJobTitle]);
 
     return (

@@ -1,5 +1,6 @@
 import connectionManager from "../conection-manager";
 import toast from "react-hot-toast";
+import {deleteCookie} from "cookies-next";
 
 export async function patchService(url: string, data: any): Promise<any> {
     try {
@@ -17,6 +18,7 @@ export async function patchService(url: string, data: any): Promise<any> {
 
         if (response.status === 401) {
             if (typeof window !== "undefined") {
+                deleteCookie("token");
                 window.location.href = "/sign-in";
             }
             toast.error("Unauthorized access - Redirecting to sign-in");

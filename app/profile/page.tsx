@@ -51,7 +51,10 @@ export default function ProfilePage() {
                     setIsLoading(false)
                     dispatch(UpdateUserAvatar(data.avatar_url))
                 })
-                .catch((error) => toast.error(error.message));
+                .catch((error) => {
+                    toast.error(error.message)
+                    setIsLoading(false)
+                });
         } else {
             console.log("No file to upload");
         }
