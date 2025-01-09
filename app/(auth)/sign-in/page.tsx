@@ -204,10 +204,10 @@ export default function SignInPage() {
                     {/* Footer */}
                     <div className="text-center text-sm flex items-center gap-2  justify-center">
                         <p className="text-gray-400 ">
-                            Dont Have Account?
+                            New to LinkedMeet?
                         </p>
                         <Link href={"/sign-up"} className="border rounded-lg bg-gray-100 text-gray-600 px-2 py-1.5">
-                            Get Started
+                            Join now
                         </Link>
                     </div>
                 </div>
