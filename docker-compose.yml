@@ -14,8 +14,6 @@ services:
     entrypoint: [ "/entrypoint.sh" ]
     environment:
       APP_ENV: ${APP_ENV}
-    mem_limit: 1G
-    cpus: 1
     networks:
       - linkedmeet
   npm:

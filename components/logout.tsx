@@ -1,0 +1,10 @@
+import {Spinner} from "@nextui-org/react";
+
+export default function LogoutPage(){
+    return (
+        <div className={"h-screen w-full flex justify-center items-center gap-2 text-danger text-sm"}>
+            <Spinner color={"danger"} size={"sm"}/>
+            Logging out
+        </div>
+    )
+}

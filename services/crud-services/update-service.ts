@@ -1,6 +1,7 @@
 import connectionManager from "../conection-manager";
 import toast from "react-hot-toast";
 import {deleteCookie} from "cookies-next";
+import {redirect} from "next/navigation";
 
 export async function updateService(url: string, data: any): Promise<any> {
     try {
@@ -17,12 +18,9 @@ export async function updateService(url: string, data: any): Promise<any> {
         });
 
         if (response.status === 401) {
-            if (typeof window !== "undefined") {
-                deleteCookie("token");
-                window.location.href = '/sign-in';
-            }
+            deleteCookie("token");
             toast.error("Unauthorized access - Redirecting to sign-in");
-            return null;
+            redirect("/sign-in");
         }
 
         const contentType = response.headers?.get("content-type") || "";

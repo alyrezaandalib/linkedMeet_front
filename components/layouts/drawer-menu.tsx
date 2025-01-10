@@ -10,7 +10,10 @@ import {
 } from "@nextui-org/react";
 import {useRouter} from "next/navigation";
 import {useDispatch, useSelector} from "react-redux";
-
+import toast from "react-hot-toast";
+import {Logout} from "@/store/userSlice";
+import {getCookie} from "cookies-next";
+import {useState} from "react";
 // icons
 import {CiUser} from "react-icons/ci";
 import {HiMiniChatBubbleOvalLeftEllipsis} from "react-icons/hi2";
@@ -18,21 +21,23 @@ import {IoExit} from "react-icons/io5";
 import {PiInfoFill} from "react-icons/pi";
 import {TiUser} from "react-icons/ti";
 import {LuMenu} from "react-icons/lu";
-import toast from "react-hot-toast";
-import {Logout} from "@/store/userSlice";
-import {getCookie} from "cookies-next";
-import {useState} from "react";
+import LogoutPage from "@/components/logout";
 
 export default function DrawerMenu() {
 
     const user = useSelector((state: any) => state.user.user);
 
-    const [isLoading, setIsLoading] = useState(false)
-
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
 
+    const [isLoading, setIsLoading] = useState(false)
+
     const router = useRouter()
+
     const dispatch = useDispatch();
+
+    if (isLoading){
+        return  <LogoutPage/>
+    }
 
     return (
         <>
@@ -43,22 +48,6 @@ export default function DrawerMenu() {
                 radius={"none"}
                 backdrop={"blur"}
                 isOpen={isOpen}
-                // motionProps={{
-                //     variants: {
-                //         enter: {
-                //             opacity: 1,
-                //             x: 0,
-                //             // @ts-ignore
-                //             duration: 0.3,
-                //         },
-                //         exit: {
-                //             x: 100,
-                //             opacity: 0,
-                //             // @ts-ignore
-                //             duration: 0.3,
-                //         },
-                //     },
-                // }}
                 onOpenChange={onOpenChange}
             >
                 <DrawerContent>
@@ -83,23 +72,22 @@ export default function DrawerMenu() {
 
 
                             <DrawerBody>
-                                <Button isDisabled={isLoading} className={"justify-start"} variant={"light"} radius={"sm"}
+                                <Button  className={"justify-start"} variant={"light"} radius={"sm"}
                                         onPress={() => router.push("/chat")}>
                                     <HiMiniChatBubbleOvalLeftEllipsis className={"text-xl"}/>
                                     Chat
                                 </Button>
-                                <Button isDisabled={isLoading} className={"justify-start"} variant={"light"} radius={"sm"}
+                                <Button  className={"justify-start"} variant={"light"} radius={"sm"}
                                         onPress={() => router.push("/profile")}>
                                     <TiUser className={"text-xl"}/>
                                     Profile
                                 </Button>
-                                <Button isDisabled={isLoading} className={"justify-start"} variant={"light"} radius={"sm"}
+                                <Button  className={"justify-start"} variant={"light"} radius={"sm"}
                                         onPress={() => router.push("/about-us")}>
                                     <PiInfoFill className={"text-xl"}/>
                                     About Us
                                 </Button>
                                 <Button
-                                    isLoading={isLoading}
                                     className={"justify-start text-red-500"}
                                     variant={"light"}
                                     radius={"sm"}
@@ -121,7 +109,6 @@ export default function DrawerMenu() {
                                                 return response.json();
                                             })
                                             .then(data => {
-                                                setIsLoading(false)
                                                 dispatch(Logout())
                                                 router.refresh()
                                             })
@@ -131,7 +118,7 @@ export default function DrawerMenu() {
                                             });
                                     }}>
                                     <IoExit className={"text-xl"}/>
-                                    {isLoading ? "Logging out" : "Exit"}
+                                    Exit
                                 </Button>
                             </DrawerBody>
 
