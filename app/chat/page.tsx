@@ -48,17 +48,23 @@ export default function ChatPage() {
                                 <>
                                     <Button
                                         key={item.id}
-                                        onPress={() => router.push(`/chat/${item.id}`)}
+                                        onPress={() => router.push(`/chat/${item.id}?user=${encodeURIComponent(JSON.stringify(item))}`)}
                                         variant={"light"}
                                         size={"lg"}
                                         radius={"sm"}
-                                        className={"flex justify-start py-8 w-full px-2.5"}
+                                        className={"flex justify-start py-8 w-full px-2"}
                                     >
-                                        <div className={"w-10 h-10 rounded-full bg-gray-200/50"}>
+                                        <div className={"min-w-10 h-10 rounded-full bg-gray-200/50"}>
                                             <img src={item.avatar} alt={item.name}
-                                                 className={"h-full w-full rounded-full"}/>
+                                                 className={"h-10 w-10 rounded-full"}/>
                                         </div>
-                                        <div className={"capitalize "}>{item.name}</div>
+                                        <div className={"flex w-full items-end"}>
+                                            <div className={"flex flex-col items-start gap-1 w-full"}>
+                                                <div className={"capitalize"}>{item.name}</div>
+                                                <div className={"text-gray-400 text-sm"}>{item.message}</div>
+                                            </div>
+                                            <div className={"text-gray-400 w-fit text-xs"}>{item.last_message_at}</div>
+                                        </div>
                                     </Button>
                                     <div
                                         className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>

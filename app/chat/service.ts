@@ -7,6 +7,7 @@ export interface Chats {
     avatar : string
     started_at : string
     last_message_at : string
+    message:string
 }
 
 export default function useService() {

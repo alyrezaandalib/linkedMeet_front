@@ -1,12 +1,51 @@
 "use client"
-import {useRouter} from "next/navigation";
-import {Input, Button} from "@nextui-org/react";
+import {useRouter, useSearchParams} from "next/navigation";
+import {Button, Spinner} from "@nextui-org/react";
+import useService, {Message, Chat} from "./service"
+import {SubmitHandler, useForm} from "react-hook-form";
+import toast from "react-hot-toast";
 // icons
-import {RiSendPlaneFill} from "react-icons/ri";
 import {FaUserCircle} from "react-icons/fa";
 import {IoIosArrowBack} from "react-icons/io";
+import SendIcon from "@/public/tsx-icons/send";
+import {useEffect, useState} from "react";
+
 
 const ChatPage = () => {
+
+    // get user info from route query
+    const searchParams = useSearchParams()
+    const user = searchParams.get("user");
+    const parsedUser = user ? JSON.parse(decodeURIComponent(user)) : null;
+
+    //
+    const {register, handleSubmit, reset, resetField} = useForm<Message>();
+
+    // service
+    const {getChatHistory, sendMessage} = useService()
+
+    // get chat history
+    const [chatHistory, setChatHistory] = useState<any>([])
+    const {data: chatHistoryResponse, isLoading} = getChatHistory(parsedUser.id, 1)
+    useEffect(() => {
+        setChatHistory(chatHistoryResponse)
+    }, [chatHistoryResponse]);
+
+
+    const onSubmit: SubmitHandler<Message> = (data: any) => {
+        data.receiver_id = parsedUser.id
+
+        sendMessage.mutate(data, {
+            onSuccess: () => {
+                resetField("message")
+            },
+            onError: (error) => {
+                toast.error(error.message)
+            },
+        });
+    };
+
+
     const router = useRouter();
     return (
         <div className="h-screen flex flex-col bg-gray-100">
@@ -21,36 +60,63 @@ const ChatPage = () => {
                     <div
                         className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
                         <FaUserCircle className="text-gray-400 h-8 w-8"/>
+                        <img alt={parsedUser.name} src={parsedUser.avatar}
+                             className={"rounded-full h-full w-full"}/>
                     </div>
                     <div className="ml-3">
-                        <p className="text-sm font-semibold text-gray-800">mohammad j4</p>
-                        <p className="text-xs text-gray-500">Graphic Design / Analyst</p>
+                        <p className="text-sm font-semibold text-gray-800">{parsedUser.name}</p>
+                        <p className="text-xs text-gray-500">{parsedUser.job_title} / {parsedUser.industry}</p>
                     </div>
                 </div>
             </header>
 
             {/* Chat Messages */}
-            <main className="flex flex-col gap-4 flex-1 overflow-y-auto px-4 py-6 bg-gray-50 mt-16">
-                {/* Received Message */}
-                <div className="flex flex-col gap-1 items-start">
-                    <div className="bg-white max-w-[80%] text-gray-700 px-4 py-3 rounded-lg shadow-sm rounded-bl-none">
-                        Hello, good time <br/> May I know your field of work?
-                    </div>
-                    <p className="text-xs text-gray-400 mt-1">5:32</p>
-                </div>
-                {/* Sent Message */}
-                <div className="flex flex-col gap-1 items-end">
-                    <div className="bg-primary max-w-[80%] text-white px-4 py-3 rounded-lg shadow-sm rounded-br-none">
-                        Hi <br/> I am a UI/UX designer
-                    </div>
-                    <p className="text-xs text-gray-400 mt-1 text-right">5:32</p>
-                </div>
+            <main className="flex flex-col gap-4 flex-1 overflow-y-auto px-4 py-6 bg-gray-50 my-[64px] mb-[75px]">
+                {
+                    isLoading
+                        ?
+                        <Spinner/>
+                        :
+                        chatHistory?.data?.map((chat: Chat) => (
+                            chat.sender_id === parsedUser.id
+                                ?
+                                <>
+                                    {/* Received Message */}
+                                    <div className="flex flex-col gap-1 items-start">
+                                        <div
+                                            className="bg-white max-w-[80%] text-gray-700 px-4 py-3 rounded-lg shadow-sm rounded-bl-none">
+                                            {chat.message}
+                                        </div>
+                                        <p className="text-xs text-gray-400 mt-1">{chat.created_at}</p>
+                                    </div>
+                                </>
+                                :
+                                <>
+                                    {/* Sent Message */}
+                                    <div className="flex flex-col gap-1 items-end">
+                                        <div
+                                            className="bg-primary text-xs max-w-[80%] text-white px-4 py-3 rounded-lg shadow-sm rounded-br-none">
+                                            {chat.message}
+                                        </div>
+                                        <p className="text-xs text-gray-400 mt-1 text-right">{chat.created_at}</p>
+                                    </div>
+                                </>
+                        ))
+                }
             </main>
 
             {/* Message Input */}
-            <footer className="flex items-center bg-white gap-2 px-4 py-3 border-t fixed bottom-0 w-full">
-                <Input placeholder={"Write a message..."} variant={"bordered"}/>
-                <Button isIconOnly radius={"full"} variant={"light"}><RiSendPlaneFill className={"text-2xl"}/></Button>
+            <footer>
+                <form className="flex items-center gap-2 px-4 py-3 border-t fixed bottom-0 w-full"
+                      onSubmit={handleSubmit(onSubmit)}>
+                    <input
+                        {...register("message", {required: true})}
+                        className={"form-input"}
+                        placeholder={"Write a message..."}
+                    />
+                    <Button isDisabled={sendMessage.isPending} type={"submit"} isIconOnly radius={"full"}
+                            variant={"light"}><SendIcon/></Button>
+                </form>
             </footer>
         </div>
     );

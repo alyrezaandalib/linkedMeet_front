@@ -1,12 +1,16 @@
 "use client"
 import Image from "next/image";
-import service, {Location, User} from "./service"
+import useService, {Location, User} from "./service"
 import DrawerMenu from "@/components/layouts/drawer-menu";
 import {useEffect, useState} from "react";
 import {Button, Modal, ModalBody, ModalContent, ModalHeader, Spinner, Tab, Tabs} from "@nextui-org/react";
 import toast from "react-hot-toast";
 import {SubmitHandler} from "react-hook-form";
 import SelectableModal from "@/components/selectableModal";
+import {useRouter} from "next/navigation";
+import {useQuery} from "@tanstack/react-query";
+import {fetchService} from "@/services/crud-services/fetch-service";
+import {deleteCookie, getCookie, setCookie} from "cookies-next";
 // images
 import disabled_location_image from "../public/images/disabled_location.png"
 import no_user_found_image from "../public/images/no_user_found.png"
@@ -15,17 +19,14 @@ import users_image from "../public/images/users.png"
 import {FaPowerOff} from "react-icons/fa6";
 import SendIcon from "@/public/tsx-icons/send";
 import {IoDocumentTextOutline} from "react-icons/io5";
-import {useRouter} from "next/navigation";
-import {useQuery} from "@tanstack/react-query";
-import {fetchService} from "@/services/crud-services/fetch-service";
-import {deleteCookie, getCookie, setCookie} from "cookies-next";
+
 
 
 export default function Home() {
 
     const router = useRouter()
     // services
-    const {sendUserLocation, getJobTitlesList, getIndustriesList} = service()
+    const {sendUserLocation, getJobTitlesList, getIndustriesList} = useService()
 
     // location state
     const [location, setLocation]: any = useState(getCookie("isLocationSet") === "true" ? "on" : "off");
@@ -46,15 +47,36 @@ export default function Home() {
     });
 
     useEffect(() => {
-        fetchNearbyUsers();
+        if (location === "on") {
+            fetchNearbyUsers();
+        }
     }, []);
+
+    const getGeoLocationFunction = () => {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const {latitude, longitude} = position.coords;
+                    // onSubmitLocation({latitude, longitude});
+                    onSubmitLocation({latitude: 37.7749, longitude: -122.4194});
+                },
+                (error) => {
+                    toast.error(`Error fetching location: ${error.message}`);
+                    setLocation("off")
+                }
+            );
+        } else {
+            toast.error("Geolocation is not supported by this browser.");
+            setLocation("off")
+        }
+    }
 
     useEffect(() => {
         let intervalId: any;
 
         if (location === "on") {
             intervalId = setInterval(() => {
-                onSubmitLocation({latitude: 37.7749, longitude: -122.4194});
+                getGeoLocationFunction()
             }, 10000);
         }
 
@@ -64,7 +86,6 @@ export default function Home() {
             }
         };
     }, [location]);
-
 
 
     // selected user
@@ -105,7 +126,7 @@ export default function Home() {
                 {
                     location === "on" &&
                     <Tabs aria-label="location"
-                          onSelectionChange={(key : any) => {
+                          onSelectionChange={(key: any) => {
                               if (key === "off") {
                                   deleteCookie("isLocationSet")
                                   setLocation("off")
@@ -131,26 +152,9 @@ export default function Home() {
                             sharing.
                         </div>
                         <Tabs aria-label="location" defaultSelectedKey="off" size={"lg"} radius={"sm"}
-                              onSelectionChange={(key : any) => {
+                              onSelectionChange={(key: any) => {
                                   if (key === "on") {
-                                      onSubmitLocation({latitude: 37.7749, longitude: -122.4194})
-
-                                      // if ("geolocation" in navigator) {
-                                      //     navigator.geolocation.getCurrentPosition(
-                                      //         (position) => {
-                                      //             const {latitude, longitude} = position.coords;
-                                      //             console.log(latitude)
-                                      //             onSubmitLocation({latitude, longitude});
-                                      //         },
-                                      //         (error) => {
-                                      //             toast.error(`Error fetching location: ${error.message}`);
-                                      //             setLocation("off")
-                                      //         }
-                                      //     );
-                                      // } else {
-                                      //     toast.error("Geolocation is not supported by this browser.");
-                                      //     setLocation("off")
-                                      // }
+                                      getGeoLocationFunction()
                                   }
 
                               }}
@@ -231,7 +235,7 @@ export default function Home() {
                                                         }}>
                                                     <IoDocumentTextOutline className={"text-lg"}/>
                                                 </Button>
-                                                <Button onPress={() => router.push(`/chat/${user.id}`)} size={"sm"}
+                                                <Button onPress={() => router.push(`/chat/${user.id}?user=${encodeURIComponent(JSON.stringify(user))}`)} size={"sm"}
                                                         variant={"bordered"}>
                                                     <SendIcon className={"text-black"}/>
                                                 </Button>
@@ -286,7 +290,7 @@ export default function Home() {
                             <ModalBody className={"p-3"}>
                                 <div className="flex flex-col items-center gap-4">
                                     <div className={"h-16 w-16 border border-gray-200 rounded-full"}>
-                                        <img src={selectedUser.avatar} alt={selectedUser.name}/>
+                                        <img src={selectedUser.avatar} alt={selectedUser.name}  className={"rounded-full h-full w-full"}/>
                                     </div>
                                     <div className={"font-mono"}>{selectedUser.name}</div>
                                     <div className={"flex flex-col gap-4 text-xs w-full"}>
@@ -307,7 +311,7 @@ export default function Home() {
                                         </div>
                                     </div>
                                 </div>
-                                <Button onPress={() => router.push(`/chat/${selectedUser.id}`)}
+                                <Button onPress={() => router.push(`/chat/${selectedUser.id}?user=${encodeURIComponent(JSON.stringify(selectedUser))}`)}
                                         className={"w-full mt-4"} color={"primary"}>
                                     <SendIcon/>Chat
                                 </Button>
