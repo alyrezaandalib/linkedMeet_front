@@ -16,19 +16,65 @@ import {FaPowerOff} from "react-icons/fa6";
 import SendIcon from "@/public/tsx-icons/send";
 import {IoDocumentTextOutline} from "react-icons/io5";
 import {useRouter} from "next/navigation";
+import {useQuery} from "@tanstack/react-query";
+import {fetchService} from "@/services/crud-services/fetch-service";
+import {deleteCookie, getCookie, setCookie} from "cookies-next";
 
 
 export default function Home() {
 
     const router = useRouter()
-    const {sendUserLocation, getNearbyUsers, getJobTitlesList, getIndustriesList} = service()
-    const [location, setLocation]: any = useState("off")
+    // services
+    const {sendUserLocation, getJobTitlesList, getIndustriesList} = service()
+
+    // location state
+    const [location, setLocation]: any = useState(getCookie("isLocationSet") === "true" ? "on" : "off");
+
+    // nearby users
+    const {data: nearbyUsers, isLoading, refetch: fetchNearbyUsers} = useQuery({
+        queryKey: ["/v1/user/nearby-users"],
+        queryFn: ({queryKey, signal}) =>
+            fetchService({
+                url: queryKey.join(""),
+            }),
+        refetchOnMount: false,
+        refetchInterval: false,
+        refetchIntervalInBackground: false,
+        refetchOnReconnect: false,
+        refetchOnWindowFocus: false,
+        enabled: false, // دستی فعال می‌شود
+    });
+
+    useEffect(() => {
+        fetchNearbyUsers();
+    }, []);
+
+    useEffect(() => {
+        let intervalId: any;
+
+        if (location === "on") {
+            intervalId = setInterval(() => {
+                onSubmitLocation({latitude: 37.7749, longitude: -122.4194});
+            }, 10000);
+        }
+
+        return () => {
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+        };
+    }, [location]);
+
+
+
+    // selected user
     const [selectedUser, setSelectedUser] = useState<any>()
 
     const onSubmitLocation: SubmitHandler<Location> = (data: any) => {
         sendUserLocation.mutate(data, {
             onSuccess: (response) => {
-                toast.success("Location successfully created!");
+                setCookie("isLocationSet", true)
+                fetchNearbyUsers()
                 setLocation("on")
             },
             onError: (error) => {
@@ -38,12 +84,12 @@ export default function Home() {
         });
     };
 
-    const getNearbyUserResponse = getNearbyUsers()
 
     // get industries and job-titles list
     const getIndustriesListResponse = getIndustriesList()
     const getJobTitlesListResponse = getJobTitlesList()
 
+    // selected industry and job_title
     const [selectedIndustry, setSelectedIndustry] = useState<any>(null);
     const [selectedJob, setSelectedJob] = useState<any>(null);
 
@@ -55,11 +101,16 @@ export default function Home() {
     return (
         <div className={"w-full h-screen"}>
             <div className={"flex items-center justify-between px-5 py-3"}>
-                <DrawerMenu/>
+                <DrawerMenu setLocation={setLocation}/>
                 {
                     location === "on" &&
                     <Tabs aria-label="location"
-                          onSelectionChange={setLocation}
+                          onSelectionChange={(key : any) => {
+                              if (key === "off") {
+                                  deleteCookie("isLocationSet")
+                                  setLocation("off")
+                              }
+                          }}
                           radius={"sm"} classNames={{tabList: "bg-primary",}}
                     >
                         <Tab key="on" title={<FaPowerOff/>} className={"px-5"}/>
@@ -80,13 +131,15 @@ export default function Home() {
                             sharing.
                         </div>
                         <Tabs aria-label="location" defaultSelectedKey="off" size={"lg"} radius={"sm"}
-                              onSelectionChange={
-                                  () => {
+                              onSelectionChange={(key : any) => {
+                                  if (key === "on") {
                                       onSubmitLocation({latitude: 37.7749, longitude: -122.4194})
+
                                       // if ("geolocation" in navigator) {
                                       //     navigator.geolocation.getCurrentPosition(
                                       //         (position) => {
                                       //             const {latitude, longitude} = position.coords;
+                                      //             console.log(latitude)
                                       //             onSubmitLocation({latitude, longitude});
                                       //         },
                                       //         (error) => {
@@ -98,7 +151,9 @@ export default function Home() {
                                       //     toast.error("Geolocation is not supported by this browser.");
                                       //     setLocation("off")
                                       // }
-                                  }}
+                                  }
+
+                              }}
                         >
                             <Tab key="off" title="off" className={"px-10"}/>
                             <Tab key="on" title={<FaPowerOff/>} className={"px-10"}/>
@@ -107,7 +162,7 @@ export default function Home() {
                 }
                 {/* when not found user nearby ...*/}
                 {
-                    location === "on" && getNearbyUserResponse.data?.data.length === 0 &&
+                    location === "on" && nearbyUsers?.data.length === 0 &&
                     <div className={"h-full p-14 flex flex-col justify-center items-center gap-4"}>
                         <Image src={no_user_found_image} width={500} alt={"no user found image"}/>
                         <div className={"font-black text-xl text-center w-full"}>No nearby user found</div>
@@ -116,71 +171,75 @@ export default function Home() {
                         </div>
                     </div>
                 }
-                {/* when found user nearby ...*/}
+                {/*when found user nearby ...*/}
                 {
-                    location === "on" && getNearbyUserResponse.data?.data.length > 0 && (
-                        <div
-                            className={"h-full p-4 bg-[#f9f9f9] w-full overflow-y-auto flex flex-col items-center gap-4"}>
-                            <Image src={users_image} alt={"users"}/>
-                            <div className={"font-black text-xl text-center w-full"}>Congratulations!</div>
-                            <div className={"text-center text-gray-600"}>
-                                The following people have been found near you. You can start a conversation with
-                                them by clicking on
-                                their profiles.
-                            </div>
-                            <div className={"w-full flex justify-between items-center gap-2"}>
-                                <input
-                                    readOnly
-                                    placeholder="Title job"
-                                    className="form-input form-input-sm !m-0"
-                                    value={selectedJob?.name || ""}
-                                    onClick={() => setJobTitleModalOpen(true)}
-                                />
-                                <input
-                                    readOnly
-                                    placeholder="Industry"
-                                    className="form-input form-input-sm !m-0"
-                                    value={selectedIndustry?.name || ""}
-                                    onClick={() => setIndustryModalOpen(true)}
-                                />
-                            </div>
-                            <div className={"grid grid-cols-2 gap-2.5 w-full"}>
-                                {getNearbyUserResponse.data?.data.map((user: User) => (
-                                    <div
-                                        key={user.id}
-                                        className={
-                                            "bg-white shadow-sm flex flex-col items-center justify-center gap-2 p-4 rounded-lg"
-                                        }
-                                    >
+                    location === "on" && nearbyUsers?.data.length > 0 && (
+                        isLoading ?
+                            <Spinner/>
+                            :
+                            <div
+                                className={"h-full p-4 bg-[#f9f9f9] w-full overflow-y-auto flex flex-col items-center gap-4"}>
+                                <Image src={users_image} alt={"users"}/>
+                                <div className={"font-black text-xl text-center w-full"}>Congratulations!</div>
+                                <div className={"text-center text-gray-600"}>
+                                    The following people have been found near you. You can start a conversation with
+                                    them by clicking on
+                                    their profiles.
+                                </div>
+                                <div className={"w-full flex justify-between items-center gap-2"}>
+                                    <input
+                                        readOnly
+                                        placeholder="Title job"
+                                        className="form-input form-input-sm !m-0"
+                                        value={selectedJob?.name || ""}
+                                        onClick={() => setJobTitleModalOpen(true)}
+                                    />
+                                    <input
+                                        readOnly
+                                        placeholder="Industry"
+                                        className="form-input form-input-sm !m-0"
+                                        value={selectedIndustry?.name || ""}
+                                        onClick={() => setIndustryModalOpen(true)}
+                                    />
+                                </div>
+                                <div className={"grid grid-cols-2 gap-2.5 w-full"}>
+                                    {nearbyUsers?.data.map((user: User) => (
                                         <div
-                                            className={"w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center"}>
-                                            <img alt={user.name} src={user.avatar}/>
-                                        </div>
-                                        <div
-                                            className={"font-medium text-gray-800 capitalize"}>{user.name}
-                                        </div>
+                                            key={user.id}
+                                            className={
+                                                "bg-white shadow-sm flex flex-col items-center justify-center gap-2 p-4 rounded-lg"
+                                            }
+                                        >
+                                            <div
+                                                className={"w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center"}>
+                                                <img alt={user.name} src={user.avatar}
+                                                     className={"rounded-full h-full w-full"}/>
+                                            </div>
+                                            <div
+                                                className={"font-medium text-center text-gray-800 capitalize"}>{user.name}
+                                            </div>
 
-                                        <div
-                                            className={"text-xs text-gray-500"}>{user.job_title + " / " + user.industry}
-                                        </div>
+                                            <div
+                                                className={"text-xs text-gray-500 text-center"}>{user.job_title + " / " + user.industry}
+                                            </div>
 
-                                        <div className={"flex gap-1"}>
-                                            <Button size={'sm'} variant={"bordered"}
-                                                    onPress={() => {
-                                                        setSelectedUser(user)
-                                                        setIsUserInfoModalOpen(true)
-                                                    }}>
-                                                <IoDocumentTextOutline className={"text-lg"}/>
-                                            </Button>
-                                            <Button onPress={() => router.push(`/chat/${user.id}`)} size={"sm"}
-                                                    variant={"bordered"}>
-                                                <SendIcon className={"text-black"}/>
-                                            </Button>
+                                            <div className={"flex gap-1"}>
+                                                <Button size={'sm'} variant={"bordered"}
+                                                        onPress={() => {
+                                                            setSelectedUser(user)
+                                                            setIsUserInfoModalOpen(true)
+                                                        }}>
+                                                    <IoDocumentTextOutline className={"text-lg"}/>
+                                                </Button>
+                                                <Button onPress={() => router.push(`/chat/${user.id}`)} size={"sm"}
+                                                        variant={"bordered"}>
+                                                    <SendIcon className={"text-black"}/>
+                                                </Button>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
-                        </div>
                     )
                 }
             </div>
@@ -236,7 +295,7 @@ export default function Home() {
                                                 company activity type
                                             </div>
                                             <div
-                                                className={"text-wrap"}> {selectedUser.industry + "/" + selectedUser.industry}</div>
+                                                className={"text-wrap"}> {selectedUser.company_activity_types}</div>
                                         </div>
                                         <div className={"flex gap-2"}>
                                             <div className={"font-semibold w-[50%] p-1"}> industry:</div>
@@ -248,7 +307,8 @@ export default function Home() {
                                         </div>
                                     </div>
                                 </div>
-                                <Button onPress={() => router.push(`/chat/${selectedUser.id}`)} className={"w-full mt-4"} color={"primary"}>
+                                <Button onPress={() => router.push(`/chat/${selectedUser.id}`)}
+                                        className={"w-full mt-4"} color={"primary"}>
                                     <SendIcon/>Chat
                                 </Button>
                             </ModalBody>

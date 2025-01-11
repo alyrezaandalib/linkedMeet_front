@@ -74,6 +74,9 @@ export default function SignInPage() {
         },
         onSuccess: (data) => {
             if (data.user.company_activity_types && data.user.company_activity_types.length === 0) router.push("/activity-type")
+            // else {
+            //     router.push("/")
+            // }
         },
     });
 

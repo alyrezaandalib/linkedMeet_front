@@ -18,8 +18,7 @@ export default function SignUpPage() {
     const {
         register,
         handleSubmit,
-        formState: {errors},
-        reset
+        formState: {errors}
     } = useForm<Inputs>()
 
     const router = useRouter();
@@ -30,7 +29,6 @@ export default function SignUpPage() {
         signUpUser.mutate(data, {
             onSuccess: () => {
                 router.push(`/verify-code?email=${data.email}`);
-                reset()
             },
             onError: (error) => {
                 toast.error(error.message);

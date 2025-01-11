@@ -12,7 +12,8 @@ export interface User {
     name: string;
     job_title: string;
     industry: string;
-    avatar: any
+    avatar: any ;
+    comapny_activity_type : any;
 }
 
 export default function useService() {
@@ -21,20 +22,6 @@ export default function useService() {
             await createService("/v1/user/location", body);
         },
     });
-
-    const getNearbyUsers = () => useQuery({
-        queryKey: ["/v1/user/nearby-users"],
-        queryFn: ({queryKey, signal}) =>
-            fetchService({
-                url: queryKey.join(""),
-            }),
-        refetchOnMount: false,
-        refetchInterval: false,
-        refetchIntervalInBackground: false,
-        refetchOnReconnect: false,
-        refetchOnWindowFocus: false,
-        enabled: true,
-    })
 
     const getIndustriesList = () => useQuery({
         queryKey: ["/v1/app/industries"],
@@ -64,5 +51,5 @@ export default function useService() {
         enabled: true,
     })
 
-    return {sendUserLocation, getNearbyUsers, getIndustriesList, getJobTitlesList};
+    return {sendUserLocation, getIndustriesList, getJobTitlesList};
 }

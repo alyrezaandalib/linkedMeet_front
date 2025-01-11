@@ -1,7 +1,6 @@
 import connectionManager from "../conection-manager";
 import toast from "react-hot-toast";
 import {deleteCookie} from "cookies-next";
-import {redirect} from "next/navigation";
 
 export async function updateService(url: string, data: any): Promise<any> {
     try {
@@ -17,10 +16,17 @@ export async function updateService(url: string, data: any): Promise<any> {
             body: JSON.stringify(data),
         });
 
-        if (response.status === 401) {
-            deleteCookie("token");
+        if (!token) {
+            window.location.href = "/sign-in";
+        }
+
+        if (token && response.status === 401) {
+            if (typeof window !== "undefined") {
+                deleteCookie("token");
+                window.location.href = "/sign-in";
+            }
             toast.error("Unauthorized access - Redirecting to sign-in");
-            redirect("/sign-in");
+            // throw new Error("Unauthorized access - Redirecting to sign-in");
         }
 
         const contentType = response.headers?.get("content-type") || "";
@@ -35,7 +41,7 @@ export async function updateService(url: string, data: any): Promise<any> {
 
             const error = await response.json();
             toast.error(error?.message || "An error has occurred.");
-            throw new Error(error?.message || "An error has occurred.");
+            // throw new Error(error?.message || "An error has occurred.");
         }
     } catch (error) {
         console.error("error in updateService:", error);
