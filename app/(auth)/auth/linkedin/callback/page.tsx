@@ -33,6 +33,7 @@ export default function Page() {
                 dispatch(Authentication({
                     isAuthenticated: true,
                     token: data.token,
+                    id : data.user.id,
                     name: data.user.name,
                     email: data.user.email,
                     avatar: data.user.avatar,

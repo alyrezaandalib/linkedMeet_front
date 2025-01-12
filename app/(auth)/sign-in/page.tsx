@@ -54,6 +54,7 @@ export default function SignInPage() {
                 dispatch(Authentication({
                     isAuthenticated: true,
                     token: data.token,
+                    id :data.user.id,
                     name: data.user.name,
                     email: data.user.email,
                     avatar: data.user.avatar,
@@ -74,9 +75,9 @@ export default function SignInPage() {
         },
         onSuccess: (data) => {
             if (data.user.company_activity_types && data.user.company_activity_types.length === 0) router.push("/activity-type")
-            // else {
-            //     router.push("/")
-            // }
+            else {
+                router.push("/")
+            }
         },
     });
 

@@ -5,6 +5,7 @@ const initialState = {
     isAuthenticated: !!(getCookie("isAuthenticated") ?? false),
     token: getCookie("token") || "",
     user: {
+        id: getCookie("id") || "",
         name: getCookie("name") || "",
         email: getCookie("email") || "",
         avatar: getCookie("avatar") || "",
@@ -22,6 +23,7 @@ const userSlice = createSlice({
             state.isAuthenticated = !!payload.isAuthenticated;
             state.token = payload.token;
             state.user = {
+                id: payload.id,
                 name: payload.name,
                 email: payload.email,
                 avatar: payload.avatar,
@@ -33,6 +35,7 @@ const userSlice = createSlice({
             // Save data to cookies
             setCookie("isAuthenticated", payload.isAuthenticated);
             setCookie("token", payload.token);
+            setCookie("id", payload.id);
             setCookie("name", payload.name);
             setCookie("email", payload.email);
             setCookie("avatar", payload.avatar);
@@ -85,6 +88,7 @@ const userSlice = createSlice({
             state.isAuthenticated = false;
             state.token = "";
             state.user = {
+                id: "",
                 name: "",
                 email: "",
                 avatar: "",
@@ -96,6 +100,7 @@ const userSlice = createSlice({
             // Remove data from cookies
             deleteCookie("isAuthenticated");
             deleteCookie("token");
+            deleteCookie("id");
             deleteCookie("name");
             deleteCookie("email");
             deleteCookie("avatar");
