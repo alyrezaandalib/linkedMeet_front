@@ -1,8 +1,6 @@
 import {NextRequest, NextResponse} from 'next/server';
-import {cookies} from 'next/headers';
 
 export async function middleware(request: NextRequest) {
-    const cookieStore = await cookies();
     const userAgent = request.headers.get('user-agent') || '';
     const allowedPaths = [
         '/sign-up',
@@ -15,7 +13,7 @@ export async function middleware(request: NextRequest) {
     console.log('Path:', request.nextUrl.pathname);
 
     // splash screen
-    const hasSeenSplash = cookieStore.get('has_seen_splash');
+    const hasSeenSplash = request.cookies.get('has_seen_splash');
     const splashScreenPath = '/splash-screen';
     if (!hasSeenSplash && request.nextUrl.pathname !== splashScreenPath) {
         const response = NextResponse.redirect(new URL(splashScreenPath, request.url));
@@ -26,7 +24,7 @@ export async function middleware(request: NextRequest) {
 
     // convert company_activity_type from string to object
     let companyActivityTypesArray = []
-    const companyActivityTypesValue = cookieStore.get("company_activity_types")?.value;
+    const companyActivityTypesValue = request.cookies.get("company_activity_types")?.value;
     if (companyActivityTypesValue) {
         try {
             companyActivityTypesArray = JSON.parse(companyActivityTypesValue);
@@ -44,7 +42,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // Check if token exists
-    if (!cookieStore.has('token')) {
+    if (!request.cookies.has('token')) {
         if (!allowedPaths.some(path => request.nextUrl.pathname.startsWith(path))) {
             console.log('No token found. Redirecting to sign-in.');
             return NextResponse.redirect(new URL('/sign-in', request.url));
@@ -59,8 +57,8 @@ export async function middleware(request: NextRequest) {
 
         // Redirect to information if both cookies exist and path is not already information
         if (
-            (cookieStore.get('industry')?.value) === "null" ||
-            (cookieStore.get('job_title')?.value === "null") &&
+            (request.cookies.get('industry')?.value) === "null" ||
+            (request.cookies.get('job_title')?.value === "null") &&
             request.nextUrl.pathname !== '/information'
         ) {
             console.log('Redirecting to information.');
