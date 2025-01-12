@@ -16,27 +16,12 @@ import SendIcon from "@/public/tsx-icons/send";
 
 
 const ChatPage = () => {
-
     const userId = useSelector((state: any) => state.user.user.id);
 
     // Get user info from route query
     const searchParams = useSearchParams();
     const user = searchParams.get("user");
     const parsedUser = user ? JSON.parse(decodeURIComponent(user)) : null;
-
-    // web socket
-    const Echo : any = echo()
-    const channelName = `chat.${Math.min(userId, parsedUser.id)}-${Math.max(userId, parsedUser.id)}`;
-    useEffect(() => {
-        Echo.channel(channelName)
-            .listen('MessageSent', (data: any) => {
-                console.log('Event received:', data);
-            });
-
-        return () => {
-            Echo.leaveChannel(channelName);
-        };
-    }, []);
 
     // Form handling
     const { register, handleSubmit, resetField } = useForm<Message>();
@@ -66,8 +51,18 @@ const ChatPage = () => {
     // Reference to scroll to the bottom of chat
     const chatEndRef = useRef<HTMLDivElement | null>(null);
 
+    // web socket
+    const channelName = `chat.${Math.min(userId, parsedUser.id)}-${Math.max(userId, parsedUser.id)}`;
+
     // Initialize chat history and meta data
     useEffect(() => {
+        if (echo) {
+            echo.private(channelName)
+                .listen('MessageSent', (data: any) => {
+                    console.log('Event received:', data);
+                });
+        }
+
         if (chatHistoryResponse && isLoadingInitial) {
             setChatHistory(chatHistoryResponse.data);
             setMetaData({
@@ -80,6 +75,12 @@ const ChatPage = () => {
             }, 100);
             setIsLoadingInitial(false);  // Set to false after initial load
         }
+
+        return () => {
+            if (echo) {
+                echo.leaveChannel(channelName);
+            }
+        };
     }, [chatHistoryResponse, isLoadingInitial]);
 
     // Load more messages
