@@ -37,7 +37,7 @@ export default function DrawerMenu({setLocation} : any) {
 
     if (isLoading){
         setLocation("off")
-        fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/api/v1/user/gps-status`, {
+        fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/user/gps-status`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${getCookie("token")}`,
