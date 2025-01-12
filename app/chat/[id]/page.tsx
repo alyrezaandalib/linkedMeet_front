@@ -4,20 +4,39 @@ import { Button, Spinner } from "@nextui-org/react";
 import useService, { Message, Chat } from "./service";
 import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { useEffect, useState, useRef } from "react";
+import { useSelector } from "react-redux";
+import { getCookie } from "cookies-next";
+import { echo } from '@/utils/echo';
 // icons
 import { FaUserCircle } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";
 import SendIcon from "@/public/tsx-icons/send";
-import { useEffect, useState, useRef } from "react";
-import { useSelector } from "react-redux";
+
+
 
 const ChatPage = () => {
+
     const userId = useSelector((state: any) => state.user.user.id);
 
     // Get user info from route query
     const searchParams = useSearchParams();
     const user = searchParams.get("user");
     const parsedUser = user ? JSON.parse(decodeURIComponent(user)) : null;
+
+    // web socket
+    const Echo : any = echo()
+    const channelName = `chat.${Math.min(userId, parsedUser.id)}-${Math.max(userId, parsedUser.id)}`;
+    useEffect(() => {
+        Echo.channel(channelName)
+            .listen('MessageSent', (data: any) => {
+                console.log('Event received:', data);
+            });
+
+        return () => {
+            Echo.leaveChannel(channelName);
+        };
+    }, []);
 
     // Form handling
     const { register, handleSubmit, resetField } = useForm<Message>();
@@ -30,6 +49,7 @@ const ChatPage = () => {
     const [metaData, setMetaData] = useState({ total_pages: 1, current_page: 1 });
     const [currentPage, setCurrentPage] = useState(1);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const [isLoadingInitial, setIsLoadingInitial] = useState(true);  // Track initial loading
 
     const { data: chatHistoryResponse, isLoading } = getChatHistory(
         parsedUser.id,
@@ -48,7 +68,7 @@ const ChatPage = () => {
 
     // Initialize chat history and meta data
     useEffect(() => {
-        if (chatHistoryResponse) {
+        if (chatHistoryResponse && isLoadingInitial) {
             setChatHistory(chatHistoryResponse.data);
             setMetaData({
                 total_pages: chatHistoryResponse.meta.total_pages,
@@ -58,12 +78,20 @@ const ChatPage = () => {
             setTimeout(() => {
                 scrollToBottom();
             }, 100);
+            setIsLoadingInitial(false);  // Set to false after initial load
         }
-    }, [chatHistoryResponse]);
+    }, [chatHistoryResponse, isLoadingInitial]);
 
     // Load more messages
-    const fetchChatHistory = async (userId: number, page: number) => {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/chat/history?partner_id=${userId}&page=${page}`);
+    const fetchChatHistory = async (partner_id: number, page: number) => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/chat/history?partner_id=${partner_id}&page=${page}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getCookie("token")}`,
+                'Accept': 'application/json',
+            },
+        });
+
         if (!response.ok) {
             throw new Error("Failed to fetch chat history.");
         }
@@ -82,7 +110,7 @@ const ChatPage = () => {
         try {
             const response = await fetchChatHistory(parsedUser.id, nextPage);
             if (response?.data?.length) {
-                setChatHistory((prevHistory: any) => [...response.data.reverse(), ...prevHistory]); // Reverse new messages and prepend them
+                setChatHistory((prevHistory: any) => [ ...response.data,...prevHistory]);
                 setMetaData({
                     total_pages: response.meta.total_pages,
                     current_page: response.meta.current_page,

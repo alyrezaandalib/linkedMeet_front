@@ -53,12 +53,18 @@ export default function Home() {
     }, []);
 
     const getGeoLocationFunction = () => {
+
+        if (!navigator.geolocation) {
+            toast.error('Your device does not support GPS.');
+            return;
+        }
+
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const {latitude, longitude} = position.coords;
-                    // onSubmitLocation({latitude, longitude});
-                    onSubmitLocation({latitude: 37.7749, longitude: -122.4194});
+                    onSubmitLocation({latitude, longitude});
+                    // onSubmitLocation({latitude: 37.7749, longitude: -122.4194});
                 },
                 (error) => {
                     toast.error(`Error fetching location: ${error.message}`);

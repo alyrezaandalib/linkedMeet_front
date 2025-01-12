@@ -5,6 +5,7 @@ import {Provider} from "react-redux"
 import store from "../store/index"
 import {Toaster} from "react-hot-toast";
 
+
 export default function CustomProvider({children}: { children: ReactNode }) {
     const queryClient = new QueryClient()
     return (
