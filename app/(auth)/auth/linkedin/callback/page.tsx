@@ -62,17 +62,17 @@ export default function Page() {
     });
 
     useEffect(() => {
-        if (isAuthenticated) {
-            router.push("/");
-        }
-
         if (code) {
             getUserInformationFromLinkedin.mutate(code)
         } else {
             toast.error("Invalid or missing LinkedIn authorization code.");
             router.push("/sign-in");
         }
-    }, [code, isAuthenticated]);
+    }, [code]);
+
+    if (isAuthenticated) {
+        router.push("/");
+    }
 
     return (
         <div className={"h-screen flex flex-col justify-center items-center gap-5 bg-white"}>
