@@ -37,6 +37,17 @@ export default function DrawerMenu({setLocation} : any) {
 
     if (isLoading){
         setLocation("off")
+        fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/api/v1/user/gps-status`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${getCookie("token")}`,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                is_gps_enabled: false,
+            }),
+        }).then(response => {});
         return  <LogoutPage/>
     }
 

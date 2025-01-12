@@ -46,6 +46,30 @@ export default function Home() {
         enabled: false, // دستی فعال می‌شود
     });
 
+    const updateGpsStatus = async (isGpsEnabled: boolean) => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/api/v1/user/gps-status`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${getCookie("token")}`,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                is_gps_enabled: isGpsEnabled,
+            }),
+        });
+    };
+
+    useEffect(() => {
+        if (location === "on") {
+            updateGpsStatus(true);
+        }
+
+        if (location === "off") {
+            updateGpsStatus(false);
+        }
+    }, [location]);
+
     useEffect(() => {
         if (location === "on") {
             fetchNearbyUsers();
@@ -84,6 +108,12 @@ export default function Home() {
             intervalId = setInterval(() => {
                 getGeoLocationFunction()
             }, 10000);
+        }
+
+        if (location === "off") {
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
         }
 
         return () => {
