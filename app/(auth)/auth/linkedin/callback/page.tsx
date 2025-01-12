@@ -52,8 +52,12 @@ export default function Page() {
             toast.error(error.message || "An error occurred during sign-in.");
             router.push("/sign-in");
         },
-        onSuccess: () => {
-            router.push("/")
+        onSuccess: (data) => {
+            if (data.user.company_activity_types && data.user.company_activity_types.length === 0) {
+                router.push("/activity-type")
+            } else {
+                router.push("/")
+            }
         },
     });
 
