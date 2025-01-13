@@ -3,19 +3,34 @@ import Link from "next/link";
 import {IoIosArrowBack} from "react-icons/io";
 import {Input, Spinner} from "@nextui-org/react";
 import useService, {Chats} from "./service";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 import {Button} from "@nextui-org/button";
+import truncateMessage from "@/utils/truncateMessage";
 // icons
 import {CiSearch} from "react-icons/ci";
-
 
 export default function ChatPage() {
 
     const router = useRouter();
+    // chats
+    const [chatHistory, setChatHistory] = useState<Chats[]>([]);
+    const [searchQuery, setSearchQuery] = useState<string>(""); // State for search input
 
-    const {getChatsList} = useService()
-    const {data, isLoading} = getChatsList()
+    // services
+    const {getChatsList} = useService();
+    const {data, isLoading} = getChatsList();
+
+    useEffect(() => {
+        if (data) {
+            setChatHistory(data?.data);
+        }
+    }, [data]);
+
+    // Filtered chat list based on search query
+    const filteredChats = chatHistory.filter((chat) =>
+        chat.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <div className={"pt-4 px-4 h-screen bg-[#f9f9f9] flex flex-col gap-4"}>
@@ -33,18 +48,20 @@ export default function ChatPage() {
                     startContent={
                         <CiSearch className="text-2xl text-default-400 pointer-events-none flex-shrink-0"/>
                     }
-                    type="email"
+                    type="text"
+                    value={searchQuery} // Bind input to state
+                    onChange={(e) => setSearchQuery(e.target.value)} // Update search query on change
                 />
             </div>
             <div className={"bg-white rounded-t-xl h-[calc(100%-40px)] w-full p-1.5 overflow-y-auto"}>
                 {
                     isLoading ?
-                       <div className={"h-full flex justify-center items-center"}>
-                           <Spinner/>
-                       </div>
+                        <div className={"h-full flex justify-center items-center"}>
+                            <Spinner/>
+                        </div>
                         :
-                        (data && data?.data.length > 0 ?
-                            data?.data.map((item: Chats) => (
+                        (filteredChats && filteredChats.length > 0 ?
+                            filteredChats.map((item: Chats) => (
                                 <>
                                     <Button
                                         key={item.id}
@@ -61,7 +78,8 @@ export default function ChatPage() {
                                         <div className={"flex w-full items-end"}>
                                             <div className={"flex flex-col items-start gap-1 w-full"}>
                                                 <div className={"capitalize"}>{item.name}</div>
-                                                <div className={"text-gray-400 text-sm"}>{item.message}</div>
+                                                <div
+                                                    className={"text-gray-400 text-sm"}>{truncateMessage(item.message)}</div>
                                             </div>
                                             <div className={"text-gray-400 w-fit text-xs"}>{item.last_message_at}</div>
                                         </div>

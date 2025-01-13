@@ -182,7 +182,7 @@ const ChatPage = () => {
                         />
                     </div>
                     <div className="ml-3">
-                        <p className="text-sm font-semibold text-gray-800">
+                        <p className="text-sm font-semibold text-gray-800 capitalize">
                             {parsedUser.name}
                         </p>
                         <p className="text-xs text-gray-500">
