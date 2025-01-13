@@ -47,25 +47,31 @@ export default function Home() {
     const [isUserInfoModalOpen, setIsUserInfoModalOpen] = useState(false)
 
     // nearby users
-    const {data: nearbyUsers, isLoading, refetch: fetchNearbyUsers} = useQuery({
-        queryKey: [
-            "/v1/user/nearby-users",
-            selectedJob ? `job_title_ids[]=${selectedJob.id}` : null,
-            selectedIndustry ? `industry_ids[]=${selectedIndustry.id}` : null,
-        ].filter(Boolean),
-        queryFn: ({queryKey}) => {
-            const url = queryKey.filter(Boolean).join("?"); // ایجاد URL معتبر
-            return fetchService({
-                url,
-            });
+    const { data: nearbyUsers, isLoading, refetch: fetchNearbyUsers } = useQuery({
+        queryKey: ["/v1/user/nearby-users"], // فقط آدرس پایه اینجا تعریف می‌شود
+
+        queryFn: ({ queryKey }) => {
+            const baseUrl = queryKey[0];
+
+            // تعریف پارامترها
+            const params = new URLSearchParams();
+            if (selectedJob) params.append("job_title_ids[]", selectedJob.id);
+            if (selectedIndustry) params.append("industry_ids[]",selectedIndustry.id);
+
+            // ایجاد URL نهایی
+            const url = `${baseUrl}?${params.toString()}`;
+
+            return fetchService({ url });
         },
+
         refetchOnMount: false,
         refetchInterval: false,
         refetchIntervalInBackground: false,
         refetchOnReconnect: false,
         refetchOnWindowFocus: false,
-        enabled: false, // دستی فعال می‌شود
+        enabled: false, // به صورت دستی فعال می‌شود
     });
+
 
     useEffect(() => {
         if (location === "on" && (selectedIndustry?.id || selectedJob?.id)) {
@@ -210,7 +216,7 @@ export default function Home() {
                               onSelectionChange={(key: any) => {
                                   if (key === "on") {
                                       getGeoLocationFunction()
-                                  }else {
+                                  } else {
                                       setTabKey("off");
                                   }
                               }}
@@ -218,6 +224,9 @@ export default function Home() {
                             <Tab key="off" title="off" className={"px-10"}/>
                             <Tab key="on" title={<FaPowerOff/>} className={"px-10"}/>
                         </Tabs>
+                        {
+                            sendUserLocation.isPending && <div className={"flex items-center gap-3 text-sm text-gray-500"}><Spinner size={"sm"}/>in progress</div>
+                        }
                     </div>
                 }
                 {location === "on" && isLoading ?
@@ -227,27 +236,28 @@ export default function Home() {
                         {
                             location === "on" && nearbyUsers?.data.length === 0 &&
                             <div className={"h-full p-14 flex flex-col justify-center items-center gap-4"}>
-                                <div className={"w-full flex justify-between items-center gap-2"}>
-                                    <input
-                                        readOnly
-                                        placeholder="Title job"
-                                        className="form-input form-input-sm !m-0"
-                                        value={selectedJob?.name || ""}
-                                        onClick={() => setJobTitleModalOpen(true)}
-                                    />
-                                    <input
-                                        readOnly
-                                        placeholder="Industry"
-                                        className="form-input form-input-sm !m-0"
-                                        value={selectedIndustry?.name || ""}
-                                        onClick={() => setIndustryModalOpen(true)}
-                                    />
-                                </div>
                                 <Image src={no_user_found_image} width={500} alt={"no user found image"}/>
                                 <div className={"font-black text-xl text-center w-full"}>No nearby user found</div>
                                 <div className={"text-center"}>The system is automatically scanning for nearby
                                     users, and they will be displayed if found.
                                 </div>
+                                {
+                                    (selectedIndustry !== null || selectedJob !== null)
+                                    && <Button
+                                        radius={"sm"}
+                                        color={"primary"}
+                                        className={"w-full"}
+                                        onPress={() => {
+                                            setSelectedIndustry(null)
+                                            setSelectedJob(null)
+                                            setTimeout(() => {
+                                                fetchNearbyUsers()
+                                            }, 100);
+                                        }}
+                                    >
+                                        clear filters
+                                    </Button>
+                                }
                             </div>
                         }
 
@@ -263,8 +273,8 @@ export default function Home() {
                                         them by clicking on
                                         their profiles.
                                     </div>
-                                    <div className={"w-full flex justify-between items-center gap-2"}>
-                                    <input
+                                    <div className={"w-full flex justify-between items-center gap-1"}>
+                                        <input
                                             readOnly
                                             placeholder="Title job"
                                             className="form-input form-input-sm !m-0"

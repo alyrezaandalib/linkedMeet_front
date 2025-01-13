@@ -15,6 +15,9 @@ import SendIcon from "@/public/tsx-icons/send";
 
 
 const ChatPage = () => {
+
+    const router = useRouter();
+
     const userId = useSelector((state: any) => state.user.user.id);
 
     // Get user info from route query
@@ -33,7 +36,7 @@ const ChatPage = () => {
     const [metaData, setMetaData] = useState({total_pages: 1, current_page: 1});
     const [currentPage, setCurrentPage] = useState(1);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
-    const [isLoadingInitial, setIsLoadingInitial] = useState(true);  // Track initial loading
+    const [isLoadingInitial, setIsLoadingInitial] = useState(true);
 
     const {data: chatHistoryResponse, isLoading} = getChatHistory(
         parsedUser.id,
@@ -53,26 +56,23 @@ const ChatPage = () => {
     // web socket
     const channelName = `chat.${Math.min(userId, parsedUser.id)}-${Math.max(userId, parsedUser.id)}`;
 
-    // Initialize chat history and meta data
+
     useEffect(() => {
         if (echo) {
             echo.private(channelName)
                 .listen('MessageSent', (data: any) => {
                     console.log('Event received:', data);
+                    setChatHistory((prevHistory = []) => [
+                        ...prevHistory,
+                        {
+                            id: Math.random(),
+                            receiver_id: Math.random(),
+                            sender_id: data.sender_id,
+                            message: data.message,
+                            created_at: data.created_at,
+                        },
+                    ]);
                 });
-        }
-
-        if (chatHistoryResponse && isLoadingInitial) {
-            setChatHistory(chatHistoryResponse.data);
-            setMetaData({
-                total_pages: chatHistoryResponse.meta?.total_pages,
-                current_page: chatHistoryResponse.meta?.current_page,
-            });
-            setCurrentPage(chatHistoryResponse.meta?.current_page); // Set current page
-            setTimeout(() => {
-                scrollToBottom();
-            }, 100);
-            setIsLoadingInitial(false);  // Set to false after initial load
         }
 
         return () => {
@@ -80,6 +80,22 @@ const ChatPage = () => {
                 echo.leaveChannel(channelName);
             }
         };
+    }, []);
+
+    // Initialize chat history and meta data
+    useEffect(() => {
+        if (chatHistoryResponse && isLoadingInitial) {
+            setChatHistory(chatHistoryResponse.data);
+            setMetaData({
+                total_pages: chatHistoryResponse.meta?.total_pages,
+                current_page: chatHistoryResponse.meta?.current_page,
+            });
+            setCurrentPage(chatHistoryResponse.meta?.current_page);
+            setTimeout(() => {
+                scrollToBottom();
+            }, 100);
+            setIsLoadingInitial(false);
+        }
     }, [chatHistoryResponse, isLoadingInitial]);
 
     // Load more messages
@@ -131,16 +147,6 @@ const ChatPage = () => {
         sendMessage.mutate(data, {
             onSuccess: () => {
                 resetField("message");
-                setChatHistory((prevHistory = []) => [
-                    ...prevHistory,
-                    {
-                        id: Math.random(),
-                        receiver_id: data.receiver_id,
-                        sender_id: userId,
-                        message: data.message,
-                        created_at: "",
-                    },
-                ]);
                 setTimeout(() => {
                     scrollToBottom();
                 }, 100);
@@ -150,8 +156,6 @@ const ChatPage = () => {
             },
         });
     };
-
-    const router = useRouter();
 
     // Handle scroll to load more messages
     const handleScroll = (event: React.UIEvent) => {
@@ -202,22 +206,23 @@ const ChatPage = () => {
                         <Spinner/>
                     </div>
                 ) : (
-                    <>
+                    <div className={"sm:my-[100px] my-[64px] mb-[75px] overflow-y-auto h-full"}>
                         {metaData?.current_page < metaData?.total_pages && (
                             <button
-                                className="mt-4 text-sm text-primary"
+                                className="mt-4 text-sm text-primary/60 bg-gray-200 w-full py-4 mb-5"
                                 onClick={loadMoreMessages}
                                 disabled={isLoadingMore}
                             >
-                                {isLoadingMore ? "Loading..." : "Load More Messages"}
+                                {isLoadingMore ? <div className={"flex gap-2 justify-center items-center"}><Spinner size={"sm"}/>Loading...</div> : "Load More Messages"}
                             </button>
                         )}
-                        <div className={"h-full flex flex-col overflow-y-auto justify-end sm:my-[100px] my-[64px] mb-[75px]"}>
+                        <div
+                            className={" flex flex-col gap-4"}>
                             {
                                 chatHistory?.length > 0 ?
                                     chatHistory?.map((chat: Chat) => (
                                         chat?.sender_id === parsedUser?.id ? (
-                                            <div key={chat?.id} className="flex flex-col gap-1 items-start">
+                                            <div key={chat?.id} className="flex flex-col gap-0.5 items-start">
                                                 <div
                                                     className="bg-white text-xs max-w-[80%] text-gray-700 px-4 py-3 rounded-lg shadow-sm rounded-bl-none break-words">
                                                     {chat?.message}
@@ -225,7 +230,7 @@ const ChatPage = () => {
                                                 <p className="text-xs text-gray-400 mt-1">{chat?.created_at}</p>
                                             </div>
                                         ) : (
-                                            <div key={chat?.id} className="flex flex-col gap-1 items-end">
+                                            <div key={chat?.id} className="flex flex-col gap-0.5 items-end">
                                                 <div
                                                     className="bg-primary text-xs max-w-[80%] text-white px-4 py-3 rounded-lg shadow-sm rounded-br-none break-words">
                                                     {chat?.message}
@@ -241,7 +246,7 @@ const ChatPage = () => {
                             }
                         </div>
                         <div ref={chatEndRef}></div>
-                    </>
+                    </div>
                 )}
             </main>
 

@@ -62,7 +62,7 @@ export default function ChatPage() {
                         :
                         (filteredChats && filteredChats.length > 0 ?
                             filteredChats.map((item: Chats) => (
-                                <>
+                                <div key={item.id}>
                                     <Button
                                         key={item.id}
                                         onPress={() => router.push(`/chat/${item.id}?user=${encodeURIComponent(JSON.stringify(item))}`)}
@@ -86,10 +86,11 @@ export default function ChatPage() {
                                     </Button>
                                     <div
                                         className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
-                                </>
+                                </div>
                             )) : <div className={"h-full flex justify-center items-center text-sm text-gray-500"}>
                                 There is no chat to display.
-                            </div>)
+                            </div>
+                        )
                 }
             </div>
         </div>
