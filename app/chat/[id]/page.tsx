@@ -198,7 +198,9 @@ const ChatPage = () => {
                 onScroll={handleScroll}
             >
                 {isLoading ? (
-                    <Spinner />
+                  <div className="flex h-full justify-center items-center">
+                      <Spinner />
+                  </div>
                 ) : (
                     <>
                         {metaData.current_page < metaData.total_pages && (
@@ -210,25 +212,28 @@ const ChatPage = () => {
                                 {isLoadingMore ? "Loading..." : "Load More Messages"}
                             </button>
                         )}
-                        {chatHistory?.map((chat: Chat) => (
-                            chat.sender_id === parsedUser.id ? (
-                                <div key={chat.id} className="flex flex-col gap-1 items-start">
-                                    <div className="bg-white max-w-[80%] text-gray-700 px-4 py-3 rounded-lg shadow-sm rounded-bl-none">
-                                        {chat.message}
-                                    </div>
-                                    <p className="text-xs text-gray-400 mt-1">{chat.created_at}</p>
-                                </div>
-                            ) : (
-                                <div key={chat.id} className="flex flex-col gap-1 items-end">
-                                    <div className="bg-primary text-xs max-w-[80%] text-white px-4 py-3 rounded-lg shadow-sm rounded-br-none">
-                                        {chat.message}
-                                    </div>
-                                    <p className="text-xs text-gray-400 mt-1 text-right">
-                                        {chat.created_at}
-                                    </p>
-                                </div>
-                            )
-                        ))}
+                        {
+                            chatHistory.length > 0 ?
+                                chatHistory?.map((chat: Chat) => (
+                                    chat.sender_id === parsedUser.id ? (
+                                        <div key={chat.id} className="flex flex-col gap-1 items-start">
+                                            <div className="bg-white max-w-[80%] text-gray-700 px-4 py-3 rounded-lg shadow-sm rounded-bl-none">
+                                                {chat.message}
+                                            </div>
+                                            <p className="text-xs text-gray-400 mt-1">{chat.created_at}</p>
+                                        </div>
+                                    ) : (
+                                        <div key={chat.id} className="flex flex-col gap-1 items-end">
+                                            <div className="bg-primary text-xs max-w-[80%] text-white px-4 py-3 rounded-lg shadow-sm rounded-br-none">
+                                                {chat.message}
+                                            </div>
+                                            <p className="text-xs text-gray-400 mt-1 text-right">
+                                                {chat.created_at}
+                                            </p>
+                                        </div>
+                                    )
+                                )) : <div className={"h-full flex justify-center items-center text-sm text-gray-500"}>No messages here yet...</div>
+                        }
                         <div ref={chatEndRef}></div>
                     </>
                 )}

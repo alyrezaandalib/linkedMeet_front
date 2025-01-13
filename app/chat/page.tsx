@@ -69,7 +69,7 @@ export default function ChatPage() {
                                     <div
                                         className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
                                 </>
-                            )) : <div className={"h-full flex justify-center items-center"}>
+                            )) : <div className={"h-full flex justify-center items-center text-sm text-gray-500"}>
                                 There is no chat to display.
                             </div>)
                 }

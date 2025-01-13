@@ -82,22 +82,22 @@ export default function Home() {
             return;
         }
 
-        onSubmitLocation({latitude: 37.7749, longitude: -122.4194});
-        // if ("geolocation" in navigator) {
-        //     navigator.geolocation.getCurrentPosition(
-        //         (position) => {
-        //             const {latitude, longitude} = position.coords;
-        //             // onSubmitLocation({latitude, longitude});
-        //         },
-        //         (error) => {
-        //             toast.error(`Error fetching location: ${error.message}`);
-        //             setLocation("off")
-        //         }
-        //     );
-        // } else {
-        //     toast.error("Geolocation is not supported by this browser.");
-        //     setLocation("off")
-        // }
+        // onSubmitLocation({latitude: 37.7749, longitude: -122.4194});
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const {latitude, longitude} = position.coords;
+                    onSubmitLocation({latitude, longitude});
+                },
+                (error) => {
+                    toast.error(`Error fetching location: ${error.message}`);
+                    setLocation("off")
+                }
+            );
+        } else {
+            toast.error("Geolocation is not supported by this browser.");
+            setLocation("off")
+        }
     }
 
     useEffect(() => {
@@ -199,7 +199,7 @@ export default function Home() {
                         </Tabs>
                     </div>
                 }
-                {isLoading ?
+                {location === "on" && isLoading ?
                     <Spinner/>
                     : <>
                         {/* when not found user nearby ...*/}
@@ -330,7 +330,7 @@ export default function Home() {
                             <div
                                 className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mt-3"></div>
                             <ModalBody className={"p-3"}>
-                                <div className="flex flex-col items-center gap-4">
+                                <div className="flex flex-col items-center gap-2.5">
                                     <div className={"h-16 w-16 border border-gray-200 rounded-full"}>
                                         <img src={selectedUser.avatar} alt={selectedUser.name}
                                              className={"rounded-full h-full w-full"}/>
