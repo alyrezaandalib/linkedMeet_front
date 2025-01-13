@@ -1,13 +1,15 @@
 import {Button, Modal, ModalBody, ModalContent, ModalHeader} from "@nextui-org/react";
+// icons
 import {IoMdCheckmark} from "react-icons/io";
+import {IoIosClose} from "react-icons/io";
 
 interface SelectableModalProps {
     title: string;
     items: string[];
-    selectedItem: string | null;
+    selectedItem: any;
     isOpen: boolean;
     onClose: () => void;
-    onSelect: (item: string) => void;
+    onSelect: (item: string | null) => void;
 }
 
 export default function SelectableModal({title, items, selectedItem, isOpen, onClose, onSelect}: SelectableModalProps) {
@@ -20,8 +22,22 @@ export default function SelectableModal({title, items, selectedItem, isOpen, onC
                         <div
                             className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mt-3"></div>
                         <ModalBody>
+                            {
+                                selectedItem?.name && <>
+                                    <div
+                                        className={"font-semibold text-sm flex justify-between items-center px-6"}>{selectedItem?.name}
+                                        <button className={"!p-0"} onClick={() => {
+                                            onSelect(null)
+                                        }}>
+                                            <IoIosClose className={"text-2xl"}/>
+                                        </button>
+                                    </div>
+                                    <div
+                                        className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+                                </>
+                            }
                             <div className="flex flex-col">
-                                {items?.map((item : any, index) => (
+                                {items?.map((item: any, index) => (
                                     <div key={index}>
                                         <Button
                                             onPress={() => {
@@ -31,7 +47,7 @@ export default function SelectableModal({title, items, selectedItem, isOpen, onC
                                             variant="light"
                                             size="lg"
                                             radius="sm"
-                                            className={"flex justify-between py-6 w-full"}
+                                            className={"flex justify-between py-6 w-full text-sm"}
                                         >
                                             {item.name}
                                             {selectedItem === item && (

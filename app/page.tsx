@@ -227,6 +227,22 @@ export default function Home() {
                         {
                             location === "on" && nearbyUsers?.data.length === 0 &&
                             <div className={"h-full p-14 flex flex-col justify-center items-center gap-4"}>
+                                <div className={"w-full flex justify-between items-center gap-2"}>
+                                    <input
+                                        readOnly
+                                        placeholder="Title job"
+                                        className="form-input form-input-sm !m-0"
+                                        value={selectedJob?.name || ""}
+                                        onClick={() => setJobTitleModalOpen(true)}
+                                    />
+                                    <input
+                                        readOnly
+                                        placeholder="Industry"
+                                        className="form-input form-input-sm !m-0"
+                                        value={selectedIndustry?.name || ""}
+                                        onClick={() => setIndustryModalOpen(true)}
+                                    />
+                                </div>
                                 <Image src={no_user_found_image} width={500} alt={"no user found image"}/>
                                 <div className={"font-black text-xl text-center w-full"}>No nearby user found</div>
                                 <div className={"text-center"}>The system is automatically scanning for nearby
@@ -248,7 +264,7 @@ export default function Home() {
                                         their profiles.
                                     </div>
                                     <div className={"w-full flex justify-between items-center gap-2"}>
-                                        <input
+                                    <input
                                             readOnly
                                             placeholder="Title job"
                                             className="form-input form-input-sm !m-0"
@@ -358,13 +374,6 @@ export default function Home() {
                                     </div>
                                     <div className={"font-mono"}>{selectedUser.name}</div>
                                     <div className={"flex flex-col gap-4 text-xs w-full"}>
-                                        <div className={"flex gap-2 bg-white p-1"}>
-                                            <div className={"font-semibold w-[50%] text-nowrap"}>
-                                                company activity type
-                                            </div>
-                                            <div
-                                                className={"text-wrap"}> {selectedUser.company_activity_types}</div>
-                                        </div>
                                         <div className={"flex gap-2"}>
                                             <div className={"font-semibold w-[50%] p-1"}> industry:</div>
                                             <div className={"text-wrap"}>{selectedUser.industry}</div>
