@@ -21,7 +21,6 @@ import SendIcon from "@/public/tsx-icons/send";
 import {IoDocumentTextOutline} from "react-icons/io5";
 
 
-
 export default function Home() {
 
     const router = useRouter()
@@ -83,22 +82,22 @@ export default function Home() {
             return;
         }
 
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const {latitude, longitude} = position.coords;
-                    onSubmitLocation({latitude, longitude});
-                    // onSubmitLocation({latitude: 37.7749, longitude: -122.4194});
-                },
-                (error) => {
-                    toast.error(`Error fetching location: ${error.message}`);
-                    setLocation("off")
-                }
-            );
-        } else {
-            toast.error("Geolocation is not supported by this browser.");
-            setLocation("off")
-        }
+        onSubmitLocation({latitude: 37.7749, longitude: -122.4194});
+        // if ("geolocation" in navigator) {
+        //     navigator.geolocation.getCurrentPosition(
+        //         (position) => {
+        //             const {latitude, longitude} = position.coords;
+        //             // onSubmitLocation({latitude, longitude});
+        //         },
+        //         (error) => {
+        //             toast.error(`Error fetching location: ${error.message}`);
+        //             setLocation("off")
+        //         }
+        //     );
+        // } else {
+        //     toast.error("Geolocation is not supported by this browser.");
+        //     setLocation("off")
+        // }
     }
 
     useEffect(() => {
@@ -200,88 +199,95 @@ export default function Home() {
                         </Tabs>
                     </div>
                 }
-                {/* when not found user nearby ...*/}
-                {
-                    location === "on" && nearbyUsers?.data.length === 0 &&
-                    <div className={"h-full p-14 flex flex-col justify-center items-center gap-4"}>
-                        <Image src={no_user_found_image} width={500} alt={"no user found image"}/>
-                        <div className={"font-black text-xl text-center w-full"}>No nearby user found</div>
-                        <div className={"text-center"}>The system is automatically scanning for nearby
-                            users, and they will be displayed if found.
-                        </div>
-                    </div>
-                }
-                {/*when found user nearby ...*/}
-                {
-                    location === "on" && nearbyUsers?.data.length > 0 && (
-                        isLoading ?
-                            <Spinner/>
-                            :
-                            <div
-                                className={"h-full p-4 bg-[#f9f9f9] w-full overflow-y-auto flex flex-col items-center gap-4"}>
-                                <Image src={users_image} alt={"users"}/>
-                                <div className={"font-black text-xl text-center w-full"}>Congratulations!</div>
-                                <div className={"text-center text-gray-600"}>
-                                    The following people have been found near you. You can start a conversation with
-                                    them by clicking on
-                                    their profiles.
-                                </div>
-                                <div className={"w-full flex justify-between items-center gap-2"}>
-                                    <input
-                                        readOnly
-                                        placeholder="Title job"
-                                        className="form-input form-input-sm !m-0"
-                                        value={selectedJob?.name || ""}
-                                        onClick={() => setJobTitleModalOpen(true)}
-                                    />
-                                    <input
-                                        readOnly
-                                        placeholder="Industry"
-                                        className="form-input form-input-sm !m-0"
-                                        value={selectedIndustry?.name || ""}
-                                        onClick={() => setIndustryModalOpen(true)}
-                                    />
-                                </div>
-                                <div className={"grid grid-cols-2 gap-2.5 w-full"}>
-                                    {nearbyUsers?.data.map((user: User) => (
-                                        <div
-                                            key={user.id}
-                                            className={
-                                                "bg-white shadow-sm flex flex-col items-center justify-center gap-2 p-4 rounded-lg"
-                                            }
-                                        >
-                                            <div
-                                                className={"w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center"}>
-                                                <img alt={user.name} src={user.avatar}
-                                                     className={"rounded-full h-full w-full"}/>
-                                            </div>
-                                            <div
-                                                className={"font-medium text-center text-gray-800 capitalize"}>{user.name}
-                                            </div>
-
-                                            <div
-                                                className={"text-xs text-gray-500 text-center"}>{user.job_title + " / " + user.industry}
-                                            </div>
-
-                                            <div className={"flex gap-1"}>
-                                                <Button size={'sm'} variant={"bordered"}
-                                                        onPress={() => {
-                                                            setSelectedUser(user)
-                                                            setIsUserInfoModalOpen(true)
-                                                        }}>
-                                                    <IoDocumentTextOutline className={"text-lg"}/>
-                                                </Button>
-                                                <Button onPress={() => router.push(`/chat/${user.id}?user=${encodeURIComponent(JSON.stringify(user))}`)} size={"sm"}
-                                                        variant={"bordered"}>
-                                                    <SendIcon className={"text-black"}/>
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    ))}
+                {isLoading ?
+                    <Spinner/>
+                    : <>
+                        {/* when not found user nearby ...*/}
+                        {
+                            location === "on" && nearbyUsers?.data.length === 0 &&
+                            <div className={"h-full p-14 flex flex-col justify-center items-center gap-4"}>
+                                <Image src={no_user_found_image} width={500} alt={"no user found image"}/>
+                                <div className={"font-black text-xl text-center w-full"}>No nearby user found</div>
+                                <div className={"text-center"}>The system is automatically scanning for nearby
+                                    users, and they will be displayed if found.
                                 </div>
                             </div>
-                    )
+                        }
+
+                        {/*when found user nearby ...*/}
+                        {
+                            location === "on" && nearbyUsers?.data.length > 0 && (
+                                <div
+                                    className={"h-full p-4 bg-[#f9f9f9] w-full overflow-y-auto flex flex-col items-center gap-4"}>
+                                    <Image src={users_image} alt={"users"}/>
+                                    <div className={"font-black text-xl text-center w-full"}>Congratulations!</div>
+                                    <div className={"text-center text-gray-600"}>
+                                        The following people have been found near you. You can start a conversation with
+                                        them by clicking on
+                                        their profiles.
+                                    </div>
+                                    <div className={"w-full flex justify-between items-center gap-2"}>
+                                        <input
+                                            readOnly
+                                            placeholder="Title job"
+                                            className="form-input form-input-sm !m-0"
+                                            value={selectedJob?.name || ""}
+                                            onClick={() => setJobTitleModalOpen(true)}
+                                        />
+                                        <input
+                                            readOnly
+                                            placeholder="Industry"
+                                            className="form-input form-input-sm !m-0"
+                                            value={selectedIndustry?.name || ""}
+                                            onClick={() => setIndustryModalOpen(true)}
+                                        />
+                                    </div>
+                                    <div className={"grid grid-cols-2 gap-2.5 w-full"}>
+                                        {nearbyUsers?.data.map((user: User) => (
+                                            <div
+                                                key={user.id}
+                                                className={
+                                                    "bg-white shadow-sm flex flex-col items-center justify-center gap-2 p-4 rounded-lg"
+                                                }
+                                            >
+                                                <div
+                                                    className={"w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center"}>
+                                                    <img alt={user.name} src={user.avatar}
+                                                         className={"rounded-full h-full w-full"}/>
+                                                </div>
+                                                <div
+                                                    className={"font-medium text-center text-gray-800 capitalize"}>{user.name}
+                                                </div>
+
+                                                <div
+                                                    className={"text-xs text-gray-500 text-center"}>{user.job_title + " / " + user.industry}
+                                                </div>
+
+                                                <div className={"flex gap-1"}>
+                                                    <Button size={'sm'} variant={"bordered"}
+                                                            onPress={() => {
+                                                                setSelectedUser(user)
+                                                                setIsUserInfoModalOpen(true)
+                                                            }}>
+                                                        <IoDocumentTextOutline className={"text-lg"}/>
+                                                    </Button>
+                                                    <Button
+                                                        onPress={() => router.push(`/chat/${user.id}?user=${encodeURIComponent(JSON.stringify(user))}`)}
+                                                        size={"sm"}
+                                                        variant={"bordered"}>
+                                                        <SendIcon className={"text-black"}/>
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )
+                        }
+                    </>
                 }
+
+
             </div>
             {
                 getIndustriesListResponse.data?.data && (
@@ -326,7 +332,8 @@ export default function Home() {
                             <ModalBody className={"p-3"}>
                                 <div className="flex flex-col items-center gap-4">
                                     <div className={"h-16 w-16 border border-gray-200 rounded-full"}>
-                                        <img src={selectedUser.avatar} alt={selectedUser.name}  className={"rounded-full h-full w-full"}/>
+                                        <img src={selectedUser.avatar} alt={selectedUser.name}
+                                             className={"rounded-full h-full w-full"}/>
                                     </div>
                                     <div className={"font-mono"}>{selectedUser.name}</div>
                                     <div className={"flex flex-col gap-4 text-xs w-full"}>
@@ -347,8 +354,9 @@ export default function Home() {
                                         </div>
                                     </div>
                                 </div>
-                                <Button onPress={() => router.push(`/chat/${selectedUser.id}?user=${encodeURIComponent(JSON.stringify(selectedUser))}`)}
-                                        className={"w-full mt-4"} color={"primary"}>
+                                <Button
+                                    onPress={() => router.push(`/chat/${selectedUser.id}?user=${encodeURIComponent(JSON.stringify(selectedUser))}`)}
+                                    className={"w-full mt-4"} color={"primary"}>
                                     <SendIcon/>Chat
                                 </Button>
                             </ModalBody>
