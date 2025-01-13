@@ -30,13 +30,32 @@ export default function Home() {
     // location state
     const [location, setLocation]: any = useState(getCookie("isLocationSet") === "true" ? "on" : "off");
 
+    // selected industry and job_title
+    const [selectedIndustry, setSelectedIndustry] = useState<any>(null);
+    const [selectedJob, setSelectedJob] = useState<any>(null);
+
+    // get industries and job-titles list
+    const getIndustriesListResponse = getIndustriesList()
+    const getJobTitlesListResponse = getJobTitlesList()
+
+    // modals
+    const [isIndustryModalOpen, setIndustryModalOpen] = useState(false);
+    const [isJobTitleModalOpen, setJobTitleModalOpen] = useState(false);
+    const [isUserInfoModalOpen, setIsUserInfoModalOpen] = useState(false)
+
     // nearby users
     const {data: nearbyUsers, isLoading, refetch: fetchNearbyUsers} = useQuery({
-        queryKey: ["/v1/user/nearby-users"],
-        queryFn: ({queryKey, signal}) =>
-            fetchService({
-                url: queryKey.join(""),
-            }),
+        queryKey: [
+            "/v1/user/nearby-users",
+            selectedJob ? `job_title_ids[]=${selectedJob.id}` : null,
+            selectedIndustry ? `industry_ids[]=${selectedIndustry.id}` : null,
+        ].filter(Boolean),
+        queryFn: ({queryKey}) => {
+            const url = queryKey.filter(Boolean).join("?"); // ایجاد URL معتبر
+            return fetchService({
+                url,
+            });
+        },
         refetchOnMount: false,
         refetchInterval: false,
         refetchIntervalInBackground: false,
@@ -45,6 +64,11 @@ export default function Home() {
         enabled: false, // دستی فعال می‌شود
     });
 
+    useEffect(() => {
+        fetchNearbyUsers()
+    }, [selectedIndustry, selectedJob]);
+
+    // update gps status
     const updateGpsStatus = async (isGpsEnabled: boolean) => {
         const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/user/gps-status`, {
             method: 'PATCH',
@@ -76,13 +100,10 @@ export default function Home() {
     }, []);
 
     const getGeoLocationFunction = () => {
-
         if (!navigator.geolocation) {
             toast.error('Your device does not support GPS.');
             return;
         }
-
-        // onSubmitLocation({latitude: 37.7749, longitude: -122.4194});
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -139,20 +160,6 @@ export default function Home() {
             }
         });
     };
-
-
-    // get industries and job-titles list
-    const getIndustriesListResponse = getIndustriesList()
-    const getJobTitlesListResponse = getJobTitlesList()
-
-    // selected industry and job_title
-    const [selectedIndustry, setSelectedIndustry] = useState<any>(null);
-    const [selectedJob, setSelectedJob] = useState<any>(null);
-
-    // modals
-    const [isIndustryModalOpen, setIndustryModalOpen] = useState(false);
-    const [isJobTitleModalOpen, setJobTitleModalOpen] = useState(false);
-    const [isUserInfoModalOpen, setIsUserInfoModalOpen] = useState(false)
 
     return (
         <div className={"w-full h-screen"}>

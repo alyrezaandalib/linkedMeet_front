@@ -217,14 +217,14 @@ const ChatPage = () => {
                                 chatHistory?.map((chat: Chat) => (
                                     chat.sender_id === parsedUser.id ? (
                                         <div key={chat.id} className="flex flex-col gap-1 items-start">
-                                            <div className="bg-white max-w-[80%] text-gray-700 px-4 py-3 rounded-lg shadow-sm rounded-bl-none">
+                                            <div className="bg-white max-w-[80%] text-gray-700 px-4 py-3 rounded-lg shadow-sm rounded-bl-none break-words">
                                                 {chat.message}
                                             </div>
                                             <p className="text-xs text-gray-400 mt-1">{chat.created_at}</p>
                                         </div>
                                     ) : (
                                         <div key={chat.id} className="flex flex-col gap-1 items-end">
-                                            <div className="bg-primary text-xs max-w-[80%] text-white px-4 py-3 rounded-lg shadow-sm rounded-br-none">
+                                            <div className="bg-primary text-xs max-w-[80%] text-white px-4 py-3 rounded-lg shadow-sm rounded-br-none break-words">
                                                 {chat.message}
                                             </div>
                                             <p className="text-xs text-gray-400 mt-1 text-right">
