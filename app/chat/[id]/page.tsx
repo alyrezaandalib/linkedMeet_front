@@ -1,18 +1,17 @@
 "use client";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Button, Spinner } from "@nextui-org/react";
-import useService, { Message, Chat } from "./service";
-import { SubmitHandler, useForm } from "react-hook-form";
+import {useRouter, useSearchParams} from "next/navigation";
+import {Button, Spinner} from "@nextui-org/react";
+import useService, {Message, Chat} from "./service";
+import {SubmitHandler, useForm} from "react-hook-form";
 import toast from "react-hot-toast";
-import { useEffect, useState, useRef } from "react";
-import { useSelector } from "react-redux";
-import { getCookie } from "cookies-next";
-import { echo } from '@/utils/echo';
+import {useEffect, useState, useRef} from "react";
+import {useSelector} from "react-redux";
+import {getCookie} from "cookies-next";
+import {echo} from '@/utils/echo';
 // icons
-import { FaUserCircle } from "react-icons/fa";
-import { IoIosArrowBack } from "react-icons/io";
+import {FaUserCircle} from "react-icons/fa";
+import {IoIosArrowBack} from "react-icons/io";
 import SendIcon from "@/public/tsx-icons/send";
-
 
 
 const ChatPage = () => {
@@ -24,19 +23,19 @@ const ChatPage = () => {
     const parsedUser = user ? JSON.parse(decodeURIComponent(user)) : null;
 
     // Form handling
-    const { register, handleSubmit, resetField } = useForm<Message>();
+    const {register, handleSubmit, resetField} = useForm<Message>();
 
     // Service hooks
-    const { getChatHistory, sendMessage } = useService();
+    const {getChatHistory, sendMessage} = useService();
 
     // Chat state
     const [chatHistory, setChatHistory] = useState<any>([]);
-    const [metaData, setMetaData] = useState({ total_pages: 1, current_page: 1 });
+    const [metaData, setMetaData] = useState({total_pages: 1, current_page: 1});
     const [currentPage, setCurrentPage] = useState(1);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [isLoadingInitial, setIsLoadingInitial] = useState(true);  // Track initial loading
 
-    const { data: chatHistoryResponse, isLoading } = getChatHistory(
+    const {data: chatHistoryResponse, isLoading} = getChatHistory(
         parsedUser.id,
         currentPage
     );
@@ -44,7 +43,7 @@ const ChatPage = () => {
     // Scroll to bottom when new data is loaded
     const scrollToBottom = () => {
         if (chatEndRef.current) {
-            chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+            chatEndRef.current.scrollIntoView({behavior: "smooth"});
         }
     };
 
@@ -66,10 +65,10 @@ const ChatPage = () => {
         if (chatHistoryResponse && isLoadingInitial) {
             setChatHistory(chatHistoryResponse.data);
             setMetaData({
-                total_pages: chatHistoryResponse.meta.total_pages,
-                current_page: chatHistoryResponse.meta.current_page,
+                total_pages: chatHistoryResponse.meta?.total_pages,
+                current_page: chatHistoryResponse.meta?.current_page,
             });
-            setCurrentPage(chatHistoryResponse.meta.current_page); // Set current page
+            setCurrentPage(chatHistoryResponse.meta?.current_page); // Set current page
             setTimeout(() => {
                 scrollToBottom();
             }, 100);
@@ -100,7 +99,7 @@ const ChatPage = () => {
     };
 
     const loadMoreMessages = async () => {
-        if (currentPage >= metaData.total_pages) {
+        if (currentPage >= metaData?.total_pages) {
             toast.error("No more messages to load.");
             return;
         }
@@ -111,10 +110,10 @@ const ChatPage = () => {
         try {
             const response = await fetchChatHistory(parsedUser.id, nextPage);
             if (response?.data?.length) {
-                setChatHistory((prevHistory: any) => [ ...response.data,...prevHistory]);
+                setChatHistory((prevHistory: any) => [...response.data, ...prevHistory]);
                 setMetaData({
-                    total_pages: response.meta.total_pages,
-                    current_page: response.meta.current_page,
+                    total_pages: response?.meta?.total_pages,
+                    current_page: response?.meta?.current_page,
                 });
                 setCurrentPage(nextPage);
             }
@@ -157,7 +156,7 @@ const ChatPage = () => {
     // Handle scroll to load more messages
     const handleScroll = (event: React.UIEvent) => {
         const bottom = event.currentTarget.scrollHeight === event.currentTarget.scrollTop + event.currentTarget.clientHeight;
-        if (bottom && currentPage < metaData.total_pages) {
+        if (bottom && currentPage < metaData?.total_pages) {
             loadMoreMessages();
         }
     };
@@ -170,23 +169,24 @@ const ChatPage = () => {
                     onClick={() => router.back()}
                     className="rounded-lg btn !shadow !p-2 !border-none hover:bg-gray-200"
                 >
-                    <IoIosArrowBack className={"text-lg"} />
+                    <IoIosArrowBack className={"text-lg"}/>
                 </button>
                 <div className="flex items-center ml-4">
-                    <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                        <FaUserCircle className="text-gray-400 h-8 w-8" />
+                    <div
+                        className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                        <FaUserCircle className="text-gray-400 h-8 w-8"/>
                         <img
-                            alt={parsedUser.name}
-                            src={parsedUser.avatar}
+                            alt={parsedUser?.name}
+                            src={parsedUser?.avatar}
                             className={"rounded-full h-full w-full"}
                         />
                     </div>
                     <div className="ml-3">
                         <p className="text-sm font-semibold text-gray-800 capitalize">
-                            {parsedUser.name}
+                            {parsedUser?.name}
                         </p>
                         <p className="text-xs text-gray-500">
-                            {parsedUser.job_title} / {parsedUser.industry}
+                            {parsedUser?.job_title} / {parsedUser?.industry}
                         </p>
                     </div>
                 </div>
@@ -194,16 +194,16 @@ const ChatPage = () => {
 
             {/* Chat Messages */}
             <main
-                className="flex flex-col gap-4 flex-1 overflow-y-auto px-4 py-6 bg-gray-50 my-[64px] mb-[75px]"
+                className="flex flex-col gap-4 flex-1 justify-end px-4 py-6 bg-gray-50"
                 onScroll={handleScroll}
             >
                 {isLoading ? (
-                  <div className="flex h-full justify-center items-center">
-                      <Spinner />
-                  </div>
+                    <div className="flex h-full justify-center items-center">
+                        <Spinner/>
+                    </div>
                 ) : (
                     <>
-                        {metaData.current_page < metaData.total_pages && (
+                        {metaData?.current_page < metaData?.total_pages && (
                             <button
                                 className="mt-4 text-sm text-primary"
                                 onClick={loadMoreMessages}
@@ -212,28 +212,34 @@ const ChatPage = () => {
                                 {isLoadingMore ? "Loading..." : "Load More Messages"}
                             </button>
                         )}
-                        {
-                            chatHistory.length > 0 ?
-                                chatHistory?.map((chat: Chat) => (
-                                    chat.sender_id === parsedUser.id ? (
-                                        <div key={chat.id} className="flex flex-col gap-1 items-start">
-                                            <div className="bg-white max-w-[80%] text-gray-700 px-4 py-3 rounded-lg shadow-sm rounded-bl-none break-words">
-                                                {chat.message}
+                        <div className={"h-full flex flex-col overflow-y-auto justify-end sm:my-[100px] my-[64px] mb-[75px]"}>
+                            {
+                                chatHistory?.length > 0 ?
+                                    chatHistory?.map((chat: Chat) => (
+                                        chat?.sender_id === parsedUser?.id ? (
+                                            <div key={chat?.id} className="flex flex-col gap-1 items-start">
+                                                <div
+                                                    className="bg-white text-xs max-w-[80%] text-gray-700 px-4 py-3 rounded-lg shadow-sm rounded-bl-none break-words">
+                                                    {chat?.message}
+                                                </div>
+                                                <p className="text-xs text-gray-400 mt-1">{chat?.created_at}</p>
                                             </div>
-                                            <p className="text-xs text-gray-400 mt-1">{chat.created_at}</p>
-                                        </div>
-                                    ) : (
-                                        <div key={chat.id} className="flex flex-col gap-1 items-end">
-                                            <div className="bg-primary text-xs max-w-[80%] text-white px-4 py-3 rounded-lg shadow-sm rounded-br-none break-words">
-                                                {chat.message}
+                                        ) : (
+                                            <div key={chat?.id} className="flex flex-col gap-1 items-end">
+                                                <div
+                                                    className="bg-primary text-xs max-w-[80%] text-white px-4 py-3 rounded-lg shadow-sm rounded-br-none break-words">
+                                                    {chat?.message}
+                                                </div>
+                                                <p className="text-xs text-gray-400 mt-1 text-right">
+                                                    {chat?.created_at}
+                                                </p>
                                             </div>
-                                            <p className="text-xs text-gray-400 mt-1 text-right">
-                                                {chat.created_at}
-                                            </p>
-                                        </div>
-                                    )
-                                )) : <div className={"h-full flex justify-center items-center text-sm text-gray-500"}>No messages here yet...</div>
-                        }
+                                        )
+                                    )) :
+                                    <div className={"h-full flex justify-center items-center text-sm text-gray-500"}>No
+                                        messages here yet...</div>
+                            }
+                        </div>
                         <div ref={chatEndRef}></div>
                     </>
                 )}
@@ -242,22 +248,22 @@ const ChatPage = () => {
             {/* Message Input */}
             <footer>
                 <form
-                    className="flex items-center gap-2 px-4 py-3 border-t fixed bottom-0 w-full"
+                    className="flex items-center gap-2 px-4 py-3 border-t fixed bottom-0 w-full bg-white"
                     onSubmit={handleSubmit(onSubmit)}
                 >
                     <input
-                        {...register("message", { required: true })}
+                        {...register("message", {required: true})}
                         className={"form-input"}
                         placeholder={"Write a message..."}
                     />
                     <Button
-                        isDisabled={sendMessage.isPending}
+                        isDisabled={sendMessage?.isPending}
                         type={"submit"}
                         isIconOnly
                         radius={"full"}
                         variant={"light"}
                     >
-                        <SendIcon />
+                        <SendIcon/>
                     </Button>
                 </form>
             </footer>

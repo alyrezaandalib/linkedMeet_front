@@ -68,7 +68,7 @@ export default function Home() {
     });
 
     useEffect(() => {
-        if (selectedIndustry?.id || selectedJob?.id) {
+        if (location === "on" && (selectedIndustry?.id || selectedJob?.id)) {
             fetchNearbyUsers()
         }
     }, [selectedIndustry, selectedJob]);
