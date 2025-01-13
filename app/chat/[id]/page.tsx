@@ -9,7 +9,6 @@ import {useSelector} from "react-redux";
 import {getCookie} from "cookies-next";
 import {echo} from '@/utils/echo';
 // icons
-import {FaUserCircle} from "react-icons/fa";
 import {IoIosArrowBack} from "react-icons/io";
 import SendIcon from "@/public/tsx-icons/send";
 
@@ -61,7 +60,6 @@ const ChatPage = () => {
         if (echo) {
             echo.private(channelName)
                 .listen('MessageSent', (data: any) => {
-                    console.log('Event received:', data);
                     setChatHistory((prevHistory = []) => [
                         ...prevHistory,
                         {
@@ -72,6 +70,9 @@ const ChatPage = () => {
                             created_at: data.created_at,
                         },
                     ]);
+                    setTimeout(() => {
+                        scrollToBottom();
+                    }, 100);
                 });
         }
 
@@ -147,9 +148,6 @@ const ChatPage = () => {
         sendMessage.mutate(data, {
             onSuccess: () => {
                 resetField("message");
-                setTimeout(() => {
-                    scrollToBottom();
-                }, 100);
             },
             onError: (error) => {
                 toast.error(error.message);
@@ -178,7 +176,6 @@ const ChatPage = () => {
                 <div className="flex items-center ml-4">
                     <div
                         className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                        <FaUserCircle className="text-gray-400 h-8 w-8"/>
                         <img
                             alt={parsedUser?.name}
                             src={parsedUser?.avatar}
