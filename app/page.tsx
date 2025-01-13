@@ -30,6 +30,9 @@ export default function Home() {
     // location state
     const [location, setLocation]: any = useState(getCookie("isLocationSet") === "true" ? "on" : "off");
 
+    // selected tab
+    const [tabKey, setTabKey] = useState("off")
+
     // selected industry and job_title
     const [selectedIndustry, setSelectedIndustry] = useState<any>(null);
     const [selectedJob, setSelectedJob] = useState<any>(null);
@@ -65,7 +68,9 @@ export default function Home() {
     });
 
     useEffect(() => {
-        fetchNearbyUsers()
+        if (selectedIndustry?.id || selectedJob?.id) {
+            fetchNearbyUsers()
+        }
     }, [selectedIndustry, selectedJob]);
 
     // update gps status
@@ -112,11 +117,13 @@ export default function Home() {
                 },
                 (error) => {
                     toast.error(`Error fetching location: ${error.message}`);
+                    setTabKey("off")
                     setLocation("off")
                 }
             );
         } else {
             toast.error("Geolocation is not supported by this browser.");
+            setTabKey("off")
             setLocation("off")
         }
     }
@@ -155,6 +162,7 @@ export default function Home() {
                 setLocation("on")
             },
             onError: (error) => {
+                setTabKey("off")
                 setLocation("off")
                 toast.error(error.message);
             }
@@ -193,12 +201,18 @@ export default function Home() {
                         <div className={"text-center"}>To find nearby people, please enable location
                             sharing.
                         </div>
-                        <Tabs aria-label="location" defaultSelectedKey="off" size={"lg"} radius={"sm"}
+                        <Tabs isDisabled={sendUserLocation.isPending}
+                              aria-label="location"
+                              defaultSelectedKey="off"
+                              size={"lg"}
+                              radius={"sm"}
+                              selectedKey={tabKey}
                               onSelectionChange={(key: any) => {
                                   if (key === "on") {
                                       getGeoLocationFunction()
+                                  }else {
+                                      setTabKey("off");
                                   }
-
                               }}
                         >
                             <Tab key="off" title="off" className={"px-10"}/>
