@@ -2,7 +2,7 @@
 import Image from "next/image";
 import useService, {Location, User} from "./service"
 import DrawerMenu from "@/components/layouts/drawer-menu";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {Button, Modal, ModalBody, ModalContent, ModalHeader, Spinner, Tab, Tabs} from "@nextui-org/react";
 import toast from "react-hot-toast";
 import {SubmitHandler} from "react-hook-form";
@@ -27,8 +27,10 @@ export default function Home() {
     // services
     const {sendUserLocation, getJobTitlesList, getIndustriesList} = useService()
 
-    // location state
-    const [location, setLocation]: any = useState(getCookie("isLocationSet") === "true" ? "on" : "off");
+    // GPS
+    const [isGpsOn, setIsGpsOn] = useState(getCookie("isLocationSet") === "true");
+    const [watchId, setWatchId] = useState(null);
+    const lastSentTime = useRef(0);
 
     // selected tab
     const [tabKey, setTabKey] = useState("off")
@@ -77,38 +79,6 @@ export default function Home() {
         }
     }, [selectedIndustry, selectedJob]);
 
-    let intervalId: any;
-
-    const getGeoLocationFunction = () => {
-        if (!navigator.geolocation) {
-            toast.error('Your device does not support GPS.');
-            return;
-        }
-
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const {latitude, longitude} = position.coords;
-                    onSubmitLocation({latitude, longitude});
-                },
-                (error) => {
-                    if (error.code === error.PERMISSION_DENIED) {
-                        toast.error('Please enable GPS access.')
-                    } else {
-                        toast.error('Error in retrieving location.');
-                    }
-
-                    setTabKey("off")
-                    setLocation("off")
-                }
-            );
-        } else {
-            toast.error("Geolocation is not supported by this device.");
-            setTabKey("off")
-            setLocation("off")
-        }
-    }
-
     // update gps status
     const updateGpsStatus = async (isGpsEnabled: boolean) => {
         const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/user/gps-status`, {
@@ -122,33 +92,67 @@ export default function Home() {
                 is_gps_enabled: isGpsEnabled,
             }),
         });
+    };
 
-        if (response.status === 200 && isGpsEnabled) {
-            intervalId = setInterval(() => {
-                getGeoLocationFunction()
-            }, 5000);
-            await fetchNearbyUsers();
+    const startTracking = () => {
+        if (!navigator.geolocation) {
+            toast.error('Your device does not support GPS.');
+            setTabKey("off")
+            setIsGpsOn(false)
+            return;
+        }
+
+        const id = navigator.geolocation.watchPosition(
+            (position) => {
+                const now = Date.now();
+                if (now - lastSentTime.current >= 10000) {
+                    const {latitude, longitude} = position.coords;
+                    onSubmitLocation({latitude, longitude});
+                    lastSentTime.current = now;
+                }
+
+            },
+            (error) => {
+                if (error.code === error.PERMISSION_DENIED) {
+                    toast.error('Please enable GPS access.')
+                } else {
+                    toast.error('Error in retrieving location.' + error.message);
+                }
+
+                setTabKey("off")
+                setIsGpsOn(false)
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0,
+            }
+        );
+
+        // @ts-ignore
+        setWatchId(id);
+    };
+
+    const stopTracking = () => {
+        if (watchId !== null) {
+            navigator.geolocation.clearWatch(watchId);
+            setWatchId(null);
+            setTabKey("off")
         }
     };
 
     useEffect(() => {
-        if (location === "on") {
+        if (isGpsOn) {
             updateGpsStatus(true);
-        }
-
-        if (location === "off") {
-            if (intervalId) {
-                clearInterval(intervalId);
-            }
+            setCookie("isLocationSet", true);
+            startTracking();
+        } else {
+            deleteCookie("isLocationSet");
+            setTabKey("off");
             updateGpsStatus(false);
+            stopTracking();
         }
-
-        return () => {
-            if (intervalId) {
-                clearInterval(intervalId);
-            }
-        };
-    }, [location]);
+    }, [isGpsOn]);
 
     // selected user
     const [selectedUser, setSelectedUser] = useState<any>()
@@ -156,28 +160,26 @@ export default function Home() {
     const onSubmitLocation: SubmitHandler<Location> = (data: any) => {
         sendUserLocation.mutate(data, {
             onSuccess: (response) => {
-                setLocation("on")
-                setCookie("isLocationSet", true)
+                fetchNearbyUsers()
             },
             onError: (error) => {
-                setLocation("off")
-                setTabKey("off")
+                setIsGpsOn(false)
                 toast.error(error.message);
             }
         });
     };
 
+    console.log(sendUserLocation.isPending);
     return (
         <div className={"w-full h-screen"}>
             <div className={"flex items-center justify-between px-5 py-3"}>
-                <DrawerMenu setLocation={setLocation}/>
+                <DrawerMenu setIsGpsOn={setIsGpsOn}/>
                 {
-                    location === "on" &&
+                    isGpsOn &&
                     <Tabs aria-label="location"
                           onSelectionChange={(key: any) => {
                               if (key === "off") {
-                                  deleteCookie("isLocationSet")
-                                  setLocation("off")
+                                  setIsGpsOn(false)
                               }
                           }}
                           radius={"sm"} classNames={{tabList: "bg-primary",}}
@@ -190,7 +192,7 @@ export default function Home() {
             <div className={"h-[calc(100%-64px)] flex justify-center"}>
                 {/* when location is off ... */}
                 {
-                    location === "off" &&
+                    !isGpsOn &&
                     <div className={"h-full p-10 flex flex-col justify-center items-center gap-4"}>
                         <Image src={disabled_location_image} width={500} alt={"disabled location image"}/>
                         <div className={"font-black text-xl text-center w-full"}>Location sharing is
@@ -207,26 +209,23 @@ export default function Home() {
                               selectedKey={tabKey}
                               onSelectionChange={(key: any) => {
                                   if (key === "on") {
-                                      getGeoLocationFunction()
+                                      setIsGpsOn(true)
                                   } else {
-                                      setTabKey("off");
+                                      setIsGpsOn(false)
                                   }
                               }}
                         >
                             <Tab key="off" title="off" className={"px-10"}/>
                             <Tab key="on" title={<FaPowerOff/>} className={"px-10"}/>
                         </Tabs>
-                        {
-                            sendUserLocation.isPending && <div className={"flex items-center gap-3 text-sm text-gray-500"}><Spinner size={"sm"}/>in progress</div>
-                        }
                     </div>
                 }
-                {location === "on" && isLoading ?
+                {isGpsOn && isLoading ?
                     <Spinner/>
                     : <>
                         {/* when not found user nearby ...*/}
                         {
-                            location === "on" && nearbyUsers?.data.length === 0 &&
+                            isGpsOn && nearbyUsers?.data.length === 0 &&
                             <div className={"h-full p-14 flex flex-col justify-center items-center gap-4"}>
                                 <Image src={no_user_found_image} width={500} alt={"no user found image"}/>
                                 <div className={"font-black text-xl text-center w-full"}>No nearby user found</div>
@@ -252,7 +251,7 @@ export default function Home() {
 
                         {/*when found user nearby ...*/}
                         {
-                            location === "on" && nearbyUsers?.data.length > 0 && (
+                            isGpsOn && nearbyUsers?.data.length > 0 && (
                                 <div
                                     className={"h-full p-4 bg-[#f9f9f9] w-full overflow-y-auto flex flex-col items-center gap-4"}>
                                     <Image src={users_image} alt={"users"}/>

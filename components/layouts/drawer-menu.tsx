@@ -23,7 +23,7 @@ import {TiUser} from "react-icons/ti";
 import {LuMenu} from "react-icons/lu";
 import LogoutPage from "@/components/logout";
 
-export default function DrawerMenu({setLocation}: any) {
+export default function DrawerMenu({setIsGpsOn}: any) {
 
     const user = useSelector((state: any) => state.user.user);
 
@@ -36,7 +36,7 @@ export default function DrawerMenu({setLocation}: any) {
     const dispatch = useDispatch();
 
     if (isLoading) {
-        setLocation("off")
+        setIsGpsOn(false)
         return <LogoutPage/>
     }
 
