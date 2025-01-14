@@ -47,21 +47,19 @@ export default function Home() {
     const [isUserInfoModalOpen, setIsUserInfoModalOpen] = useState(false)
 
     // nearby users
-    const { data: nearbyUsers, isLoading, refetch: fetchNearbyUsers } = useQuery({
-        queryKey: ["/v1/user/nearby-users"], // فقط آدرس پایه اینجا تعریف می‌شود
+    const {data: nearbyUsers, isLoading, refetch: fetchNearbyUsers} = useQuery({
+        queryKey: ["/v1/user/nearby-users"],
 
-        queryFn: ({ queryKey }) => {
+        queryFn: ({queryKey}) => {
             const baseUrl = queryKey[0];
 
-            // تعریف پارامترها
             const params = new URLSearchParams();
             if (selectedJob) params.append("job_title_ids[]", selectedJob.id);
-            if (selectedIndustry) params.append("industry_ids[]",selectedIndustry.id);
+            if (selectedIndustry) params.append("industry_ids[]", selectedIndustry.id);
 
-            // ایجاد URL نهایی
             const url = `${baseUrl}?${params.toString()}`;
 
-            return fetchService({ url });
+            return fetchService({url});
         },
 
         refetchOnMount: false,
@@ -69,15 +67,47 @@ export default function Home() {
         refetchIntervalInBackground: false,
         refetchOnReconnect: false,
         refetchOnWindowFocus: false,
-        enabled: false, // به صورت دستی فعال می‌شود
+        enabled: false,
     });
 
 
     useEffect(() => {
-        if (location === "on" && (selectedIndustry?.id || selectedJob?.id)) {
+        if (selectedIndustry?.id && selectedJob?.id) {
             fetchNearbyUsers()
         }
     }, [selectedIndustry, selectedJob]);
+
+    let intervalId: any;
+
+    const getGeoLocationFunction = () => {
+        if (!navigator.geolocation) {
+            toast.error('Your device does not support GPS.');
+            return;
+        }
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const {latitude, longitude} = position.coords;
+                    onSubmitLocation({latitude, longitude});
+                },
+                (error) => {
+                    if (error.code === error.PERMISSION_DENIED) {
+                        toast.error('Please enable GPS access.')
+                    } else {
+                        toast.error('Error in retrieving location.');
+                    }
+
+                    setTabKey("off")
+                    setLocation("off")
+                }
+            );
+        } else {
+            toast.error("Geolocation is not supported by this device.");
+            setTabKey("off")
+            setLocation("off")
+        }
+    }
 
     // update gps status
     const updateGpsStatus = async (isGpsEnabled: boolean) => {
@@ -92,6 +122,13 @@ export default function Home() {
                 is_gps_enabled: isGpsEnabled,
             }),
         });
+
+        if (response.status === 200 && isGpsEnabled) {
+            intervalId = setInterval(() => {
+                getGeoLocationFunction()
+            }, 5000);
+            await fetchNearbyUsers();
+        }
     };
 
     useEffect(() => {
@@ -100,53 +137,10 @@ export default function Home() {
         }
 
         if (location === "off") {
-            updateGpsStatus(false);
-        }
-    }, [location]);
-
-    useEffect(() => {
-        if (location === "on") {
-            fetchNearbyUsers();
-        }
-    }, []);
-
-    const getGeoLocationFunction = () => {
-        if (!navigator.geolocation) {
-            toast.error('Your device does not support GPS.');
-            return;
-        }
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const {latitude, longitude} = position.coords;
-                    onSubmitLocation({latitude, longitude});
-                },
-                (error) => {
-                    toast.error(`Error fetching location: ${error.message}`);
-                    setTabKey("off")
-                    setLocation("off")
-                }
-            );
-        } else {
-            toast.error("Geolocation is not supported by this browser.");
-            setTabKey("off")
-            setLocation("off")
-        }
-    }
-
-    useEffect(() => {
-        let intervalId: any;
-
-        if (location === "on") {
-            intervalId = setInterval(() => {
-                getGeoLocationFunction()
-            }, 10000);
-        }
-
-        if (location === "off") {
             if (intervalId) {
                 clearInterval(intervalId);
             }
+            updateGpsStatus(false);
         }
 
         return () => {
@@ -156,20 +150,18 @@ export default function Home() {
         };
     }, [location]);
 
-
     // selected user
     const [selectedUser, setSelectedUser] = useState<any>()
 
     const onSubmitLocation: SubmitHandler<Location> = (data: any) => {
         sendUserLocation.mutate(data, {
             onSuccess: (response) => {
-                setCookie("isLocationSet", true)
-                fetchNearbyUsers()
                 setLocation("on")
+                setCookie("isLocationSet", true)
             },
             onError: (error) => {
-                setTabKey("off")
                 setLocation("off")
+                setTabKey("off")
                 toast.error(error.message);
             }
         });
@@ -250,9 +242,6 @@ export default function Home() {
                                         onPress={() => {
                                             setSelectedIndustry(null)
                                             setSelectedJob(null)
-                                            setTimeout(() => {
-                                                fetchNearbyUsers()
-                                            }, 100);
                                         }}
                                     >
                                         clear filters

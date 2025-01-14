@@ -12,6 +12,12 @@ export async function middleware(request: NextRequest) {
 
     console.log('Path:', request.nextUrl.pathname);
 
+    // Check if the device is mobile
+    if (!userAgent.includes('Mobile')) {
+        console.log('Non-mobile device detected. Redirecting to not-found.');
+        return NextResponse.rewrite(new URL('/not-found', request.url));
+    }
+
     // splash screen
     const hasSeenSplash = request.cookies.get('has_seen_splash');
     const splashScreenPath = '/splash-screen';
@@ -19,26 +25,6 @@ export async function middleware(request: NextRequest) {
         const response = NextResponse.redirect(new URL(splashScreenPath, request.url));
         response.cookies.set('has_seen_splash', 'true');
         return response;
-    }
-
-
-    // convert company_activity_type from string to object
-    let companyActivityTypesArray = []
-    const companyActivityTypesValue = request.cookies.get("company_activity_types")?.value;
-    if (companyActivityTypesValue) {
-        try {
-            companyActivityTypesArray = JSON.parse(companyActivityTypesValue);
-        } catch (error) {
-            console.error("Failed to parse company_activity_types as JSON:", error);
-        }
-    } else {
-        console.log("No company_activity_types cookie found or it is empty.");
-    }
-
-    // Check if the device is mobile
-    if (!userAgent.includes('Mobile')) {
-        console.log('Non-mobile device detected. Redirecting to not-found.');
-        return NextResponse.rewrite(new URL('/not-found', request.url));
     }
 
     // Check if token exists
@@ -49,6 +35,19 @@ export async function middleware(request: NextRequest) {
         }
     } else {
 
+        // convert company_activity_type from string to object
+        let companyActivityTypesArray = []
+        const companyActivityTypesValue = request.cookies.get("company_activity_types")?.value;
+        if (companyActivityTypesValue) {
+            try {
+                companyActivityTypesArray = JSON.parse(companyActivityTypesValue);
+            } catch (error) {
+                console.error("Failed to parse company_activity_types as JSON:", error);
+            }
+        } else {
+            console.log("No company_activity_types cookie found or it is empty.");
+        }
+
         // Redirect to activity-type if the cookie exists and path is not already activity-type
         if (companyActivityTypesArray.length === 0 && request.nextUrl.pathname !== '/activity-type') {
             console.log('Redirecting to activity-type.');
@@ -56,13 +55,16 @@ export async function middleware(request: NextRequest) {
         }
 
         // Redirect to information if both cookies exist and path is not already information
-        if (
-            (request.cookies.get('industry')?.value) === "null" ||
-            (request.cookies.get('job_title')?.value === "null") &&
-            request.nextUrl.pathname !== '/information'
-        ) {
+        if ((
+            request.cookies.get('industry')?.value === "null" ||
+            request.cookies.get('job_title')?.value === "null"
+        ) && request.nextUrl.pathname !== '/information') {
             console.log('Redirecting to information.');
             return NextResponse.redirect(new URL('/information', request.url));
+        }
+
+        if (allowedPaths.some(path => request.nextUrl.pathname.startsWith(path))) {
+            return NextResponse.redirect(new URL("/", request.url));
         }
     }
 

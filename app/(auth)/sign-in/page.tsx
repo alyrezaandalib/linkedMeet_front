@@ -5,9 +5,9 @@ import {Button, Checkbox, Spinner} from "@nextui-org/react";
 import {useForm, Controller, SubmitHandler, set} from "react-hook-form";
 import  {Inputs} from "./service";
 import {useRouter} from "next/navigation";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import toast from "react-hot-toast";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {useMutation} from "@tanstack/react-query";
 import {Authentication} from "@/store/userSlice";
 
@@ -16,8 +16,6 @@ export default function SignInPage() {
     const router = useRouter();
 
     const [isLoading, setIsLoading] = useState(false)
-
-    const isAuthenticated = useSelector((state: any) => state.user.isAuthenticated);
 
     const {
         register,
@@ -88,10 +86,6 @@ export default function SignInPage() {
 
     const {isPending} = signInUser
 
-    useEffect(() => {
-        if (isAuthenticated) router.push("/");
-    }, [isAuthenticated]);
-
     return (
         <div className={"flex flex-col h-screen"}>
             <div
@@ -119,6 +113,7 @@ export default function SignInPage() {
                                 type="email"
                                 placeholder="test@gmail.com"
                                 className="form-input"
+                                autoComplete="email"
                             />
                             {errors.email && <p className={"text-red-500 text-xs mt-1"}>{errors.email.message}</p>}
                         </div>
@@ -135,11 +130,12 @@ export default function SignInPage() {
                                         message: "Password must be at least 8 characters long.",
                                     },
                                     maxLength: {
-                                        value: 10,
-                                        message: "Password must be at lest 10 characters long."
+                                        value: 32,
+                                        message: "Password must be at lest 32 characters long."
                                     }
                                 })}
                                 type="password"
+                                autoComplete="current-password"
                                 className="form-input"
                             />
                             {errors.password &&
@@ -164,8 +160,7 @@ export default function SignInPage() {
                         />
 
 
-                        <p className="text-xs text-gray-400">By clicking Continue, you agree to MYAPP User
-                            Agreement, Privacy Policy, and Cookie Policy.</p>
+                        <p className="text-xs text-gray-400">“Sign in” instead of  “Continue” “LinkedMeet” instead of “My App”</p>
 
                         <Button color={"primary"} isLoading={isPending} radius={"sm"} type={"submit"}>Sign In</Button>
                     </form>

@@ -1,21 +1,19 @@
 "use client"
 import {Spinner} from "@nextui-org/react";
 import {useRouter, useSearchParams} from "next/navigation";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {Authentication} from "@/store/userSlice";
 import toast from "react-hot-toast";
-import {useEffect} from "react";
 import {useMutation} from "@tanstack/react-query";
 
 export default function Page() {
 
-    const isAuthenticated = useSelector((state: any) => state.user.isAuthenticated);
+    const router = useRouter();
 
     // get code from query
     const searchParams = useSearchParams()
     const code = searchParams.get("code")
 
-    const router = useRouter();
     const dispatch = useDispatch()
 
     const getUserInformationFromLinkedin = useMutation({
@@ -61,17 +59,11 @@ export default function Page() {
         },
     });
 
-    useEffect(() => {
-        if (code) {
-            getUserInformationFromLinkedin.mutate(code)
-        } else {
-            toast.error("Invalid or missing LinkedIn authorization code.");
-            router.push("/sign-in");
-        }
-    }, [code]);
-
-    if (isAuthenticated) {
-        router.push("/");
+    if (code) {
+        getUserInformationFromLinkedin.mutate(code)
+    } else {
+        toast.error("Invalid or missing LinkedIn authorization code.");
+        router.push("/sign-in");
     }
 
     return (
