@@ -5,6 +5,7 @@ import {useDispatch} from "react-redux";
 import {Authentication} from "@/store/userSlice";
 import toast from "react-hot-toast";
 import {useMutation} from "@tanstack/react-query";
+import {useEffect, useState} from "react";
 
 export default function Page() {
 
@@ -12,7 +13,7 @@ export default function Page() {
 
     // get code from query
     const searchParams = useSearchParams()
-    const code = searchParams.get("code")
+    const [code, setCode] = useState<string | null>(searchParams.get("code"));
 
     const dispatch = useDispatch()
 
@@ -59,12 +60,14 @@ export default function Page() {
         },
     });
 
-    if (code) {
-        getUserInformationFromLinkedin.mutate(code)
-    } else {
-        toast.error("Invalid or missing LinkedIn authorization code.");
-        router.push("/sign-in");
-    }
+    useEffect(() => {
+        if (code) {
+            getUserInformationFromLinkedin.mutate(code)
+        } else {
+            toast.error("Invalid or missing LinkedIn authorization code.");
+            router.push("/sign-in");
+        }
+    }, [code]);
 
     return (
         <div className={"h-screen flex flex-col justify-center items-center gap-5 bg-white"}>
