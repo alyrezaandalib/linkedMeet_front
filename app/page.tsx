@@ -169,7 +169,6 @@ export default function Home() {
         });
     };
 
-    console.log(sendUserLocation.isPending);
     return (
         <div className={"w-full h-screen"}>
             <div className={"flex items-center justify-between px-5 py-3"}>

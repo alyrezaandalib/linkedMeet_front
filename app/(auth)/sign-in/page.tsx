@@ -7,15 +7,17 @@ import  {Inputs} from "./service";
 import {useRouter} from "next/navigation";
 import {useDispatch} from "react-redux";
 import toast from "react-hot-toast";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useMutation} from "@tanstack/react-query";
 import {Authentication} from "@/store/userSlice";
+import {getCookie} from "cookies-next";
 
 export default function SignInPage() {
 
     const router = useRouter();
 
     const [isLoading, setIsLoading] = useState(false)
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(getCookie("isAuthenticated") === "true");
 
     const {
         register,
@@ -85,6 +87,12 @@ export default function SignInPage() {
     };
 
     const {isPending} = signInUser
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            router.push("/");
+        }
+    }, [isAuthenticated]);
 
     return (
         <div className={"flex flex-col h-screen"}>
