@@ -63,7 +63,6 @@ export default function SignInPage() {
                 if (data.user.company_activity_types && data.user.company_activity_types.length === 0) {
                     router.push("/activity-type")
                 } else {
-                    router.refresh();
                     router.push("/");
                 }
             } else if (response.status === 403) {
