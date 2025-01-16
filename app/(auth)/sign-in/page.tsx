@@ -1,60 +1,55 @@
 "use client"
 import Linkedin from "@/public/tsx-icons/linkedin";
 import Link from "next/link";
-import {Button, Checkbox, Spinner} from "@nextui-org/react";
-import {useForm, Controller, SubmitHandler, set} from "react-hook-form";
-import  {Inputs} from "./service";
+import {Button, Checkbox} from "@nextui-org/react";
+import {useForm, Controller} from "react-hook-form";
 import {useRouter} from "next/navigation";
 import {useDispatch} from "react-redux";
 import toast from "react-hot-toast";
-import {useEffect, useState} from "react";
-import {useMutation} from "@tanstack/react-query";
+import {useState} from "react";
 import {Authentication} from "@/store/userSlice";
-import {getCookie} from "cookies-next";
+
+type Inputs = {
+    email: string;
+    password: string;
+    keepLoggedIn: boolean;
+};
 
 export default function SignInPage() {
 
+    const [isLoadingLogin, setIsLoadingLogin] = useState(false);
+    const [isLoadingLinkedin, setIsLoadingLinkedin] = useState(false);
     const router = useRouter();
-
-    const [isLoading, setIsLoading] = useState(false)
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(getCookie("isAuthenticated") === "true");
 
     const {
         register,
-        handleSubmit,
         control,
+        handleSubmit,
         formState: {errors},
-    } = useForm<Inputs>()
+    } = useForm<Inputs>();
 
     const dispatch = useDispatch();
-    const signInUser = useMutation({
-        mutationFn: async (body: Inputs) => {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/login`, {
-                method: "POST",
+
+    const onSubmit = async (params: Inputs) => {
+        setIsLoadingLogin(true);
+
+        try {
+            const response: Response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/login`, {
+                method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer null`,
                     'Accept': 'application/json',
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(body),
+                body: JSON.stringify(params),
             });
-
-            if (response.status === 403) {
-                router.push(`/verify-code?email=${body.email}`);
-            }
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData?.message || `HTTP Error: ${response.status}`);
-            }
 
             const data = await response.json();
 
-            if (data?.token && data?.user) {
+            if (response.ok) {
                 dispatch(Authentication({
                     isAuthenticated: true,
                     token: data.token,
-                    id :data.user.id,
+                    id: data.user.id,
                     name: data.user.name,
                     email: data.user.email,
                     avatar: data.user.avatar,
@@ -64,35 +59,23 @@ export default function SignInPage() {
                 }));
 
                 toast.success("Login successful!");
-                return data;
+
+                if (data.user.company_activity_types && data.user.company_activity_types.length === 0) {
+                    router.push("/activity-type")
+                } else {
+                    router.push("/")
+                }
+            } else if (response.status === 403) {
+                router.push(`/verify-code?email=${data.user.email}`, {});
             } else {
-                throw new Error("Invalid response structure from server.");
+                toast.error(data.message || "An error occurred during sign-in.");
             }
-        },
-        onError: (error) => {
-            console.error("Sign-in error:", error);
-            toast.error(error.message || "An error occurred during sign-in.");
-        },
-        onSuccess: (data) => {
-            if (data.user.company_activity_types && data.user.company_activity_types.length === 0) {
-                router.push("/activity-type")
-            } else {
-                router.push("/")
-            }
-        },
-    });
-
-    const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
-        signInUser.mutate(data);
-    };
-
-    const {isPending} = signInUser
-
-    useEffect(() => {
-        if (isAuthenticated) {
-            router.push("/");
+        } catch (error) {
+            toast.error("Invalid response structure from server.");
+        } finally {
+            setIsLoadingLogin(false);
         }
-    }, [isAuthenticated]);
+    };
 
     return (
         <div className={"flex flex-col h-screen"}>
@@ -168,9 +151,11 @@ export default function SignInPage() {
                         />
 
 
-                        <p className="text-xs text-gray-400">“Sign in” instead of  “Continue” “LinkedMeet” instead of “My App”</p>
+                        <p className="text-xs text-gray-400">“Sign in” instead of “Continue” “LinkedMeet” instead of “My
+                            App”</p>
 
-                        <Button color={"primary"} isLoading={isPending} radius={"sm"} type={"submit"}>Sign In</Button>
+                        <Button color={"primary"} isLoading={isLoadingLogin} radius={"sm"} type={"submit"}>Sign
+                            In</Button>
                     </form>
 
                     {/* OR Divider */}
@@ -182,10 +167,10 @@ export default function SignInPage() {
 
                     {/* LinkedIn Login */}
                     <Button
-                        isLoading={isLoading}
+                        isLoading={isLoadingLinkedin}
                         variant={"bordered"}
                         onPress={() => {
-                            setIsLoading(true)
+                            setIsLoadingLinkedin(true)
                             fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/linkedin`)
                                 .then(response => {
                                     if (!response.ok) {
@@ -195,7 +180,7 @@ export default function SignInPage() {
                                     return response.json();
                                 })
                                 .then(data => {
-                                    setIsLoading(false)
+                                    setIsLoadingLinkedin(false)
                                     window.location.replace(data.url)
                                 })
                                 .catch(error => {
