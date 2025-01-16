@@ -22,6 +22,7 @@ export async function middleware(request: NextRequest) {
     const hasSeenSplash = request.cookies.get('has_seen_splash');
     const splashScreenPath = '/splash-screen';
     if (!hasSeenSplash && request.nextUrl.pathname !== splashScreenPath) {
+        console.log('Redirecting to splash-screen.');
         const response = NextResponse.redirect(new URL(splashScreenPath, request.url));
         response.cookies.set('has_seen_splash', 'true');
         return response;
@@ -61,10 +62,6 @@ export async function middleware(request: NextRequest) {
         ) && request.nextUrl.pathname !== '/information') {
             console.log('Redirecting to information.');
             return NextResponse.redirect(new URL('/information', request.url));
-        }
-
-        if (allowedPaths.some(path => request.nextUrl.pathname.startsWith(path))) {
-            return NextResponse.redirect(new URL("/", request.url));
         }
     }
 
