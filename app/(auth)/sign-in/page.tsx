@@ -199,7 +199,7 @@ export default function SignInPage() {
                         <p className="text-gray-400 ">
                             New to LinkedMeet?
                         </p>
-                        <Link href={"/sign-up"} className="border rounded-lg bg-gray-100 text-gray-600 px-2 py-1.5">
+                        <Link href={"/sign-up"} prefetch={false} className="border rounded-lg bg-gray-100 text-gray-600 px-2 py-1.5">
                             Join now
                         </Link>
                     </div>
