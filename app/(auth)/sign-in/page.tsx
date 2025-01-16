@@ -45,6 +45,8 @@ export default function SignInPage() {
 
             const data = await response.json();
 
+            router.refresh();
+
             if (response.ok) {
                 dispatch(Authentication({
                     isAuthenticated: true,
