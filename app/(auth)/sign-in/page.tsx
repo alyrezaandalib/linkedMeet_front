@@ -6,7 +6,7 @@ import {useForm, Controller} from "react-hook-form";
 import {useRouter} from "next/navigation";
 import {useDispatch} from "react-redux";
 import toast from "react-hot-toast";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Authentication} from "@/store/userSlice";
 
 type Inputs = {
@@ -60,13 +60,10 @@ export default function SignInPage() {
 
                 toast.success("Login successful!");
 
-                if (data.user.company_activity_types && data.user.company_activity_types.length === 0) {
-                    router.push("/activity-type")
-                } else {
-                    router.push("/");
-                }
+                const activity_types = data.user.activity_types;
+                setRedirectPath(activity_types && activity_types.length === 0 ? "/activity-type" : "/");
             } else if (response.status === 403) {
-                router.push(`/verify-code?email=${data.user.email}`, {});
+                setRedirectPath(`/verify-code?email=${data.user.email}`);
             } else {
                 toast.error(data.message || "An error occurred during sign-in.");
             }
@@ -76,6 +73,14 @@ export default function SignInPage() {
             setIsLoadingLogin(false);
         }
     };
+
+    const [redirectPath, setRedirectPath] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (redirectPath) {
+            router.push(redirectPath);
+        }
+    }, [redirectPath]);
 
     return (
         <div className={"flex flex-col h-screen"}>
@@ -198,7 +203,8 @@ export default function SignInPage() {
                         <p className="text-gray-400 ">
                             New to LinkedMeet?
                         </p>
-                        <Link href={"/sign-up"} prefetch={false} className="border rounded-lg bg-gray-100 text-gray-600 px-2 py-1.5">
+                        <Link href={"/sign-up"} prefetch={false}
+                              className="border rounded-lg bg-gray-100 text-gray-600 px-2 py-1.5">
                             Join now
                         </Link>
                     </div>
