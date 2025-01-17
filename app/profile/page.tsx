@@ -42,7 +42,7 @@ export default function ProfilePage() {
 
             setIsLoading(true)
 
-            fetch("http://bakhtnama.ir/api/v1/user/avatar", requestOptions)
+            fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/user/avatar`, requestOptions)
                 .then((response) => {
                     return response.json();
                 })
