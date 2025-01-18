@@ -16,29 +16,11 @@ if (typeof window !== 'undefined') {
     window.Echo = new Echo<'reverb'>({
         broadcaster: 'reverb',
         key: process.env.NEXT_PUBLIC_REVERB_APP_KEY,
-        authorizer: (channel: { name: any; }) => {
-            return {
-                authorize: (socketId: any, callback: (arg0: boolean, arg1: any) => void) => {
-                    axios.post(
-                        process.env.NEXT_PUBLIC_BASE_URL_API + '/broadcasting/auth',
-                        {
-                            socket_id: socketId,
-                            channel_name: channel.name
-                        },
-                        {
-                            headers: {
-                                Authorization: `Bearer ${getCookie("token")}`,
-                            },
-                        }
-                    )
-                        .then((response: { data: any; }) => {
-                            callback(false, response.data);
-                        })
-                        .catch((error: any) => {
-                            callback(true, error);
-                        });
-                }
-            };
+        channelAuthorization: {
+            endpoint: `${process.env.NEXT_PUBLIC_BASE_URL_API}/broadcasting/auth`,
+            headers: {
+                Authorization: `Bearer ${getCookie("token")}`
+            },
         },
         wsHost: process.env.NEXT_PUBLIC_REVERB_HOST,
         wsPort: process.env.NEXT_PUBLIC_REVERB_PORT ?? 80,
