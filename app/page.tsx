@@ -112,7 +112,6 @@ export default function Home() {
     const startTracking = () => {
         if (!navigator.geolocation) {
             toast.error("Your device does not support GPS.");
-            setTabKey("off");
             setIsGpsOn(false);
             return;
         }
@@ -165,13 +164,13 @@ export default function Home() {
     useEffect(() => {
         if (isGpsOn) {
             startTracking();
+
+            return () => {
+                stopTracking();
+            };
         } else {
             stopTracking();
         }
-
-        return () => {
-            stopTracking();
-        };
     }, [isGpsOn]);
 
     // selected user
