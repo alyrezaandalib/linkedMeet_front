@@ -3,16 +3,7 @@ import Image from "next/image";
 import useService, {Location, User} from "./service";
 import DrawerMenu from "@/components/layouts/drawer-menu";
 import {useEffect, useRef, useState} from "react";
-import {
-    Button,
-    Modal,
-    ModalBody,
-    ModalContent,
-    ModalHeader,
-    Spinner,
-    Tab,
-    Tabs,
-} from "@nextui-org/react";
+import {Button, Modal, ModalBody, ModalContent, ModalHeader, Spinner, Tab, Tabs,} from "@nextui-org/react";
 import toast from "react-hot-toast";
 import {SubmitHandler} from "react-hook-form";
 import SelectableModal from "@/components/selectableModal";
@@ -39,7 +30,7 @@ export default function Home() {
     const [isGpsOn, setIsGpsOn] = useState(
         getCookie("isLocationSet") === "true"
     );
-    const [watchId, setWatchId] = useState(null);
+    const watchId = useRef<number | null>(null);
     const lastSentTime = useRef(0);
 
     const [isLoading, setIsLoading] = useState(false);
@@ -110,6 +101,10 @@ export default function Home() {
     };
 
     const startTracking = () => {
+        if (watchId.current !== null) {
+            return;
+        }
+
         if (!navigator.geolocation) {
             toast.error("Your device does not support GPS.");
             setIsGpsOn(false);
@@ -119,7 +114,7 @@ export default function Home() {
         updateGpsStatus(true);
         setCookie("isLocationSet", true);
 
-        const id = navigator.geolocation.watchPosition(
+        watchId.current = navigator.geolocation.watchPosition(
             (position) => {
                 const now = Date.now();
                 if (now - lastSentTime.current >= 10000) {
@@ -146,31 +141,31 @@ export default function Home() {
                 maximumAge: 0,
             }
         );
-
-        // @ts-ignore
-        setWatchId(id);
     };
 
     const stopTracking = () => {
-        if (watchId !== null) {
-            navigator.geolocation.clearWatch(watchId);
-            updateGpsStatus(false);
-            deleteCookie("isLocationSet");
-            setWatchId(null);
-            setTabKey("off");
+        if (watchId.current !== null) {
+            console.log("stopTracking NULL");
+            navigator.geolocation.clearWatch(watchId.current);
+            watchId.current = null;
         }
     };
 
     useEffect(() => {
         if (isGpsOn) {
             startTracking();
+        }
 
-            return () => {
-                stopTracking();
-            };
-        } else {
+        if (!isGpsOn) {
+            deleteCookie("isLocationSet");
+            setTabKey("off");
+            updateGpsStatus(false);
             stopTracking();
         }
+
+        return () => {
+            stopTracking();
+        };
     }, [isGpsOn]);
 
     // selected user
@@ -195,7 +190,7 @@ export default function Home() {
     return (
         <div className={"w-full h-screen"}>
             <div className={"flex items-center justify-between px-5 py-3"}>
-                <DrawerMenu setIsGpsOn={setIsGpsOn}/>
+                <DrawerMenu setIsGpsOnAction={setIsGpsOn}/>
                 {isGpsOn && (
                     <Tabs
                         aria-label="location"

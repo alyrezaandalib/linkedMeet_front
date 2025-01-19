@@ -12,7 +12,7 @@ import {useRouter} from "next/navigation";
 import {useDispatch, useSelector} from "react-redux";
 import toast from "react-hot-toast";
 import {Logout} from "@/store/userSlice";
-import {getCookie} from "cookies-next";
+import {deleteCookie, getCookie} from "cookies-next";
 import {useState} from "react";
 // icons
 import {CiUser} from "react-icons/ci";
@@ -22,8 +22,13 @@ import {PiInfoFill} from "react-icons/pi";
 import {TiUser} from "react-icons/ti";
 import {LuMenu} from "react-icons/lu";
 import LogoutPage from "@/components/logout";
+import {useEffect} from "react";
 
-export default function DrawerMenu({setIsGpsOn}: any) {
+interface DrawerMenuProps {
+    setIsGpsOnAction: (status: boolean) => void;
+}
+
+export default function DrawerMenu({ setIsGpsOnAction }: DrawerMenuProps) {
 
     const user = useSelector((state: any) => state.user.user);
 
@@ -35,8 +40,13 @@ export default function DrawerMenu({setIsGpsOn}: any) {
 
     const dispatch = useDispatch();
 
+    useEffect(() => {
+        if (isLoading) {
+            setIsGpsOnAction(false);
+        }
+    }, [isLoading, setIsGpsOnAction]);
+
     if (isLoading) {
-        setIsGpsOn(false)
         return <LogoutPage/>
     }
 
@@ -106,6 +116,7 @@ export default function DrawerMenu({setIsGpsOn}: any) {
                                             }),
                                         })
                                             .then(response => {
+                                                deleteCookie("isLocationSet");
                                                 fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/logout`, {
                                                     method: "POST",
                                                     headers: {
