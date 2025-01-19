@@ -1,8 +1,8 @@
 "use client";
 import Image from "next/image";
-import useService, { Location, User } from "./service";
+import useService, {Location, User} from "./service";
 import DrawerMenu from "@/components/layouts/drawer-menu";
-import { useEffect, useRef, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 import {
     Button,
     Modal,
@@ -14,25 +14,25 @@ import {
     Tabs,
 } from "@nextui-org/react";
 import toast from "react-hot-toast";
-import { SubmitHandler } from "react-hook-form";
+import {SubmitHandler} from "react-hook-form";
 import SelectableModal from "@/components/selectableModal";
-import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { fetchService } from "@/services/crud-services/fetch-service";
-import { deleteCookie, getCookie, setCookie } from "cookies-next";
+import {useRouter} from "next/navigation";
+import {useQuery} from "@tanstack/react-query";
+import {fetchService} from "@/services/crud-services/fetch-service";
+import {deleteCookie, getCookie, setCookie} from "cookies-next";
 // images
 import disabled_location_image from "../public/images/disabled_location.png";
 import no_user_found_image from "../public/images/no_user_found.png";
 import users_image from "../public/images/users.png";
 // icons
-import { FaPowerOff } from "react-icons/fa6";
+import {FaPowerOff} from "react-icons/fa6";
 import SendIcon from "@/public/tsx-icons/send";
-import { IoDocumentTextOutline } from "react-icons/io5";
+import {IoDocumentTextOutline} from "react-icons/io5";
 
 export default function Home() {
     const router = useRouter();
     // services
-    const { sendUserLocation, getJobTitlesList, getIndustriesList } =
+    const {sendUserLocation, getJobTitlesList, getIndustriesList} =
         useService();
 
     // GPS
@@ -61,10 +61,10 @@ export default function Home() {
     const [isUserInfoModalOpen, setIsUserInfoModalOpen] = useState(false);
 
     // nearby users
-    const { data: nearbyUsers, refetch: fetchNearbyUsers } = useQuery({
+    const {data: nearbyUsers, refetch: fetchNearbyUsers} = useQuery({
         queryKey: ["/v1/user/nearby-users"],
 
-        queryFn: ({ queryKey }) => {
+        queryFn: ({queryKey}) => {
             const baseUrl = queryKey[0];
 
             const params = new URLSearchParams();
@@ -74,7 +74,7 @@ export default function Home() {
 
             const url = `${baseUrl}?${params.toString()}`;
 
-            return fetchService({ url });
+            return fetchService({url});
         },
 
         refetchOnMount: false,
@@ -117,12 +117,15 @@ export default function Home() {
             return;
         }
 
+        updateGpsStatus(true);
+        setCookie("isLocationSet", true);
+
         const id = navigator.geolocation.watchPosition(
             (position) => {
                 const now = Date.now();
                 if (now - lastSentTime.current >= 10000) {
-                    const { latitude, longitude } = position.coords;
-                    onSubmitLocation({ latitude, longitude });
+                    const {latitude, longitude} = position.coords;
+                    onSubmitLocation({latitude, longitude});
                     lastSentTime.current = now;
                 }
             },
@@ -152,6 +155,8 @@ export default function Home() {
     const stopTracking = () => {
         if (watchId !== null) {
             navigator.geolocation.clearWatch(watchId);
+            updateGpsStatus(false);
+            deleteCookie("isLocationSet");
             setWatchId(null);
             setTabKey("off");
         }
@@ -159,15 +164,14 @@ export default function Home() {
 
     useEffect(() => {
         if (isGpsOn) {
-            updateGpsStatus(true);
-            setCookie("isLocationSet", true);
             startTracking();
         } else {
-            deleteCookie("isLocationSet");
-            setTabKey("off");
-            updateGpsStatus(false);
             stopTracking();
         }
+
+        return () => {
+            stopTracking();
+        };
     }, [isGpsOn]);
 
     // selected user
@@ -192,7 +196,7 @@ export default function Home() {
     return (
         <div className={"w-full h-screen"}>
             <div className={"flex items-center justify-between px-5 py-3"}>
-                <DrawerMenu setIsGpsOn={setIsGpsOn} />
+                <DrawerMenu setIsGpsOn={setIsGpsOn}/>
                 {isGpsOn && (
                     <Tabs
                         aria-label="location"
@@ -202,14 +206,14 @@ export default function Home() {
                             }
                         }}
                         radius={"sm"}
-                        classNames={{ tabList: "bg-primary" }}
+                        classNames={{tabList: "bg-primary"}}
                     >
                         <Tab
                             key="on"
-                            title={<FaPowerOff />}
+                            title={<FaPowerOff/>}
                             className={"px-5"}
                         />
-                        <Tab key="off" title="off" className={"px-5"} />
+                        <Tab key="off" title="off" className={"px-5"}/>
                     </Tabs>
                 )}
             </div>
@@ -250,17 +254,17 @@ export default function Home() {
                                 }
                             }}
                         >
-                            <Tab key="off" title="off" className={"px-10"} />
+                            <Tab key="off" title="off" className={"px-10"}/>
                             <Tab
                                 key="on"
-                                title={<FaPowerOff />}
+                                title={<FaPowerOff/>}
                                 className={"px-10"}
                             />
                         </Tabs>
                     </div>
                 )}
                 {isGpsOn && isLoading ? (
-                    <Spinner />
+                    <Spinner/>
                 ) : (
                     <>
                         {/* when not found user nearby ...*/}
@@ -311,7 +315,7 @@ export default function Home() {
                                     "h-full p-4 bg-[#f9f9f9] w-full overflow-y-auto flex flex-col items-center gap-4"
                                 }
                             >
-                                <Image src={users_image} alt={"users"} />
+                                <Image src={users_image} alt={"users"}/>
                                 <div
                                     className={
                                         "font-black text-xl text-center w-full"
@@ -477,7 +481,8 @@ export default function Home() {
                             <ModalHeader className="flex flex-col gap-1">
                                 user Info
                             </ModalHeader>
-                            <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mt-3"></div>
+                            <div
+                                className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mt-3"></div>
                             <ModalBody className={"p-3"}>
                                 <div className="flex flex-col items-center gap-2.5">
                                     <div
@@ -542,7 +547,7 @@ export default function Home() {
                                     className={"w-full mt-4"}
                                     color={"primary"}
                                 >
-                                    <SendIcon />
+                                    <SendIcon/>
                                     Chat
                                 </Button>
                             </ModalBody>
