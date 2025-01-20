@@ -1,21 +1,20 @@
 "use client"
 import {Spinner} from "@nextui-org/react";
 import {useRouter, useSearchParams} from "next/navigation";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {Authentication} from "@/store/userSlice";
 import toast from "react-hot-toast";
-import {useEffect} from "react";
 import {useMutation} from "@tanstack/react-query";
+import {useEffect, useState} from "react";
 
 export default function Page() {
 
-    const isAuthenticated = useSelector((state: any) => state.user.isAuthenticated);
+    const router = useRouter();
 
     // get code from query
     const searchParams = useSearchParams()
-    const code = searchParams.get("code")
+    const [code, setCode] = useState<string | null>(searchParams.get("code"));
 
-    const router = useRouter();
     const dispatch = useDispatch()
 
     const getUserInformationFromLinkedin = useMutation({
@@ -69,10 +68,6 @@ export default function Page() {
             router.push("/sign-in");
         }
     }, [code]);
-
-    if (isAuthenticated) {
-        router.push("/");
-    }
 
     return (
         <div className={"h-screen flex flex-col justify-center items-center gap-5 bg-white"}>

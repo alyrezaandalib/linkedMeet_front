@@ -4,6 +4,7 @@ import LinkedMeetIcon from "../../public/images/LinkedMeet.png"
 import {useEffect} from "react";
 import {useRouter} from "next/navigation";
 import {Spinner} from "@nextui-org/react";
+import {hasCookie} from "cookies-next";
 
 export default function SplashScreenPage() {
 
@@ -11,11 +12,11 @@ export default function SplashScreenPage() {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            router.replace('/');
-        }, 5000);
+            router.replace(hasCookie("token") ? '/' : '/sign-in');
+        }, 3000);
 
         return () => clearTimeout(timer);
-    }, [router]);
+    }, []);
 
     return (
         <div className={"flex flex-col items-center justify-between gap-2 h-screen p-5"}>

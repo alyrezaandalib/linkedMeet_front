@@ -6,12 +6,9 @@ import useService, {Inputs} from "./service";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {useRouter} from "next/navigation";
 import toast from "react-hot-toast";
-import {useSelector} from "react-redux";
 import {useState} from "react";
 
 export default function SignUpPage() {
-
-    const isAuthenticated = useSelector((state: any) => state.user.isAuthenticated);
 
     const [isLoading, setIsLoading] = useState(false)
 
@@ -37,8 +34,6 @@ export default function SignUpPage() {
     };
 
     const {isPending} = signUpUser
-
-    if (isAuthenticated) router.push("/");
 
     return (
         <div className={"flex flex-col h-screen"}>
@@ -78,6 +73,7 @@ export default function SignUpPage() {
                                 type="email"
                                 placeholder="test@gmail.com"
                                 className="form-input"
+                                autoComplete="email"
                             />
                             {errors.email && <p className={"text-red-500 text-xs mt-1"}>{errors.email.message}</p>}
                         </div>
@@ -100,6 +96,7 @@ export default function SignUpPage() {
                                 })}
                                 type="password"
                                 className="form-input"
+                                autoComplete={"new-password"}
                             />
                             {errors.password &&
                                 <p className={"text-red-500 text-xs mt-1"}>{errors.password.message}</p>}
@@ -107,7 +104,7 @@ export default function SignUpPage() {
 
                         <p className="text-xs text-gray-400 max-w-[90%]">By clicking Agree & Join or Continue, you agree
                             to the
-                            LinkedIn User Agreement, Privacy Policy, and Cookie Policy.</p>
+                            LinkedMeet User Agreement, Privacy Policy, and Cookie Policy.</p>
 
                         <Button color={"primary"} isLoading={isPending} radius={"sm"} type={"submit"}>Agree &
                             Join</Button>
@@ -150,9 +147,9 @@ export default function SignUpPage() {
                     {/* Footer */}
                     <div className="text-center text-sm flex items-center gap-2  justify-center">
                         <p className="text-gray-400 ">
-                            Already on LinkedIn? Sign in ?
+                            Already on LinkedMeet?
                         </p>
-                        <Link href={"/sign-in"} className="border rounded-lg bg-gray-100 text-gray-600 px-2 py-1.5">
+                        <Link href={"/sign-in"} prefetch={false} className="border rounded-lg bg-gray-100 text-gray-600 px-2 py-1.5">
                             Sign In
                         </Link>
                     </div>

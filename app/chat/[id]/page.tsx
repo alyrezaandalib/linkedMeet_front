@@ -1,20 +1,18 @@
 "use client";
-import {useRouter, useSearchParams} from "next/navigation";
-import {Button, Spinner} from "@nextui-org/react";
-import useService, {Message, Chat} from "./service";
-import {SubmitHandler, useForm} from "react-hook-form";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Button, Spinner } from "@nextui-org/react";
+import useService, { Message, Chat } from "./service";
+import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import {useEffect, useState, useRef} from "react";
-import {useSelector} from "react-redux";
-import {getCookie} from "cookies-next";
-import {echo} from '@/utils/echo';
+import { useEffect, useState, useRef } from "react";
+import { useSelector } from "react-redux";
+import { getCookie } from "cookies-next";
+import { echo } from "@/utils/echo";
 // icons
-import {IoIosArrowBack} from "react-icons/io";
+import { IoIosArrowBack } from "react-icons/io";
 import SendIcon from "@/public/tsx-icons/send";
 
-
 const ChatPage = () => {
-
     const router = useRouter();
 
     const userId = useSelector((state: any) => state.user.user.id);
@@ -25,27 +23,32 @@ const ChatPage = () => {
     const parsedUser = user ? JSON.parse(decodeURIComponent(user)) : null;
 
     // Form handling
-    const {register, handleSubmit, resetField} = useForm<Message>();
+    const { register, handleSubmit, resetField } = useForm<Message>();
 
     // Service hooks
-    const {getChatHistory, sendMessage} = useService();
+    const { getChatHistory, sendMessage } = useService();
 
     // Chat state
     const [chatHistory, setChatHistory] = useState<any>([]);
-    const [metaData, setMetaData] = useState({total_pages: 1, current_page: 1});
+    const [metaData, setMetaData] = useState({
+        total_pages: 1,
+        current_page: 1,
+    });
     const [currentPage, setCurrentPage] = useState(1);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [isLoadingInitial, setIsLoadingInitial] = useState(true);
 
-    const {data: chatHistoryResponse, isLoading} = getChatHistory(
+    const { data: chatHistoryResponse, isLoading } = getChatHistory(
         parsedUser.id,
         currentPage
     );
 
     // Scroll to bottom when new data is loaded
     const scrollToBottom = () => {
-        if (chatEndRef.current) {
-            chatEndRef.current.scrollIntoView({behavior: "smooth"});
+        if (chatEndRef?.current) {
+            chatEndRef?.current?.children?.[0]?.children?.[
+                chatEndRef?.current?.children?.[0].children?.length - 1
+            ]?.scrollIntoView({ behavior: "smooth" });
         }
     };
 
@@ -53,27 +56,28 @@ const ChatPage = () => {
     const chatEndRef = useRef<HTMLDivElement | null>(null);
 
     // web socket
-    const channelName = `chat.${Math.min(userId, parsedUser.id)}-${Math.max(userId, parsedUser.id)}`;
-
+    const channelName = `chat.${Math.min(userId, parsedUser.id)}-${Math.max(
+        userId,
+        parsedUser.id
+    )}`;
 
     useEffect(() => {
         if (echo) {
-            echo.private(channelName)
-                .listen('MessageSent', (data: any) => {
-                    setChatHistory((prevHistory = []) => [
-                        ...prevHistory,
-                        {
-                            id: Math.random(),
-                            receiver_id: Math.random(),
-                            sender_id: data.sender_id,
-                            message: data.message,
-                            created_at: data.created_at,
-                        },
-                    ]);
-                    setTimeout(() => {
-                        scrollToBottom();
-                    }, 100);
-                });
+            echo.private(channelName).listen("MessageSent", (data: any) => {
+                setChatHistory((prevHistory = []) => [
+                    ...prevHistory,
+                    {
+                        id: Math.random(),
+                        receiver_id: Math.random(),
+                        sender_id: data.sender_id,
+                        message: data.message,
+                        created_at: data.created_at,
+                    },
+                ]);
+                setTimeout(() => {
+                    scrollToBottom();
+                }, 100);
+            });
         }
 
         return () => {
@@ -101,13 +105,16 @@ const ChatPage = () => {
 
     // Load more messages
     const fetchChatHistory = async (partner_id: number, page: number) => {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/chat/history?partner_id=${partner_id}&page=${page}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${getCookie("token")}`,
-                'Accept': 'application/json',
-            },
-        });
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/chat/history?partner_id=${partner_id}&page=${page}`,
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${getCookie("token")}`,
+                    Accept: "application/json",
+                },
+            }
+        );
 
         if (!response.ok) {
             throw new Error("Failed to fetch chat history.");
@@ -127,7 +134,10 @@ const ChatPage = () => {
         try {
             const response = await fetchChatHistory(parsedUser.id, nextPage);
             if (response?.data?.length) {
-                setChatHistory((prevHistory: any) => [...response.data, ...prevHistory]);
+                setChatHistory((prevHistory: any) => [
+                    ...response.data,
+                    ...prevHistory,
+                ]);
                 setMetaData({
                     total_pages: response?.meta?.total_pages,
                     current_page: response?.meta?.current_page,
@@ -157,7 +167,9 @@ const ChatPage = () => {
 
     // Handle scroll to load more messages
     const handleScroll = (event: React.UIEvent) => {
-        const bottom = event.currentTarget.scrollHeight === event.currentTarget.scrollTop + event.currentTarget.clientHeight;
+        const bottom =
+            event.currentTarget.scrollHeight ===
+            event.currentTarget.scrollTop + event.currentTarget.clientHeight;
         if (bottom && currentPage < metaData?.total_pages) {
             loadMoreMessages();
         }
@@ -171,11 +183,10 @@ const ChatPage = () => {
                     onClick={() => router.back()}
                     className="rounded-lg btn !shadow !p-2 !border-none hover:bg-gray-200"
                 >
-                    <IoIosArrowBack className={"text-lg"}/>
+                    <IoIosArrowBack className={"text-lg"} />
                 </button>
                 <div className="flex items-center ml-4">
-                    <div
-                        className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                    <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
                         <img
                             alt={parsedUser?.name}
                             src={parsedUser?.avatar}
@@ -200,49 +211,74 @@ const ChatPage = () => {
             >
                 {isLoading ? (
                     <div className="flex h-full justify-center items-center">
-                        <Spinner/>
+                        <Spinner />
                     </div>
                 ) : (
-                    <div className={"sm:my-[100px] my-[64px] mb-[75px] overflow-y-auto h-full"}>
+                    <div
+                        className={
+                            "sm:my-[100px] my-[64px] mb-[75px] overflow-y-auto h-full flex flex-col-reverse"
+                        }
+                        ref={chatEndRef}
+                    >
+                        <div className={" flex flex-col gap-4"}>
+                            {chatHistory?.length > 0 ? (
+                                chatHistory?.map((chat: Chat) =>
+                                    chat?.sender_id === parsedUser?.id ? (
+                                        <div
+                                            key={chat?.id}
+                                            className="flex flex-col gap-0.5 items-start"
+                                        >
+                                            <div className="bg-white text-xs max-w-[80%] text-gray-700 px-4 py-3 rounded-lg shadow-sm rounded-bl-none break-words">
+                                                {chat?.message}
+                                            </div>
+                                            <p className="text-xs text-gray-400 mt-1">
+                                                {chat?.created_at}
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <div
+                                            key={chat?.id}
+                                            className="flex flex-col gap-0.5 items-end"
+                                        >
+                                            <div className="bg-primary text-xs max-w-[80%] text-white px-4 py-3 rounded-lg shadow-sm rounded-br-none break-words">
+                                                {chat?.message}
+                                            </div>
+                                            <p className="text-xs text-gray-400 mt-1 text-right">
+                                                {chat?.created_at}
+                                            </p>
+                                        </div>
+                                    )
+                                )
+                            ) : (
+                                <div
+                                    className={
+                                        "h-full flex justify-center items-center text-sm text-gray-500"
+                                    }
+                                >
+                                    No messages here yet...
+                                </div>
+                            )}
+                        </div>
                         {metaData?.current_page < metaData?.total_pages && (
                             <button
-                                className="mt-4 text-sm text-primary/60 bg-gray-200 w-full py-4 mb-5"
+                                className="mt-4 text-sm text-primary/60 bg-gray-200 w-full py-4 mb-5 rounded"
                                 onClick={loadMoreMessages}
                                 disabled={isLoadingMore}
                             >
-                                {isLoadingMore ? <div className={"flex gap-2 justify-center items-center"}><Spinner size={"sm"}/>Loading...</div> : "Load More Messages"}
+                                {isLoadingMore ? (
+                                    <div
+                                        className={
+                                            "flex gap-2 justify-center items-center"
+                                        }
+                                    >
+                                        <Spinner size={"sm"} />
+                                        Loading...
+                                    </div>
+                                ) : (
+                                    "Load More Messages"
+                                )}
                             </button>
                         )}
-                        <div
-                            className={" flex flex-col gap-4"}>
-                            {
-                                chatHistory?.length > 0 ?
-                                    chatHistory?.map((chat: Chat) => (
-                                        chat?.sender_id === parsedUser?.id ? (
-                                            <div key={chat?.id} className="flex flex-col gap-0.5 items-start">
-                                                <div
-                                                    className="bg-white text-xs max-w-[80%] text-gray-700 px-4 py-3 rounded-lg shadow-sm rounded-bl-none break-words">
-                                                    {chat?.message}
-                                                </div>
-                                                <p className="text-xs text-gray-400 mt-1">{chat?.created_at}</p>
-                                            </div>
-                                        ) : (
-                                            <div key={chat?.id} className="flex flex-col gap-0.5 items-end">
-                                                <div
-                                                    className="bg-primary text-xs max-w-[80%] text-white px-4 py-3 rounded-lg shadow-sm rounded-br-none break-words">
-                                                    {chat?.message}
-                                                </div>
-                                                <p className="text-xs text-gray-400 mt-1 text-right">
-                                                    {chat?.created_at}
-                                                </p>
-                                            </div>
-                                        )
-                                    )) :
-                                    <div className={"h-full flex justify-center items-center text-sm text-gray-500"}>No
-                                        messages here yet...</div>
-                            }
-                        </div>
-                        <div ref={chatEndRef}></div>
                     </div>
                 )}
             </main>
@@ -254,7 +290,7 @@ const ChatPage = () => {
                     onSubmit={handleSubmit(onSubmit)}
                 >
                     <input
-                        {...register("message", {required: true})}
+                        {...register("message", { required: true })}
                         className={"form-input"}
                         placeholder={"Write a message..."}
                     />
@@ -265,7 +301,7 @@ const ChatPage = () => {
                         radius={"full"}
                         variant={"light"}
                     >
-                        <SendIcon/>
+                        <SendIcon />
                     </Button>
                 </form>
             </footer>

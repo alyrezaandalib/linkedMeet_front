@@ -12,7 +12,7 @@ import {useRouter} from "next/navigation";
 import {useDispatch, useSelector} from "react-redux";
 import toast from "react-hot-toast";
 import {Logout} from "@/store/userSlice";
-import {getCookie} from "cookies-next";
+import {deleteCookie, getCookie} from "cookies-next";
 import {useState} from "react";
 // icons
 import {CiUser} from "react-icons/ci";
@@ -22,8 +22,13 @@ import {PiInfoFill} from "react-icons/pi";
 import {TiUser} from "react-icons/ti";
 import {LuMenu} from "react-icons/lu";
 import LogoutPage from "@/components/logout";
+import {useEffect} from "react";
 
-export default function DrawerMenu({setLocation} : any) {
+interface DrawerMenuProps {
+    setIsGpsOnAction: (status: boolean) => void;
+}
+
+export default function DrawerMenu({ setIsGpsOnAction }: DrawerMenuProps) {
 
     const user = useSelector((state: any) => state.user.user);
 
@@ -35,20 +40,14 @@ export default function DrawerMenu({setLocation} : any) {
 
     const dispatch = useDispatch();
 
-    if (isLoading){
-        setLocation("off")
-        fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/user/gps-status`, {
-            method: 'PATCH',
-            headers: {
-                'Authorization': `Bearer ${getCookie("token")}`,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                is_gps_enabled: false,
-            }),
-        }).then(response => {});
-        return  <LogoutPage/>
+    useEffect(() => {
+        if (isLoading) {
+            setIsGpsOnAction(false);
+        }
+    }, [isLoading, setIsGpsOnAction]);
+
+    if (isLoading) {
+        return <LogoutPage/>
     }
 
     return (
@@ -84,17 +83,17 @@ export default function DrawerMenu({setLocation} : any) {
 
 
                             <DrawerBody>
-                                <Button  className={"justify-start"} variant={"light"} radius={"sm"}
+                                <Button className={"justify-start"} variant={"light"} radius={"sm"}
                                         onPress={() => router.push("/chat")}>
                                     <HiMiniChatBubbleOvalLeftEllipsis className={"text-xl"}/>
                                     Chat
                                 </Button>
-                                <Button  className={"justify-start"} variant={"light"} radius={"sm"}
+                                <Button className={"justify-start"} variant={"light"} radius={"sm"}
                                         onPress={() => router.push("/profile")}>
                                     <TiUser className={"text-xl"}/>
                                     Profile
                                 </Button>
-                                <Button  className={"justify-start"} variant={"light"} radius={"sm"}
+                                <Button className={"justify-start"} variant={"light"} radius={"sm"}
                                         onPress={() => router.push("/about-us")}>
                                     <PiInfoFill className={"text-xl"}/>
                                     About Us
@@ -105,32 +104,46 @@ export default function DrawerMenu({setLocation} : any) {
                                     radius={"sm"}
                                     onPress={() => {
                                         setIsLoading(true)
-                                        fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/logout`, {
-                                            method: "POST",
+                                        fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/user/gps-status`, {
+                                            method: 'PATCH',
                                             headers: {
-                                                'Content-Type': 'application/json',
                                                 'Authorization': `Bearer ${getCookie("token")}`,
                                                 'Accept': 'application/json',
+                                                'Content-Type': 'application/json',
                                             },
+                                            body: JSON.stringify({
+                                                is_gps_enabled: false,
+                                            }),
                                         })
                                             .then(response => {
-                                                if (!response.ok) {
-                                                    toast.error(`HTTP error! status: ${response.status}`)
-                                                    throw new Error(`HTTP error! status: ${response.status}`);
-                                                }
-                                                return response.json();
-                                            })
-                                            .then(data => {
-                                                dispatch(Logout())
-                                                router.refresh()
-                                            })
-                                            .catch(error => {
-                                                toast.error(`Error fetching LinkedIn auth URL: ${error}`);
-                                                setIsLoading(false)
+                                                deleteCookie("isLocationSet");
+                                                fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/logout`, {
+                                                    method: "POST",
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                        'Authorization': `Bearer ${getCookie("token")}`,
+                                                        'Accept': 'application/json',
+                                                    },
+                                                })
+                                                    .then(response => {
+                                                        if (!response.ok) {
+                                                            toast.error(`HTTP error! status: ${response.status}`)
+                                                            throw new Error(`HTTP error! status: ${response.status}`);
+                                                        }
+                                                        return response.json();
+                                                    })
+                                                    .then(data => {
+                                                        dispatch(Logout())
+                                                        router.refresh()
+                                                    })
+                                                    .catch(error => {
+                                                        toast.error(`Error fetching LinkedIn auth URL: ${error}`);
+                                                        setIsLoading(false)
+                                                    });
                                             });
                                     }}>
                                     <IoExit className={"text-xl"}/>
-                                    Exit
+                                    Sign out
                                 </Button>
                             </DrawerBody>
 
