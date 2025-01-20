@@ -11,6 +11,7 @@ import {useRouter} from "next/navigation";
 import {useQuery} from "@tanstack/react-query";
 import {fetchService} from "@/services/crud-services/fetch-service";
 import {deleteCookie, getCookie, setCookie} from "cookies-next";
+import LogoutPage from "@/components/logout";
 // images
 import disabled_location_image from "../public/images/disabled_location.png";
 import no_user_found_image from "../public/images/no_user_found.png";
@@ -25,6 +26,9 @@ export default function Home() {
     // services
     const {sendUserLocation, getJobTitlesList, getIndustriesList} =
         useService();
+
+    // logout state
+    const [isLoggingOut, setIsLoggingOut] = useState(false)
 
     // GPS
     const [isGpsOn, setIsGpsOn] = useState(
@@ -187,10 +191,15 @@ export default function Home() {
         });
     };
 
+    if (isLoggingOut) {
+        return <LogoutPage/>
+    }
+
     return (
         <div className={"w-full h-screen"}>
+            {/* header */}
             <div className={"flex items-center justify-between px-5 py-3"}>
-                <DrawerMenu setIsGpsOnAction={setIsGpsOn}/>
+                <DrawerMenu isLoading={isLoggingOut} setIsLoading={setIsLoggingOut} setIsGpsOnAction={setIsGpsOn}/>
                 {isGpsOn && (
                     <Tabs
                         aria-label="location"
@@ -294,6 +303,9 @@ export default function Home() {
                                         onPress={() => {
                                             setSelectedIndustry(null);
                                             setSelectedJob(null);
+                                            setTimeout(() => {
+                                                fetchNearbyUsers()
+                                            }, 100);
                                         }}
                                     >
                                         clear filters
@@ -322,14 +334,10 @@ export default function Home() {
                                     you. You can start a conversation with them
                                     by clicking on their profiles.
                                 </div>
-                                <div
-                                    className={
-                                        "w-full flex justify-between items-center gap-1"
-                                    }
-                                >
+                                <div className={"w-full flex justify-between items-center gap-1"}>
                                     <input
                                         readOnly
-                                        placeholder="Title job"
+                                        placeholder="Filter job title..."
                                         className="form-input form-input-sm !m-0"
                                         value={selectedJob?.name || ""}
                                         onClick={() =>
@@ -338,7 +346,7 @@ export default function Home() {
                                     />
                                     <input
                                         readOnly
-                                        placeholder="Industry"
+                                        placeholder="Filter industry..."
                                         className="form-input form-input-sm !m-0"
                                         value={selectedIndustry?.name || ""}
                                         onClick={() =>
@@ -367,7 +375,7 @@ export default function Home() {
                                                     alt={user.name}
                                                     src={user.avatar}
                                                     className={
-                                                        "rounded-full h-full w-full"
+                                                        "rounded-full h-full w-full bg-gray-200 border border-gray-300 !max-w-12 !max-h-12"
                                                     }
                                                 />
                                             </div>
@@ -488,7 +496,7 @@ export default function Home() {
                                             src={selectedUser.avatar}
                                             alt={selectedUser.name}
                                             className={
-                                                "rounded-full h-full w-full"
+                                                "rounded-full h-full w-full bg-gray-200 border border-gray-300 !max-w-16 !max-h-16"
                                             }
                                         />
                                     </div>
@@ -506,7 +514,6 @@ export default function Home() {
                                                     "font-semibold w-[50%] p-1"
                                                 }
                                             >
-                                                {" "}
                                                 industry:
                                             </div>
                                             <div className={"text-wrap"}>
@@ -519,7 +526,6 @@ export default function Home() {
                                                     "font-semibold w-[50%] p-1"
                                                 }
                                             >
-                                                {" "}
                                                 title job:
                                             </div>
                                             <div className={"text-wrap"}>

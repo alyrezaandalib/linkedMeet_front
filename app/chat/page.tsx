@@ -1,11 +1,10 @@
 "use client"
 import Link from "next/link";
 import {IoIosArrowBack} from "react-icons/io";
-import {Input, Spinner} from "@nextui-org/react";
+import {Input, Spinner, Button} from "@nextui-org/react";
 import useService, {Chats} from "./service";
 import React, {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
-import {Button} from "@nextui-org/button";
 import truncateMessage from "@/utils/truncateMessage";
 // icons
 import {CiSearch} from "react-icons/ci";
@@ -73,7 +72,7 @@ export default function ChatPage() {
                                     >
                                         <div className={"min-w-10 h-10 rounded-full bg-gray-200/50"}>
                                             <img src={item.avatar} alt={item.name}
-                                                 className={"h-10 w-10 rounded-full"}/>
+                                                 className={"rounded-full h-full w-full bg-gray-200 border border-gray-300 !max-w-10 !max-h-10"}/>
                                         </div>
                                         <div className={"flex w-full items-end"}>
                                             <div className={"flex flex-col items-start gap-1 w-full"}>

@@ -190,7 +190,7 @@ const ChatPage = () => {
                         <img
                             alt={parsedUser?.name}
                             src={parsedUser?.avatar}
-                            className={"rounded-full h-full w-full"}
+                            className={"rounded-full h-full w-full bg-gray-200 border border-gray-300 !max-w-10 !max-h-10"}
                         />
                     </div>
                     <div className="ml-3">

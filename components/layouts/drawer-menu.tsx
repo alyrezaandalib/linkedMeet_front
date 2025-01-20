@@ -13,7 +13,6 @@ import {useDispatch, useSelector} from "react-redux";
 import toast from "react-hot-toast";
 import {Logout} from "@/store/userSlice";
 import {deleteCookie, getCookie} from "cookies-next";
-import {useState} from "react";
 // icons
 import {CiUser} from "react-icons/ci";
 import {HiMiniChatBubbleOvalLeftEllipsis} from "react-icons/hi2";
@@ -21,20 +20,19 @@ import {IoExit} from "react-icons/io5";
 import {PiInfoFill} from "react-icons/pi";
 import {TiUser} from "react-icons/ti";
 import {LuMenu} from "react-icons/lu";
-import LogoutPage from "@/components/logout";
 import {useEffect} from "react";
 
 interface DrawerMenuProps {
     setIsGpsOnAction: (status: boolean) => void;
+    isLoading : boolean
+    setIsLoading : any;
 }
 
-export default function DrawerMenu({ setIsGpsOnAction }: DrawerMenuProps) {
+export default function DrawerMenu({ setIsGpsOnAction , isLoading , setIsLoading }: DrawerMenuProps) {
 
     const user = useSelector((state: any) => state.user.user);
 
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
-
-    const [isLoading, setIsLoading] = useState(false)
 
     const router = useRouter()
 
@@ -45,10 +43,6 @@ export default function DrawerMenu({ setIsGpsOnAction }: DrawerMenuProps) {
             setIsGpsOnAction(false);
         }
     }, [isLoading, setIsGpsOnAction]);
-
-    if (isLoading) {
-        return <LogoutPage/>
-    }
 
     return (
         <>
@@ -70,7 +64,7 @@ export default function DrawerMenu({ setIsGpsOnAction }: DrawerMenuProps) {
                                     {
                                         user.avatar
                                             ?
-                                            <img className={"rounded-full"} src={user.avatar} alt={user.name}/>
+                                            <img className={"rounded-full w-full h-full !max-w-20 !max-h-20"} src={user.avatar} alt={user.name}/>
                                             :
                                             <CiUser className={"text-3xl"}/>
                                     }
