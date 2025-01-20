@@ -80,7 +80,12 @@ export default function ChatPage() {
                                                 <div
                                                     className={"text-gray-400 text-sm"}>{truncateMessage(item.message)}</div>
                                             </div>
+                                            <div className={"flex flex-col items-end gap-2"}>
+                                                <div className={"bg-danger rounded-full w-5 h-5 flex items-center justify-center text-xs text-white p-0.5"}>
+                                                    3
+                                                </div>
                                             <div className={"text-gray-400 w-fit text-xs"}>{item.last_message_at}</div>
+                                            </div>
                                         </div>
                                     </Button>
                                     <div

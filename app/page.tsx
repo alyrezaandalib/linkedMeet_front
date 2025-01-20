@@ -2,7 +2,7 @@
 import Image from "next/image";
 import useService, {Location, User} from "./service";
 import DrawerMenu from "@/components/layouts/drawer-menu";
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Button, Modal, ModalBody, ModalContent, ModalHeader, Spinner, Tab, Tabs,} from "@nextui-org/react";
 import toast from "react-hot-toast";
 import {SubmitHandler} from "react-hook-form";
@@ -19,7 +19,7 @@ import users_image from "../public/images/users.png";
 // icons
 import {FaPowerOff} from "react-icons/fa6";
 import SendIcon from "@/public/tsx-icons/send";
-import {IoDocumentTextOutline} from "react-icons/io5";
+import {IoChatbubbleOutline, IoDocumentTextOutline} from "react-icons/io5";
 
 export default function Home() {
     const router = useRouter();
@@ -200,25 +200,34 @@ export default function Home() {
             {/* header */}
             <div className={"flex items-center justify-between px-5 py-3"}>
                 <DrawerMenu isLoading={isLoggingOut} setIsLoading={setIsLoggingOut} setIsGpsOnAction={setIsGpsOn}/>
-                {isGpsOn && (
-                    <Tabs
-                        aria-label="location"
-                        onSelectionChange={(key: any) => {
-                            if (key === "off") {
-                                setIsGpsOn(false);
-                            }
-                        }}
-                        radius={"sm"}
-                        classNames={{tabList: "bg-primary"}}
-                    >
-                        <Tab
-                            key="on"
-                            title={<FaPowerOff/>}
-                            className={"px-5"}
-                        />
-                        <Tab key="off" title="off" className={"px-5"}/>
-                    </Tabs>
-                )}
+                <div className={"flex items-center gap-1"}>
+                    <Button isIconOnly variant={"light"} onPress={() => router.push("/chat")}>
+                        <div className={"relative"}>
+                            <div className={"absolute bg-danger rounded-full w-2 h-2 top-0 left-0"}></div>
+                            <IoChatbubbleOutline className={"text-2xl"}/>
+                        </div>
+                    </Button>
+
+                    {isGpsOn && (
+                        <Tabs
+                            aria-label="location"
+                            onSelectionChange={(key: any) => {
+                                if (key === "off") {
+                                    setIsGpsOn(false);
+                                }
+                            }}
+                            radius={"sm"}
+                            classNames={{tabList: "bg-primary"}}
+                        >
+                            <Tab
+                                key="on"
+                                title={<FaPowerOff/>}
+                                className={"px-5"}
+                            />
+                            <Tab key="off" title="off" className={"px-5"}/>
+                        </Tabs>
+                    )}
+                </div>
             </div>
             <div className={"h-[calc(100%-64px)] flex justify-center"}>
                 {/* when location is off ... */}
