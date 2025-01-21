@@ -1,15 +1,15 @@
 "use client";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Button, Spinner } from "@nextui-org/react";
-import useService, { Message, Chat } from "./service";
-import { SubmitHandler, useForm } from "react-hook-form";
+import {useRouter, useSearchParams} from "next/navigation";
+import {Button, Spinner} from "@nextui-org/react";
+import useService, {IMessage, IChat} from "./service";
+import {SubmitHandler, useForm} from "react-hook-form";
 import toast from "react-hot-toast";
-import { useEffect, useState, useRef } from "react";
-import { useSelector } from "react-redux";
-import { getCookie } from "cookies-next";
-import { echo } from "@/utils/echo";
+import {useEffect, useState, useRef} from "react";
+import {useSelector} from "react-redux";
+import {getCookie} from "cookies-next";
+import {echo} from "@/utils/echo";
 // icons
-import { IoIosArrowBack } from "react-icons/io";
+import {IoIosArrowBack} from "react-icons/io";
 import SendIcon from "@/public/tsx-icons/send";
 
 const ChatPage = () => {
@@ -23,10 +23,14 @@ const ChatPage = () => {
     const parsedUser = user ? JSON.parse(decodeURIComponent(user)) : null;
 
     // Form handling
-    const { register, handleSubmit, resetField } = useForm<Message>();
+    const {register, handleSubmit, resetField} = useForm<IMessage>();
 
     // Service hooks
-    const { getChatHistory, sendMessage } = useService();
+    const {
+        getChatHistory,
+        sendMessage,
+        markAsRead
+    } = useService();
 
     // Chat state
     const [chatHistory, setChatHistory] = useState<any>([]);
@@ -38,17 +42,21 @@ const ChatPage = () => {
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [isLoadingInitial, setIsLoadingInitial] = useState(true);
 
-    const { data: chatHistoryResponse, isLoading } = getChatHistory(
+    const {data: chatHistoryResponse, isLoading} = getChatHistory(
         parsedUser.id,
         currentPage
     );
+
+    useEffect(() => {
+        if (chatHistoryResponse) markAsRead.mutate({"sender_id": userId})
+    }, [chatHistoryResponse]);
 
     // Scroll to bottom when new data is loaded
     const scrollToBottom = () => {
         if (chatEndRef?.current) {
             chatEndRef?.current?.children?.[0]?.children?.[
-                chatEndRef?.current?.children?.[0].children?.length - 1
-            ]?.scrollIntoView({ behavior: "smooth" });
+            chatEndRef?.current?.children?.[0].children?.length - 1
+                ]?.scrollIntoView({behavior: "smooth"});
         }
     };
 
@@ -152,7 +160,7 @@ const ChatPage = () => {
     };
 
     // Handle message send
-    const onSubmit: SubmitHandler<Message> = (data: any) => {
+    const onSubmit: SubmitHandler<IMessage> = (data: any) => {
         data.receiver_id = parsedUser?.id;
 
         sendMessage.mutate(data, {
@@ -183,10 +191,11 @@ const ChatPage = () => {
                     onClick={() => router.back()}
                     className="rounded-lg btn !shadow !p-2 !border-none hover:bg-gray-200"
                 >
-                    <IoIosArrowBack className={"text-lg"} />
+                    <IoIosArrowBack className={"text-lg"}/>
                 </button>
                 <div className="flex items-center ml-4">
-                    <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                    <div
+                        className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
                         <img
                             alt={parsedUser?.name}
                             src={parsedUser?.avatar}
@@ -211,7 +220,7 @@ const ChatPage = () => {
             >
                 {isLoading ? (
                     <div className="flex h-full justify-center items-center">
-                        <Spinner />
+                        <Spinner/>
                     </div>
                 ) : (
                     <div
@@ -222,13 +231,14 @@ const ChatPage = () => {
                     >
                         <div className={" flex flex-col gap-4"}>
                             {chatHistory?.length > 0 ? (
-                                chatHistory?.map((chat: Chat) =>
+                                chatHistory?.map((chat: IChat) =>
                                     chat?.sender_id === parsedUser?.id ? (
                                         <div
                                             key={chat?.id}
                                             className="flex flex-col gap-0.5 items-start"
                                         >
-                                            <div className="bg-white text-xs max-w-[80%] text-gray-700 px-4 py-3 rounded-lg shadow-sm rounded-bl-none break-words">
+                                            <div
+                                                className="bg-white text-xs max-w-[80%] text-gray-700 px-4 py-3 rounded-lg shadow-sm rounded-bl-none break-words">
                                                 {chat?.message}
                                             </div>
                                             <p className="text-xs text-gray-400 mt-1">
@@ -240,7 +250,8 @@ const ChatPage = () => {
                                             key={chat?.id}
                                             className="flex flex-col gap-0.5 items-end"
                                         >
-                                            <div className="bg-primary text-xs max-w-[80%] text-white px-4 py-3 rounded-lg shadow-sm rounded-br-none break-words">
+                                            <div
+                                                className="bg-primary text-xs max-w-[80%] text-white px-4 py-3 rounded-lg shadow-sm rounded-br-none break-words">
                                                 {chat?.message}
                                             </div>
                                             <p className="text-xs text-gray-400 mt-1 text-right">
@@ -271,7 +282,7 @@ const ChatPage = () => {
                                             "flex gap-2 justify-center items-center"
                                         }
                                     >
-                                        <Spinner size={"sm"} />
+                                        <Spinner size={"sm"}/>
                                         Loading...
                                     </div>
                                 ) : (
@@ -290,7 +301,7 @@ const ChatPage = () => {
                     onSubmit={handleSubmit(onSubmit)}
                 >
                     <input
-                        {...register("message", { required: true })}
+                        {...register("message", {required: true})}
                         className={"form-input"}
                         placeholder={"Write a message..."}
                     />
@@ -301,7 +312,7 @@ const ChatPage = () => {
                         radius={"full"}
                         variant={"light"}
                     >
-                        <SendIcon />
+                        <SendIcon/>
                     </Button>
                 </form>
             </footer>

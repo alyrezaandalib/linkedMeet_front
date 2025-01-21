@@ -60,40 +60,45 @@ export default function ChatPage() {
                         </div>
                         :
                         (filteredChats && filteredChats.length > 0 ?
-                            filteredChats.map((item: Chats) => (
-                                <div key={item.id}>
-                                    <Button
-                                        key={item.id}
-                                        onPress={() => router.push(`/chat/${item.id}?user=${encodeURIComponent(JSON.stringify(item))}`)}
-                                        variant={"light"}
-                                        size={"lg"}
-                                        radius={"sm"}
-                                        className={"flex justify-start py-8 w-full px-2"}
-                                    >
-                                        <div className={"min-w-10 h-10 rounded-full bg-gray-200/50"}>
-                                            <img src={item.avatar} alt={item.name}
-                                                 className={"rounded-full h-full w-full bg-gray-200 border border-gray-300 !max-w-10 !max-h-10"}/>
-                                        </div>
-                                        <div className={"flex w-full items-end"}>
-                                            <div className={"flex flex-col items-start gap-1 w-full"}>
-                                                <div className={"capitalize"}>{item.name}</div>
-                                                <div
-                                                    className={"text-gray-400 text-sm"}>{truncateMessage(item.message)}</div>
+                                filteredChats.map((item: Chats) => (
+                                    <div key={item.id}>
+                                        <Button
+                                            key={item.id}
+                                            onPress={() => router.push(`/chat/${item.id}?user=${encodeURIComponent(JSON.stringify(item))}`)}
+                                            variant={"light"}
+                                            size={"lg"}
+                                            radius={"sm"}
+                                            className={"flex justify-start py-8 w-full px-2"}
+                                        >
+                                            <div className={"min-w-10 h-10 rounded-full bg-gray-200/50"}>
+                                                <img src={item.avatar} alt={item.name}
+                                                     className={"rounded-full h-full w-full bg-gray-200 border border-gray-300 !max-w-10 !max-h-10"}/>
                                             </div>
-                                            <div className={"flex flex-col items-end gap-2"}>
-                                                <div className={"bg-danger rounded-full w-5 h-5 flex items-center justify-center text-xs text-white p-0.5"}>
-                                                    3
+                                            <div className={"flex w-full items-end"}>
+                                                <div className={"flex flex-col items-start gap-1 w-full"}>
+                                                    <div className={"capitalize"}>{item.name}</div>
+                                                    <div
+                                                        className={"text-gray-400 text-sm"}>{truncateMessage(item.message)}</div>
                                                 </div>
-                                            <div className={"text-gray-400 w-fit text-xs"}>{item.last_message_at}</div>
+                                                <div className={"flex flex-col items-end gap-2"}>
+                                                    {
+                                                        item.has_new_messages > 0 &&
+                                                        <div
+                                                            className={"bg-danger rounded-full w-5 h-5 flex items-center justify-center text-xs text-white p-0.5"}>
+                                                            {item.has_new_messages}
+                                                        </div>
+                                                    }
+                                                    <div
+                                                        className={"text-gray-400 w-fit text-xs"}>{item.last_message_at}</div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </Button>
-                                    <div
-                                        className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+                                        </Button>
+                                        <div
+                                            className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+                                    </div>
+                                )) : <div className={"h-full flex justify-center items-center text-sm text-gray-500"}>
+                                    There is no chat to display.
                                 </div>
-                            )) : <div className={"h-full flex justify-center items-center text-sm text-gray-500"}>
-                                There is no chat to display.
-                            </div>
                         )
                 }
             </div>

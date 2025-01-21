@@ -63,7 +63,7 @@ export default function SignInPage() {
                 const activity_types = data.user.activity_types;
                 setRedirectPath(activity_types && activity_types.length === 0 ? "/activity-type" : "/");
             } else if (response.status === 403) {
-                setRedirectPath(`/verify-code?email=${data.user.email}`);
+                setRedirectPath(`/verify-code?email=${params.email}`);
             } else {
                 toast.error(data.message || "An error occurred during sign-in.");
             }

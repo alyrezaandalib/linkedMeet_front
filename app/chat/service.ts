@@ -8,6 +8,7 @@ export interface Chats {
     started_at : string
     last_message_at : string
     message:string
+    has_new_messages : number
 }
 
 export default function useService() {

@@ -1,20 +1,23 @@
 import {useMutation, useQuery} from "@tanstack/react-query";
-import {Inputs} from "@/app/profile/service";
 import {createService} from "@/services/crud-services/create-service";
 import {fetchService} from "@/services/crud-services/fetch-service";
 
-export interface Message {
+export interface IMessage {
     receiver_id: number
     message: string
 }
 
-export interface Chat {
+export interface IChat {
     id: number
     "sender_id": number,
     "receiver_id": number
     "message": string
     "created_at": string
     "read_at": string
+}
+
+export interface IMarkAsRead {
+    sender_id: number
 }
 
 
@@ -32,11 +35,17 @@ export default function useService() {
         enabled: true,
     });
 
+    const markAsRead = useMutation({
+        mutationFn: async (body: IMarkAsRead) => {
+            await createService("/v1/chat/mark-as-read", body);
+        },
+    });
+
     const sendMessage = useMutation({
-        mutationFn: async (body: Inputs) => {
+        mutationFn: async (body: any) => {
             await createService("/v1/chat/send-message", body);
         },
     });
 
-    return {getChatHistory,sendMessage};
+    return {getChatHistory, sendMessage, markAsRead};
 }

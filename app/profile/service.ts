@@ -1,7 +1,6 @@
 import {useMutation, useQuery} from "@tanstack/react-query";
 import {fetchService} from "@/services/crud-services/fetch-service";
 import {patchService} from "@/services/crud-services/patch-service";
-import {createService} from "@/services/crud-services/create-service";
 
 export interface Inputs {
     name: string;
