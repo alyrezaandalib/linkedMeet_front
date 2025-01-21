@@ -48,7 +48,7 @@ const ChatPage = () => {
     );
 
     useEffect(() => {
-        if (chatHistoryResponse) markAsRead.mutate({"sender_id": userId})
+        if (chatHistoryResponse) markAsRead.mutate({"sender_id": parsedUser.id})
     }, [chatHistoryResponse]);
 
     // Scroll to bottom when new data is loaded
@@ -82,6 +82,7 @@ const ChatPage = () => {
                         created_at: data.created_at,
                     },
                 ]);
+                markAsRead.mutate({"sender_id": parsedUser.id})
                 setTimeout(() => {
                     scrollToBottom();
                 }, 100);
