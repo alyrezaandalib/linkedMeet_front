@@ -57,8 +57,8 @@ export default function DrawerMenu({ setIsGpsOnAction, isLoading, setIsLoading }
             });
 
             if (response.ok) {
-                const data = await response.json();
-                setAppVersion(data.version || "unknown");
+                const data = await response.json()
+                setAppVersion(data?.latest_version || "unknown");
             } else if (response.status === 404) {
                 setAppVersion("unknown");
             } else {
