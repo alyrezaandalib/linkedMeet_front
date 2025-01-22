@@ -15,6 +15,9 @@ const geistSans = localFont({
 export const metadata: Metadata = {
     title: "LinkedMeet",
     description: "LinkedMeet",
+    appleWebApp: {
+        title: "LinkedMeet",
+    },
 };
 
 export default function RootLayout({
