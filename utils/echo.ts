@@ -1,6 +1,5 @@
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
-import axios from "axios";
 import {getCookie} from "cookies-next";
 
 declare global {

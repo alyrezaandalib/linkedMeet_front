@@ -1,4 +1,4 @@
-"use client"
+import React, { useEffect, useState } from "react";
 import {
     Drawer,
     DrawerContent,
@@ -8,11 +8,12 @@ import {
     Button,
     useDisclosure,
 } from "@heroui/react";
-import {useRouter} from "next/navigation";
-import {useDispatch, useSelector} from "react-redux";
+import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import {Logout} from "@/store/userSlice";
-import {deleteCookie, getCookie} from "cookies-next";
+import { Logout } from "@/store/userSlice";
+import { deleteCookie, getCookie } from "cookies-next";
+import { UAParser } from "ua-parser-js";
 // icons
 import {CiUser} from "react-icons/ci";
 import {HiMiniChatBubbleOvalLeftEllipsis} from "react-icons/hi2";
@@ -20,23 +21,60 @@ import {IoExit} from "react-icons/io5";
 import {PiInfoFill} from "react-icons/pi";
 import {TiUser} from "react-icons/ti";
 import {LuMenu} from "react-icons/lu";
-import {useEffect} from "react";
 
 interface DrawerMenuProps {
     setIsGpsOnAction: (status: boolean) => void;
-    isLoading : boolean
-    setIsLoading : any;
+    isLoading: boolean;
+    setIsLoading: any;
 }
 
-export default function DrawerMenu({ setIsGpsOnAction , isLoading , setIsLoading }: DrawerMenuProps) {
+export default function DrawerMenu({ setIsGpsOnAction, isLoading, setIsLoading }: DrawerMenuProps) {
+    const [userPlatform, setUserPlatform] = useState<any>();
+    const [appVersion, setAppVersion] = useState<string>("unknown");
+
+    useEffect(() => {
+        if (typeof navigator !== "undefined") {
+            const { os } = UAParser(navigator.userAgent);
+            setUserPlatform(os);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (userPlatform) {
+            fetchAppVersion();
+        }
+    }, [userPlatform]);
+
+    const fetchAppVersion = async () => {
+        try {
+            const response: Response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/app/check-version?current_version=0.0.0&platform=${userPlatform.name.toLowerCase()}`, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getCookie("token")}`,
+                    'Accept': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setAppVersion(data.version || "unknown");
+            } else if (response.status === 404) {
+                setAppVersion("unknown");
+            } else {
+                const data = await response.json();
+                toast.error(data.message || "An error occurred during version fetch.");
+            }
+        } catch (error: any) {
+            toast.error(error.message);
+        }
+    };
 
     const user = useSelector((state: any) => state.user.user);
-
-    const {isOpen, onOpen, onOpenChange} = useDisclosure();
-
-    const router = useRouter()
-
     const dispatch = useDispatch();
+
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const router = useRouter();
 
     useEffect(() => {
         if (isLoading) {
@@ -64,7 +102,8 @@ export default function DrawerMenu({ setIsGpsOnAction , isLoading , setIsLoading
                                     {
                                         user.avatar
                                             ?
-                                            <img className={"rounded-full w-full h-full !max-w-20 !max-h-20"} src={user.avatar} alt={user.name}/>
+                                            <img className={"rounded-full w-full h-full !max-w-20 !max-h-20"}
+                                                 src={user.avatar} alt={user.name}/>
                                             :
                                             <CiUser className={"text-3xl"}/>
                                     }
@@ -97,7 +136,7 @@ export default function DrawerMenu({ setIsGpsOnAction , isLoading , setIsLoading
                                     variant={"light"}
                                     radius={"sm"}
                                     onPress={() => {
-                                        setIsLoading(true)
+                                        setIsLoading(true);
                                         fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/user/gps-status`, {
                                             method: 'PATCH',
                                             headers: {
@@ -109,7 +148,7 @@ export default function DrawerMenu({ setIsGpsOnAction , isLoading , setIsLoading
                                                 is_gps_enabled: false,
                                             }),
                                         })
-                                            .then(response => {
+                                            .then(() => {
                                                 deleteCookie("isLocationSet");
                                                 fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/logout`, {
                                                     method: "POST",
@@ -121,18 +160,18 @@ export default function DrawerMenu({ setIsGpsOnAction , isLoading , setIsLoading
                                                 })
                                                     .then(response => {
                                                         if (!response.ok) {
-                                                            toast.error(`HTTP error! status: ${response.status}`)
+                                                            toast.error(`HTTP error! status: ${response.status}`);
                                                             throw new Error(`HTTP error! status: ${response.status}`);
                                                         }
                                                         return response.json();
                                                     })
-                                                    .then(data => {
-                                                        dispatch(Logout())
-                                                        router.refresh()
+                                                    .then(() => {
+                                                        dispatch(Logout());
+                                                        router.refresh();
                                                     })
                                                     .catch(error => {
-                                                        toast.error(`Error fetching LinkedIn auth URL: ${error}`);
-                                                        setIsLoading(false)
+                                                        toast.error(`Error during logout: ${error}`);
+                                                        setIsLoading(false);
                                                     });
                                             });
                                     }}>
@@ -142,7 +181,7 @@ export default function DrawerMenu({ setIsGpsOnAction , isLoading , setIsLoading
                             </DrawerBody>
 
                             <DrawerFooter className={"justify-start text-xs text-gray-400"}>
-                                Version 1.2.4
+                                Version {appVersion}
                             </DrawerFooter>
                         </>
                     )}

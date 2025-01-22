@@ -4,7 +4,7 @@ import Link from "next/link";
 import {Button, Checkbox} from "@heroui/react";
 import {useForm, Controller} from "react-hook-form";
 import {useRouter} from "next/navigation";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import toast from "react-hot-toast";
 import {useEffect, useState} from "react";
 import {Authentication} from "@/store/userSlice";
@@ -20,6 +20,8 @@ export default function SignInPage() {
     const [isLoadingLogin, setIsLoadingLogin] = useState(false);
     const [isLoadingLinkedin, setIsLoadingLinkedin] = useState(false);
     const router = useRouter();
+
+    const isAuthenticated = useSelector((state: any) => state.user.isAuthenticated);
 
     const {
         register,
@@ -81,6 +83,10 @@ export default function SignInPage() {
             router.push(redirectPath);
         }
     }, [redirectPath]);
+
+    useEffect(() => {
+        if (isAuthenticated) router.push("/")
+    }, []);
 
     return (
         <div className={"flex flex-col h-screen"}>
