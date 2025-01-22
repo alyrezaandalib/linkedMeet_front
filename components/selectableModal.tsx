@@ -1,4 +1,4 @@
-import {Button, Modal, ModalBody, ModalContent, ModalHeader} from "@nextui-org/react";
+import {Button, Modal, ModalBody, ModalContent, ModalHeader} from "@heroui/react";
 // icons
 import {IoMdCheckmark} from "react-icons/io";
 import {IoIosClose} from "react-icons/io";

@@ -1,8 +1,8 @@
 "use client";
-import {Button} from "@nextui-org/button";
+import {Button} from "@heroui/button";
 import useService, {Inputs} from "./service";
 import {Controller, SubmitHandler, useForm} from "react-hook-form";
-import {Checkbox, Spinner} from "@nextui-org/react";
+import {Checkbox, Spinner} from "@heroui/react";
 import {useDispatch, useSelector} from "react-redux";
 import {useRouter} from "next/navigation";
 import toast from "react-hot-toast";

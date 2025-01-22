@@ -1,5 +1,5 @@
 "use client"
-import {Spinner} from "@nextui-org/react";
+import {Spinner} from "@heroui/react";
 import {useRouter, useSearchParams} from "next/navigation";
 import {useDispatch} from "react-redux";
 import {Authentication} from "@/store/userSlice";

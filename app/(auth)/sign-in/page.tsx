@@ -1,7 +1,7 @@
 "use client"
 import Linkedin from "@/public/tsx-icons/linkedin";
 import Link from "next/link";
-import {Button, Checkbox} from "@nextui-org/react";
+import {Button, Checkbox} from "@heroui/react";
 import {useForm, Controller} from "react-hook-form";
 import {useRouter} from "next/navigation";
 import {useDispatch} from "react-redux";

@@ -7,7 +7,7 @@ import {
     DrawerFooter,
     Button,
     useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import {useRouter} from "next/navigation";
 import {useDispatch, useSelector} from "react-redux";
 import toast from "react-hot-toast";

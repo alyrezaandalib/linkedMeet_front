@@ -1,7 +1,7 @@
 "use client";
 
-import {InputOtp} from "@nextui-org/react";
-import {Button} from "@nextui-org/button";
+import {InputOtp} from "@heroui/react";
+import {Button} from "@heroui/button";
 import {Controller, SubmitHandler, useForm} from "react-hook-form";
 import useService, {Inputs} from "./service";
 import {useRouter, useSearchParams} from "next/navigation";

@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link";
-import {Button, Spinner} from "@nextui-org/react";
+import {Button, Spinner} from "@heroui/react";
 import useService, {Inputs} from "./service";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {useDispatch, useSelector} from "react-redux";

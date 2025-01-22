@@ -1,7 +1,7 @@
 "use client"
 import Link from "next/link";
 import {IoIosArrowBack} from "react-icons/io";
-import {Input, Spinner, Button} from "@nextui-org/react";
+import {Input, Spinner, Button} from "@heroui/react";
 import useService, {Chats} from "./service";
 import React, {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";

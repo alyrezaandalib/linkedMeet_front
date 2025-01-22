@@ -3,7 +3,7 @@ import Image from "next/image";
 import LinkedMeetIcon from "../../public/images/LinkedMeet.png"
 import {useEffect} from "react";
 import {useRouter} from "next/navigation";
-import {Spinner} from "@nextui-org/react";
+import {Spinner} from "@heroui/react";
 import {hasCookie} from "cookies-next";
 
 export default function SplashScreenPage() {

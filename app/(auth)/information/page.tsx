@@ -1,7 +1,7 @@
 "use client"
 import {useEffect, useState} from "react";
 import {SubmitHandler, useForm} from "react-hook-form";
-import {Button} from "@nextui-org/react";
+import {Button} from "@heroui/react";
 import useService, {Inputs} from "./service";
 import SelectableModal from "@/components/selectableModal";
 import toast from "react-hot-toast";

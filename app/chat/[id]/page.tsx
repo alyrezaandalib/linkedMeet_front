@@ -1,6 +1,6 @@
 "use client";
 import {useRouter, useSearchParams} from "next/navigation";
-import {Button, Spinner} from "@nextui-org/react";
+import {Button, Spinner} from "@heroui/react";
 import useService, {IMessage, IChat} from "./service";
 import {SubmitHandler, useForm} from "react-hook-form";
 import toast from "react-hot-toast";

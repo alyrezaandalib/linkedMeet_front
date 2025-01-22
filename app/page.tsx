@@ -3,7 +3,7 @@ import Image from "next/image";
 import useService, {Location, User} from "./service";
 import DrawerMenu from "@/components/layouts/drawer-menu";
 import React, {useEffect, useRef, useState} from "react";
-import {Button, Modal, ModalBody, ModalContent, ModalHeader, Spinner, Tab, Tabs,} from "@nextui-org/react";
+import {Button, Modal, ModalBody, ModalContent, ModalHeader, Spinner, Tab, Tabs,} from "@heroui/react";
 import toast from "react-hot-toast";
 import {SubmitHandler} from "react-hook-form";
 import SelectableModal from "@/components/selectableModal";
