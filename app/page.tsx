@@ -3,7 +3,7 @@ import Image from "next/image";
 import useService, {Location, User} from "./service";
 import DrawerMenu from "@/components/layouts/drawer-menu";
 import React, {useEffect, useRef, useState} from "react";
-import {Button, Modal, ModalBody, ModalContent, ModalHeader, Spinner, Tab, Tabs,} from "@heroui/react";
+import {Button, Modal, ModalBody, ModalContent, ModalHeader, Spinner, Switch} from "@heroui/react";
 import toast from "react-hot-toast";
 import {SubmitHandler} from "react-hook-form";
 import SelectableModal from "@/components/selectableModal";
@@ -207,26 +207,19 @@ export default function Home() {
                             <IoChatbubbleOutline className={"text-2xl"}/>
                         </div>
                     </Button>
-
-                    {isGpsOn && (
-                        <Tabs
-                            aria-label="location"
-                            onSelectionChange={(key: any) => {
-                                if (key === "off") {
-                                    setIsGpsOn(false);
-                                }
-                            }}
-                            radius={"sm"}
-                            classNames={{tabList: "bg-primary"}}
-                        >
-                            <Tab
-                                key="on"
-                                title={<FaPowerOff/>}
-                                className={"px-5"}
-                            />
-                            <Tab key="off" title="off" className={"px-5"}/>
-                        </Tabs>
-                    )}
+                    <Switch
+                        aria-label="location"
+                        color={"primary"}
+                        defaultSelected={isGpsOn}
+                        isDisabled={sendUserLocation.isPending}
+                        onValueChange={(E)=>{
+                            if (E) {
+                                setIsGpsOn(true);
+                            } else {
+                                setIsGpsOn(false);
+                            }
+                        }}
+                    />
                 </div>
             </div>
             <div className={"h-[calc(100%-64px)] flex justify-center"}>
@@ -251,28 +244,6 @@ export default function Home() {
                             To find nearby people, please enable location
                             sharing.
                         </div>
-                        <Tabs
-                            isDisabled={sendUserLocation.isPending}
-                            aria-label="location"
-                            defaultSelectedKey="off"
-                            size={"lg"}
-                            radius={"sm"}
-                            selectedKey={tabKey}
-                            onSelectionChange={(key: any) => {
-                                if (key === "on") {
-                                    setIsGpsOn(true);
-                                } else {
-                                    setIsGpsOn(false);
-                                }
-                            }}
-                        >
-                            <Tab key="off" title="off" className={"px-10"}/>
-                            <Tab
-                                key="on"
-                                title={<FaPowerOff/>}
-                                className={"px-10"}
-                            />
-                        </Tabs>
                     </div>
                 )}
                 {isGpsOn && isLoading ? (
