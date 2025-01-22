@@ -17,12 +17,18 @@ import disabled_location_image from "../public/images/disabled_location.png";
 import no_user_found_image from "../public/images/no_user_found.png";
 import users_image from "../public/images/users.png";
 // icons
-import {FaPowerOff} from "react-icons/fa6";
 import SendIcon from "@/public/tsx-icons/send";
 import {IoChatbubbleOutline, IoDocumentTextOutline} from "react-icons/io5";
+import { CiLocationOff , CiLocationOn } from "react-icons/ci";
+import {echo} from "@/utils/echo";
+import {useSelector} from "react-redux";
 
 export default function Home() {
     const router = useRouter();
+
+    // user info
+    const userInfo = useSelector((state: any) => state.user);
+
     // services
     const {sendUserLocation, getJobTitlesList, getIndustriesList} =
         useService();
@@ -85,6 +91,22 @@ export default function Home() {
             fetchNearbyUsers();
         }
     }, [selectedIndustry, selectedJob]);
+
+    // check notifications
+    useEffect(() => {
+        if (echo) {
+            echo.private(`chat.user.${userInfo?.user?.id}`)
+                .listen('NewMessageEvent', (e : any) => {
+                    console.log('New message received:', e.message);
+                });
+        }
+
+        return () => {
+            if (echo) {
+                echo.leaveChannel(`chat.user.${userInfo?.user?.id}`);
+            }
+        };
+    }, []);
 
     // update gps status
     const updateGpsStatus = async (isGpsEnabled: boolean) => {
@@ -200,7 +222,7 @@ export default function Home() {
             {/* header */}
             <div className={"flex items-center justify-between px-5 py-3"}>
                 <DrawerMenu isLoading={isLoggingOut} setIsLoading={setIsLoggingOut} setIsGpsOnAction={setIsGpsOn}/>
-                <div className={"flex items-center gap-1"}>
+                <div className={"flex items-center justify-center gap-3"}>
                     <Button isIconOnly variant={"light"} onPress={() => router.push("/chat")}>
                         <div className={"relative"}>
                             <div className={"absolute bg-danger rounded-full w-2 h-2 top-0 left-0"}></div>
@@ -208,10 +230,15 @@ export default function Home() {
                         </div>
                     </Button>
                     <Switch
+                        className={"my-auto"}
+                        size={"lg"}
                         aria-label="location"
                         color={"primary"}
                         defaultSelected={isGpsOn}
                         isDisabled={sendUserLocation.isPending}
+                        thumbIcon={({isSelected, className}) =>
+                            isSelected ? <CiLocationOn className={className} /> : <CiLocationOff  className={className} />
+                        }
                         onValueChange={(E)=>{
                             if (E) {
                                 setIsGpsOn(true);
