@@ -13,10 +13,10 @@ export default function CustomProvider({children}: { children: ReactNode }) {
 
     // check notifications
     useEffect(() => {
-        if (echo) {
+        if (getCookie("id") && echo) {
             echo.private(`chat.user.${getCookie("id")}`)
-                .listen('NewMessageEvent', (e : any) => {
-                    console.log('New message received:', e.message);
+                .listen('NewMessageEvent', (message : any) => {
+                    console.log('New message received:', message);
                 });
         }
 
