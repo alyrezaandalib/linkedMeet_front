@@ -264,7 +264,7 @@ const ChatPage = () => {
                             ) : (
                                 <div
                                     className={
-                                        "h-full flex justify-center items-center text-sm text-gray-500"
+                                        "h-[calc(100vh-200px)] flex justify-center items-center text-sm text-gray-500"
                                     }
                                 >
                                     No messages here yet...

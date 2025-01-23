@@ -26,9 +26,6 @@ import {useSelector} from "react-redux";
 export default function Home() {
     const router = useRouter();
 
-    // user info
-    const userInfo = useSelector((state: any) => state.user);
-
     // services
     const {sendUserLocation, getJobTitlesList, getIndustriesList} =
         useService();
@@ -91,22 +88,6 @@ export default function Home() {
             fetchNearbyUsers();
         }
     }, [selectedIndustry, selectedJob]);
-
-    // check notifications
-    useEffect(() => {
-        if (echo) {
-            echo.private(`chat.user.${userInfo?.user?.id}`)
-                .listen('NewMessageEvent', (e : any) => {
-                    console.log('New message received:', e.message);
-                });
-        }
-
-        return () => {
-            if (echo) {
-                echo.leaveChannel(`chat.user.${userInfo?.user?.id}`);
-            }
-        };
-    }, []);
 
     // update gps status
     const updateGpsStatus = async (isGpsEnabled: boolean) => {
