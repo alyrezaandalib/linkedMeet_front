@@ -41,6 +41,10 @@ export default function Home() {
     const [selectedIndustry, setSelectedIndustry] = useState<any>(null);
     const [selectedJob, setSelectedJob] = useState<any>(null);
 
+    // get industries and job-titles list
+    const getIndustriesListResponse = getIndustriesList();
+    const getJobTitlesListResponse = getJobTitlesList();
+
     // modals
     const [isIndustryModalOpen, setIndustryModalOpen] = useState(false);
     const [isJobTitleModalOpen, setJobTitleModalOpen] = useState(false);
@@ -183,14 +187,6 @@ export default function Home() {
     if (isLoggingOut) {
         return <LogoutPage/>
     }
-
-    const [getIndustriesListResponse, setIndustriesListResponse] = useState<any>();
-    const [getJobTitlesListResponse, setJobTitlesListResponse] = useState<any>();
-
-    useEffect(() => {
-        setIndustriesListResponse(getIndustriesList());
-        setJobTitlesListResponse(getJobTitlesList());
-    }, []);
 
     return (
         <div className={"w-full h-screen"}>

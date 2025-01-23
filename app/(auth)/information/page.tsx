@@ -66,7 +66,7 @@ export default function InformationPage() {
 
     useEffect(() => {
         if (hasIndustry !== null && hasJobTitle !== null) {
-            router.push("/")
+            window.location.href = '/';
         }
     }, [hasIndustry , hasJobTitle]);
 
