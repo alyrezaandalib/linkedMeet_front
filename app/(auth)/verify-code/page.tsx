@@ -5,7 +5,7 @@ import {Button} from "@heroui/button";
 import {Controller, SubmitHandler, useForm} from "react-hook-form";
 import useService, {Inputs} from "./service";
 import {useRouter, useSearchParams} from "next/navigation";
-import { useState} from "react";
+import {useEffect, useState} from "react";
 import Counter from "@/services/counter";
 import toast from "react-hot-toast";
 
@@ -14,6 +14,8 @@ export default function VerifyCodePage() {
     const email = searchParams.get("email")
 
     const router = useRouter();
+    const [resendSMS, setResendSMS] = useState<number | null>(null);
+    const [redirectPath, setRedirectPath] = useState<string | null>(null);
 
     const {
         handleSubmit,
@@ -29,11 +31,12 @@ export default function VerifyCodePage() {
         if (email) {
             data.email = email;
         }
+
         verifyCode.mutate(data, {
             onSuccess: (response) => {
-                toast.success("Email verified successfully.");
-                router.push(`/sign-in`);
                 reset();
+                toast.success("Email verified successfully.");
+                setRedirectPath('/sign-in')
             },
             onError: (error) => {
                 toast.error(error.message)
@@ -41,7 +44,11 @@ export default function VerifyCodePage() {
         });
     };
 
-    const [resendSMS, setResendSMS] = useState<number | null>(null);
+    useEffect(() => {
+        if (redirectPath) {
+            router.push(redirectPath);
+        }
+    }, [redirectPath]);
 
     return (
         <div className="flex flex-col h-screen">

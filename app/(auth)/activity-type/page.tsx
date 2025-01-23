@@ -16,12 +16,10 @@ export default function ActivityTypePage() {
     const [selectedCompanyActivityTypes, setSelectedActivityTypes] = useState<any>([])
 
     // service
-    const {getCompanyActivityTypes,
-        getUserActivityTypes ,
-        sendUserActivityType ,
+    const {
+        getCompanyActivityTypes,
+        sendUserActivityType,
     } = useService();
-
-    const getUserActivityTypesResponse = getUserActivityTypes()
 
     // company activity types list
     const {data, isLoading, isError} = getCompanyActivityTypes();
@@ -45,7 +43,7 @@ export default function ActivityTypePage() {
         sendUserActivityType.mutate(data, {
             onSuccess: () => {
                 dispatch(UpdateCompanyActivityTypes(selectedCompanyActivityTypes));
-                router.push("/information")
+                setRedirectPath('/information');
             },
             onError: (error) => {
                 toast.error(error.message);
@@ -64,7 +62,13 @@ export default function ActivityTypePage() {
         }
     };
 
-    if (getUserActivityTypesResponse.data?.data.length > 0) router.push("/")
+    const [redirectPath, setRedirectPath] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (redirectPath) {
+            router.push(redirectPath);
+        }
+    }, [redirectPath]);
 
     return (
         <div className="flex flex-col h-screen">

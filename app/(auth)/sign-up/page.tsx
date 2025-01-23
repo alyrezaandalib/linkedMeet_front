@@ -6,7 +6,7 @@ import useService, {Inputs} from "./service";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {useRouter} from "next/navigation";
 import toast from "react-hot-toast";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 export default function SignUpPage() {
 
@@ -25,13 +25,21 @@ export default function SignUpPage() {
     const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
         signUpUser.mutate(data, {
             onSuccess: () => {
-                router.push(`/verify-code?email=${data.email}`);
+                setRedirectPath(`/verify-code?email=${data.email}`);
             },
             onError: (error) => {
                 toast.error(error.message);
             },
         });
     };
+
+    const [redirectPath, setRedirectPath] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (redirectPath) {
+            router.push(redirectPath);
+        }
+    }, [redirectPath]);
 
     const {isPending} = signUpUser
 

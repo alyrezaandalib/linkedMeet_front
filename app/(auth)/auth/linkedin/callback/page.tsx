@@ -13,7 +13,7 @@ export default function Page() {
 
     // get code from query
     const searchParams = useSearchParams()
-    const [code, setCode] = useState<string | null>(searchParams.get("code"));
+    const [code, setCode] = useState<string | null>(null);
 
     const dispatch = useDispatch()
 
@@ -32,7 +32,7 @@ export default function Page() {
                 dispatch(Authentication({
                     isAuthenticated: true,
                     token: data.token,
-                    id : data.user.id,
+                    id: data.user.id,
                     name: data.user.name,
                     email: data.user.email,
                     avatar: data.user.avatar,
@@ -49,25 +49,37 @@ export default function Page() {
         },
         onError: (error) => {
             toast.error(error.message || "An error occurred during sign-in.");
-            router.push("/sign-in");
+            setRedirectPath('/sign-in');
         },
         onSuccess: (data) => {
             if (data.user.company_activity_types && data.user.company_activity_types.length === 0) {
-                router.push("/activity-type")
+                setRedirectPath('/activity-type');
             } else {
-                router.push("/")
+                setRedirectPath('/');
             }
         },
     });
+
+    const [redirectPath, setRedirectPath] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (redirectPath) {
+            router.push(redirectPath);
+        }
+    }, [redirectPath]);
 
     useEffect(() => {
         if (code) {
             getUserInformationFromLinkedin.mutate(code)
         } else {
             toast.error("Invalid or missing LinkedIn authorization code.");
-            router.push("/sign-in");
+            setRedirectPath('/sign-in');
         }
     }, [code]);
+
+    useEffect(() => {
+        setCode(searchParams.get("code"));
+    }, []);
 
     return (
         <div className={"h-screen flex flex-col justify-center items-center gap-5 bg-white"}>

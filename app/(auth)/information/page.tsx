@@ -53,8 +53,12 @@ export default function InformationPage() {
         };
         sendUserInformation.mutate(updatedData, {
             onSuccess: () => {
-                dispatch(UpdateIndustryAndJobTitle({industry: selectedIndustry.name, job_title: selectedJob.name}));
-                router.push("/")
+                dispatch(UpdateIndustryAndJobTitle({
+                    industry: selectedIndustry.name,
+                    job_title: selectedJob.name
+                }));
+
+                setRedirectPath('/');
             },
             onError: (error) => {
                 toast.error(error.message);
@@ -62,8 +66,18 @@ export default function InformationPage() {
         });
     };
 
+    const [redirectPath, setRedirectPath] = useState<string | null>(null);
+
     useEffect(() => {
-        if (hasIndustry !== null && hasJobTitle !== null) router.push("/")
+        if (redirectPath) {
+            router.push(redirectPath);
+        }
+    }, [redirectPath]);
+
+    useEffect(() => {
+        if (hasIndustry !== null && hasJobTitle !== null) {
+            router.push("/")
+        }
     }, [hasIndustry , hasJobTitle]);
 
     return (
