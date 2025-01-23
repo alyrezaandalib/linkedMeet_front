@@ -20,38 +20,26 @@ import users_image from "../public/images/users.png";
 import SendIcon from "@/public/tsx-icons/send";
 import {IoChatbubbleOutline, IoDocumentTextOutline} from "react-icons/io5";
 import { CiLocationOff , CiLocationOn } from "react-icons/ci";
-import {echo} from "@/utils/echo";
-import {useSelector} from "react-redux";
 
 export default function Home() {
     const router = useRouter();
 
     // services
-    const {sendUserLocation, getJobTitlesList, getIndustriesList} =
-        useService();
+    const {sendUserLocation, getJobTitlesList, getIndustriesList} = useService();
 
     // logout state
     const [isLoggingOut, setIsLoggingOut] = useState(false)
 
     // GPS
-    const [isGpsOn, setIsGpsOn] = useState(
-        getCookie("isLocationSet") === "true"
-    );
+    const [isGpsOn, setIsGpsOn] = useState(getCookie("isLocationSet") === "true");
     const watchId = useRef<number | null>(null);
     const lastSentTime = useRef(0);
 
     const [isLoading, setIsLoading] = useState(false);
 
-    // selected tab
-    const [tabKey, setTabKey] = useState("off");
-
     // selected industry and job_title
     const [selectedIndustry, setSelectedIndustry] = useState<any>(null);
     const [selectedJob, setSelectedJob] = useState<any>(null);
-
-    // get industries and job-titles list
-    const getIndustriesListResponse = getIndustriesList();
-    const getJobTitlesListResponse = getJobTitlesList();
 
     // modals
     const [isIndustryModalOpen, setIndustryModalOpen] = useState(false);
@@ -139,7 +127,6 @@ export default function Home() {
                     );
                 }
 
-                setTabKey("off");
                 setIsGpsOn(false);
             },
             {
@@ -165,7 +152,6 @@ export default function Home() {
 
         if (!isGpsOn) {
             deleteCookie("isLocationSet");
-            setTabKey("off");
             updateGpsStatus(false);
             stopTracking();
         }
@@ -197,6 +183,14 @@ export default function Home() {
     if (isLoggingOut) {
         return <LogoutPage/>
     }
+
+    const [getIndustriesListResponse, setIndustriesListResponse] = useState<any>();
+    const [getJobTitlesListResponse, setJobTitlesListResponse] = useState<any>();
+
+    useEffect(() => {
+        setIndustriesListResponse(getIndustriesList());
+        setJobTitlesListResponse(getJobTitlesList());
+    }, []);
 
     return (
         <div className={"w-full h-screen"}>

@@ -57,22 +57,12 @@ export default function InformationPage() {
                     industry: selectedIndustry.name,
                     job_title: selectedJob.name
                 }));
-
-                setRedirectPath('/');
             },
             onError: (error) => {
                 toast.error(error.message);
             }
         });
     };
-
-    const [redirectPath, setRedirectPath] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (redirectPath) {
-            router.push(redirectPath);
-        }
-    }, [redirectPath]);
 
     useEffect(() => {
         if (hasIndustry !== null && hasJobTitle !== null) {

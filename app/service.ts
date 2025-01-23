@@ -13,7 +13,7 @@ export interface User {
     job_title: string;
     industry: string;
     avatar: any ;
-    comapny_activity_type : any;
+    company_activity_type : any;
 }
 
 export default function useService() {
