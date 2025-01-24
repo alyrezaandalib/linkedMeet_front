@@ -20,16 +20,30 @@ import users_image from "../public/images/users.png";
 import SendIcon from "@/public/tsx-icons/send";
 import {IoChatbubbleOutline, IoDocumentTextOutline} from "react-icons/io5";
 import {CiLocationOff, CiLocationOn} from "react-icons/ci";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {updateUnreadMessages} from "@/store/notificationSlice";
 
 export default function Home() {
     const router = useRouter();
+
+    const dispatch = useDispatch();
 
     // check notifications
     const notification = useSelector((state: any) => state.notification);
 
     // services
-    const {sendUserLocation, getJobTitlesList, getIndustriesList} = useService();
+    const {getUnreadMessagesCount , sendUserLocation, getJobTitlesList, getIndustriesList} = useService();
+
+    // set unread messages
+    const unreadMessagesCount = getUnreadMessagesCount();
+
+    useEffect(() => {
+        if (unreadMessagesCount.data) {
+            dispatch(updateUnreadMessages({
+                unreadMessagesCount: unreadMessagesCount.data?.unread_messages_count,
+            }));
+        }
+    }, [unreadMessagesCount]);
 
     // logout state
     const [isLoggingOut, setIsLoggingOut] = useState(false)
