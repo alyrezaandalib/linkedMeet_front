@@ -13,7 +13,7 @@ export default function Page() {
 
     // get code from query
     const searchParams = useSearchParams()
-    const [code, setCode] = useState<string | null>(null);
+    const code = searchParams.get("code");
 
     const dispatch = useDispatch()
 
@@ -76,10 +76,6 @@ export default function Page() {
             setRedirectPath('/sign-in');
         }
     }, [code]);
-
-    useEffect(() => {
-        setCode(searchParams.get("code"));
-    }, []);
 
     return (
         <div className={"h-screen flex flex-col justify-center items-center gap-5 bg-white"}>
