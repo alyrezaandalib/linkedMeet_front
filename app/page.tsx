@@ -19,10 +19,14 @@ import users_image from "../public/images/users.png";
 // icons
 import SendIcon from "@/public/tsx-icons/send";
 import {IoChatbubbleOutline, IoDocumentTextOutline} from "react-icons/io5";
-import { CiLocationOff , CiLocationOn } from "react-icons/ci";
+import {CiLocationOff, CiLocationOn} from "react-icons/ci";
+import {useSelector} from "react-redux";
 
 export default function Home() {
     const router = useRouter();
+
+    // check notifications
+    const notification = useSelector((state: any) => state.notification);
 
     // services
     const {sendUserLocation, getJobTitlesList, getIndustriesList} = useService();
@@ -196,10 +200,20 @@ export default function Home() {
                 <div className={"flex items-center justify-center gap-3"}>
                     <Button isIconOnly variant={"light"} onPress={() => router.push("/chat")}>
                         <div className={"relative"}>
-                            <div className={"absolute bg-danger rounded-full w-2 h-2 top-0 left-0"}></div>
-                            <IoChatbubbleOutline className={"text-2xl"}/>
+                            {
+                                notification.unreadMessagesCount > 0 &&
+                                <div
+                                    className={
+                                        "absolute bg-danger rounded-full flex items-center justify-center text-white text-xs h-4 w-4 top-0 left-0 transform -translate-x-1 -translate-y-1"
+                                    }
+                                >
+                                    {notification.unreadMessagesCount}
+                                </div>
+                            }
+                            <IoChatbubbleOutline className={"text-2xl"} />
                         </div>
                     </Button>
+
                     <Switch
                         className={"my-auto"}
                         size={"lg"}
@@ -208,9 +222,9 @@ export default function Home() {
                         defaultSelected={isGpsOn}
                         isDisabled={sendUserLocation.isPending}
                         thumbIcon={({isSelected, className}) =>
-                            isSelected ? <CiLocationOn className={className} /> : <CiLocationOff  className={className} />
+                            isSelected ? <CiLocationOn className={className}/> : <CiLocationOff className={className}/>
                         }
-                        onValueChange={(E)=>{
+                        onValueChange={(E) => {
                             if (E) {
                                 setIsGpsOn(true);
                             } else {
