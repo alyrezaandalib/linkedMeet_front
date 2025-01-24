@@ -13,13 +13,13 @@ import {getCookie} from "cookies-next";
 // icons
 import {IoIosArrowBack} from "react-icons/io";
 
-
 export default function ProfilePage() {
 
     const user = useSelector((state: any) => state.user.user);
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(false)
     const [isLoaded, setIsLoaded] = useState(false);
+    const [isChanged, setIsChanged] = useState(false); // اضافه کردن state برای تغییرات
 
     // service
     const {editUserInfo, getIndustriesList, getJobTitlesList} = useService();
@@ -94,7 +94,6 @@ export default function ProfilePage() {
     } = useForm<Inputs>()
 
     const onSubmit: SubmitHandler<Inputs> = (data: Inputs) => {
-
         const industryId = getIndustriesListResponse.data?.data.find((item: any) => item?.name === user.industry)
         const job_titleId = getJobTitlesListResponse.data?.data.find((item: any) => item?.name === user.job_title)
 
@@ -113,6 +112,7 @@ export default function ProfilePage() {
                         industry: selectedIndustry?.name ? selectedIndustry?.name : user.industry,
                         job_title: selectedJob?.name ? selectedJob?.name : user.job_title,
                     }));
+                    setIsChanged(false); // بازنشانی state پس از ارسال اطلاعات
                 },
                 onError: (error) => {
                     toast.error(error.message);
@@ -121,8 +121,12 @@ export default function ProfilePage() {
         }
     };
 
-    const {isPending, isError, data} = editUserInfo
+    // چک کردن اینکه آیا تغییرات ایجاد شده است یا نه
+    const handleFieldChange = () => {
+        setIsChanged(true);
+    };
 
+    const {isPending, isError, data} = editUserInfo
 
     useEffect(() => {
         if (user) {
@@ -158,8 +162,7 @@ export default function ProfilePage() {
                         </div>
                     </div>
 
-                    <form className={"flex flex-col p-4 mt-7 h-[65%] justify-between"}
-                          onSubmit={handleSubmit(onSubmit)}>
+                    <form className={"flex flex-col p-4 mt-7 h-[65%] justify-between"} onSubmit={handleSubmit(onSubmit)}>
                         <div className={"flex flex-col gap-1.5"}>
                             <div>
                                 <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">
@@ -169,6 +172,7 @@ export default function ProfilePage() {
                                     defaultValue={user?.name}
                                     {...register("name", {required: "Name is required."})}
                                     className="form-input"
+                                    onChange={handleFieldChange} // فراخوانی متد handleFieldChange
                                 />
                                 {errors.name && <p className={"text-red-500 text-xs mt-1"}>{errors.name.message}</p>}
                             </div>
@@ -183,14 +187,14 @@ export default function ProfilePage() {
                                 />
                             </div>
                             <div>
-                                <label
-                                    className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">Industry</label>
+                                <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">Industry</label>
                                 <input
                                     {...register("industry_id", {required: "Industry is required."})}
                                     readOnly
                                     className="form-input"
                                     value={selectedIndustry?.name || (user.industry === "null" ? "" : user.industry)}
                                     onClick={() => setIndustryModalOpen(true)}
+                                    onChange={handleFieldChange} // فراخوانی متد handleFieldChange
                                 />
                                 {errors.industry_id &&
                                     <p className="text-red-500 text-xs mt-1">{errors.industry_id.message}</p>}
@@ -205,6 +209,7 @@ export default function ProfilePage() {
                                     className="form-input"
                                     value={selectedJob?.name || (user.job_title === "null" ? "" : user.job_title)}
                                     onClick={() => setJobTitleModalOpen(true)}
+                                    onChange={handleFieldChange} // فراخوانی متد handleFieldChange
                                 />
                                 {errors.job_title_id &&
                                     <p className="text-red-500 text-xs mt-1">{errors.job_title_id.message}</p>}
@@ -214,7 +219,8 @@ export default function ProfilePage() {
                         <Button radius={"sm"}
                                 color={"primary"}
                                 type={"submit"}
-                                isLoading={isPending}>
+                                isLoading={isPending}
+                                isDisabled={!isChanged}> {/* دکمه Ok فقط در صورت تغییر فعال می‌شود */}
                             Ok
                         </Button>
                     </form>
@@ -233,6 +239,7 @@ export default function ProfilePage() {
                                 onSelect={(item: any) => {
                                     setSelectedIndustry(item);
                                     setIndustryModalOpen(false);
+                                    setIsChanged(true); // تغییرات ایجاد شده است
                                 }}
                             />
 
@@ -245,6 +252,7 @@ export default function ProfilePage() {
                                 onSelect={(item: any) => {
                                     setSelectedJob(item);
                                     setJobTitleModalOpen(false);
+                                    setIsChanged(true); // تغییرات ایجاد شده است
                                 }}
                             />
 
