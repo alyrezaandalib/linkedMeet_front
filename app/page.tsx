@@ -403,8 +403,9 @@ export default function Home() {
                                                     user.industry}
                                             </div>
 
-                                            <div className={"flex gap-1"}>
+                                            <div className={"flex gap-2"}>
                                                 <Button
+                                                    className={"!border-1"}
                                                     size={"sm"}
                                                     variant={"bordered"}
                                                     onPress={() => {
@@ -431,6 +432,7 @@ export default function Home() {
                                                         )
                                                     }
                                                     size={"sm"}
+                                                    className={"!border-1"}
                                                     variant={"bordered"}
                                                 >
                                                     <SendIcon
@@ -487,7 +489,7 @@ export default function Home() {
                     {(onCloseModal) => (
                         <>
                             <ModalHeader className="flex flex-col gap-1">
-                                user Info
+                                Info
                             </ModalHeader>
                             <div
                                 className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mt-3"></div>
@@ -511,10 +513,10 @@ export default function Home() {
                                     </div>
                                     <div
                                         className={
-                                            "flex flex-col gap-4 text-xs w-full"
+                                            "flex flex-col gap-2 text-xs w-full"
                                         }
                                     >
-                                        <div className={"flex gap-2"}>
+                                        <div className={"flex gap-2 shadow rounded-lg p-2"}>
                                             <div
                                                 className={
                                                     "font-semibold w-[50%] p-1"
@@ -526,7 +528,7 @@ export default function Home() {
                                                 {selectedUser.industry}
                                             </div>
                                         </div>
-                                        <div className={"flex gap-2"}>
+                                        <div className={"flex gap-2 shadow rounded-lg p-2"}>
                                             <div
                                                 className={
                                                     "font-semibold w-[50%] p-1"

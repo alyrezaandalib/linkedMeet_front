@@ -239,7 +239,7 @@ const ChatPage = () => {
                                             className="flex flex-col gap-0.5 items-start"
                                         >
                                             <div
-                                                className="bg-white text-xs max-w-[80%] text-gray-700 px-4 py-3 rounded-lg shadow-sm rounded-bl-none break-words">
+                                                className="bg-white text-xs max-w-[80%] text-gray-700 px-4 py-3 rounded-xl shadow-sm rounded-bl-none break-words">
                                                 {chat?.message}
                                             </div>
                                             <p className="text-xs text-gray-400 mt-1">
@@ -252,7 +252,7 @@ const ChatPage = () => {
                                             className="flex flex-col gap-0.5 items-end"
                                         >
                                             <div
-                                                className="bg-primary text-xs max-w-[80%] text-white px-4 py-3 rounded-lg shadow-sm rounded-br-none break-words">
+                                                className="bg-primary text-xs max-w-[80%] text-white px-4 py-3 rounded-xl shadow-sm rounded-br-none break-words">
                                                 {chat?.message}
                                             </div>
                                             <p className="text-xs text-gray-400 mt-1 text-right">
@@ -298,13 +298,13 @@ const ChatPage = () => {
             {/* Message Input */}
             <footer>
                 <form
-                    className="flex items-center gap-2 px-4 py-3 border-t fixed bottom-0 w-full bg-white"
+                    className="flex items-center gap-2 px-4 py-3 fixed bottom-0 w-full bg-[#fdfdfd]"
                     onSubmit={handleSubmit(onSubmit)}
                 >
                     <input
                         {...register("message", {required: true})}
-                        className={"form-input"}
-                        placeholder={"Write a message..."}
+                        className={"form-input !border-0 shadow-sm"}
+                        placeholder={"type a message..."}
                     />
                     <Button
                         isDisabled={sendMessage?.isPending}
@@ -312,8 +312,9 @@ const ChatPage = () => {
                         isIconOnly
                         radius={"full"}
                         variant={"light"}
+                        className={"bg-white shadow mt-2"}
                     >
-                        <SendIcon/>
+                        <SendIcon className={"text-gray-400"}/>
                     </Button>
                 </form>
             </footer>
