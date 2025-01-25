@@ -29,7 +29,7 @@ export default function useService() {
             fetchService({
                 url: queryKey.join(""),
             }),
-        refetchOnMount: false,
+        refetchOnMount: true,
         refetchInterval: false,
         refetchIntervalInBackground: false,
         refetchOnReconnect: false,

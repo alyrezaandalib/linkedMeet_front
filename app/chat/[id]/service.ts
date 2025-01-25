@@ -43,7 +43,7 @@ export default function useService() {
 
     const sendMessage = useMutation({
         mutationFn: async (body: any) => {
-            await createService("/v1/chat/send-message", body);
+            return await createService("/v1/chat/send-message", body);
         },
     });
 

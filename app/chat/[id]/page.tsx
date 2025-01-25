@@ -50,7 +50,9 @@ const ChatPage = () => {
     );
 
     useEffect(() => {
-        if (chatHistoryResponse) markAsRead.mutate({"sender_id": parsedUser.id})
+        if (chatHistoryResponse) {
+            markAsRead.mutate({"sender_id": parsedUser.id})
+        }
     }, [chatHistoryResponse]);
 
     // Scroll to bottom when new data is loaded
@@ -65,21 +67,14 @@ const ChatPage = () => {
     // Reference to scroll to the bottom of chat
     const chatEndRef = useRef<HTMLDivElement | null>(null);
 
-    // web socket
-    const channelName = `chat.${Math.min(userId, parsedUser.id)}-${Math.max(
-        userId,
-        parsedUser.id
-    )}`;
-
     useEffect(() => {
         if (echo) {
-            echo.private(channelName).listen("MessageSent", (data: any) => {
-                console.log(data)
+            echo.private(`chat.received.${userId}`).listen("MessageSent", (data: any) => {
                 setChatHistory((prevHistory = []) => [
                     ...prevHistory,
                     {
-                        id: Math.random(),
-                        receiver_id: Math.random(),
+                        id: data.id,
+                        receiver_id: data.receiver_id,
                         sender_id: data.sender_id,
                         message: data.message,
                         created_at: data.created_at,
@@ -94,7 +89,7 @@ const ChatPage = () => {
 
         return () => {
             if (echo) {
-                echo.leaveChannel(`private-${channelName}`);
+                echo.leaveChannel(`private-chat.received.${userId}`);
             }
         };
     }, []);
@@ -168,8 +163,22 @@ const ChatPage = () => {
         data.receiver_id = parsedUser?.id;
 
         sendMessage.mutate(data, {
-            onSuccess: () => {
+            onSuccess: (response) => {
+                const data = response.data;
                 resetField("message");
+                setChatHistory((prevHistory = []) => [
+                    ...prevHistory,
+                    {
+                        id: data.id,
+                        receiver_id: data.receiver_id,
+                        sender_id: data.sender_id,
+                        message: data.message,
+                        created_at: data.created_at,
+                    },
+                ]);
+                setTimeout(() => {
+                    scrollToBottom();
+                }, 100);
             },
             onError: (error) => {
                 toast.error(error.message);
