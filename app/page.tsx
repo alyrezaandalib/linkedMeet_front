@@ -43,7 +43,7 @@ export default function Home() {
                 unreadMessagesCount: unreadMessagesCount.data?.unread_messages_count,
             }));
         }
-    }, [unreadMessagesCount]);
+    }, [unreadMessagesCount.data]);
 
     // logout state
     const [isLoggingOut, setIsLoggingOut] = useState(false)
