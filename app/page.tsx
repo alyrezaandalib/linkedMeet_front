@@ -32,13 +32,14 @@ export default function Home() {
     const notification = useSelector((state: any) => state.notification);
 
     // services
-    const {getUnreadMessagesCount , sendUserLocation, getJobTitlesList, getIndustriesList} = useService();
+    const {getUnreadMessagesCount, sendUserLocation, getJobTitlesList, getIndustriesList} = useService();
 
     // set unread messages
     const unreadMessagesCount = getUnreadMessagesCount();
 
     useEffect(() => {
         if (unreadMessagesCount.data) {
+            console.log("home", unreadMessagesCount.data?.unread_messages_count)
             dispatch(updateUnreadMessages({
                 unreadMessagesCount: unreadMessagesCount.data?.unread_messages_count,
             }));
@@ -224,7 +225,7 @@ export default function Home() {
                                     {notification.unreadMessagesCount}
                                 </div>
                             }
-                            <IoChatbubbleOutline className={"text-2xl"} />
+                            <IoChatbubbleOutline className={"text-2xl"}/>
                         </div>
                     </Button>
 

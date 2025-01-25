@@ -9,4 +9,9 @@ const rootReducer = combineReducers({
 
 export default configureStore ({
     reducer: rootReducer,
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: false, // For non-serializable actions like WebSockets
+        }),
+    devTools: process.env.APP_ENV !== "production", // Disable devTools in production
 })
