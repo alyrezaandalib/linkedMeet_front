@@ -72,6 +72,7 @@ const ChatPage = () => {
     useEffect(() => {
         if (echo) {
             echo.private(channelName).listen("MessageSent", (data: any) => {
+                console.log(data)
                 setChatHistory((prevHistory = []) => [
                     ...prevHistory,
                     {

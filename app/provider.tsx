@@ -1,7 +1,7 @@
 "use client";
 import { ReactNode, useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Provider, useDispatch } from "react-redux";
+import {Provider, useDispatch, useSelector} from "react-redux";
 import store from "../store/index";
 import { Toaster } from "react-hot-toast";
 import { echo } from "@/utils/echo";
@@ -11,15 +11,8 @@ import { updateUnreadMessages } from "@/store/notificationSlice";
 // Notification listener component
 function NotificationListener() {
     const dispatch = useDispatch();
-    const [userId, setUserId] = useState<string | undefined>(() => getCookie("id") as string | undefined);
 
-    useEffect(() => {
-        const currentId = getCookie("id") as string | undefined;
-
-        if (currentId !== userId) {
-            setUserId(currentId);
-        }
-    }, [userId]);
+    const userId = useSelector((state: any) => state.user.user.id);
 
     useEffect(() => {
         if (userId && echo) {
