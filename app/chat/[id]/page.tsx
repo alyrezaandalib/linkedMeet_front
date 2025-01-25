@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import {useEffect, useState, useRef} from "react";
 import {useSelector} from "react-redux";
 import {getCookie} from "cookies-next";
-import {echo} from "@/utils/echo";
+import {initializeEcho} from "@/utils/echo";
 // icons
 import {IoIosArrowBack} from "react-icons/io";
 import SendIcon from "@/public/tsx-icons/send";
@@ -16,6 +16,8 @@ const ChatPage = () => {
     const router = useRouter();
 
     const userId = useSelector((state: any) => state.user.user.id);
+    const userToken = useSelector((state: any) => state.user.token);
+    const echo = initializeEcho(userToken);
 
     // Get user info from route query
     const searchParams = useSearchParams();
@@ -83,7 +85,7 @@ const ChatPage = () => {
                         created_at: data.created_at,
                     },
                 ]);
-                markAsRead.mutate({"sender_id": parsedUser.id})
+                markAsRead.mutate({"sender_id": data.sender_id})
                 setTimeout(() => {
                     scrollToBottom();
                 }, 100);
@@ -92,7 +94,7 @@ const ChatPage = () => {
 
         return () => {
             if (echo) {
-                echo.leaveChannel(channelName);
+                echo.leaveChannel(`private-${channelName}`);
             }
         };
     }, []);

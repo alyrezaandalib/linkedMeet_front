@@ -17,7 +17,7 @@ export default function useService() {
         queryKey: ["/v1/user/chats"],
         queryFn: ({queryKey, signal}) =>
             fetchService({url: queryKey.join("")}),
-        refetchOnMount: false,
+        refetchOnMount: true,
         refetchInterval: false,
         refetchIntervalInBackground: false,
         refetchOnReconnect: false,
