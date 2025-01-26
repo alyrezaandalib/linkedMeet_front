@@ -38,12 +38,12 @@ export default function ChatPage() {
                     <Link href={"/"} className="rounded-lg btn !shadow !p-2 !border-none hover:bg-gray-200">
                         <IoIosArrowBack className={"text-lg"}/>
                     </Link>
-                    <h1 className="ml-2 text-lg font-bold">Chat</h1>
+                    <h1 className="ml-2 text-lg font-bold">Chats</h1>
                 </div>
                 <Input
                     variant={"bordered"}
                     radius={"sm"}
-                    placeholder="Search"
+                    placeholder="Search for a user"
                     startContent={
                         <CiSearch className="text-2xl text-default-400 pointer-events-none flex-shrink-0"/>
                     }

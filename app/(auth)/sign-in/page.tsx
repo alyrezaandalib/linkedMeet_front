@@ -113,7 +113,7 @@ export default function SignInPage() {
                             <input
                                 {...register("email", {required: "Email is required."})}
                                 type="email"
-                                placeholder="test@gmail.com"
+                                placeholder="e.g. example@email.com"
                                 className="form-input"
                                 autoComplete="email"
                             />
@@ -139,6 +139,7 @@ export default function SignInPage() {
                                 type="password"
                                 autoComplete="current-password"
                                 className="form-input"
+                                placeholder="At least 8 characters"
                             />
                             {errors.password &&
                                 <p className={"text-red-500 text-xs mt-1"}>{errors.password.message}</p>}
@@ -162,8 +163,8 @@ export default function SignInPage() {
                         />
 
 
-                        <p className="text-xs text-gray-400">“Sign in” instead of “Continue” “LinkedMeet” instead of “My
-                            App”</p>
+                        <p className="text-xs text-gray-400">By Clicking Sign In, you agree to LinkedMeet User Agreement, Privacy Policy, and Cookie
+                            Policy.</p>
 
                         <Button color={"primary"} isLoading={isLoadingLogin} radius={"sm"} type={"submit"}>Sign
                             In</Button>
@@ -201,7 +202,7 @@ export default function SignInPage() {
                         className="py-6"
                     >
                         <Linkedin/>
-                        <div className="text-sm text-gray-600">Linkedin</div>
+                        <div className="text-sm text-gray-600">LinkedIn</div>
                     </Button>
 
                     {/* Footer */}

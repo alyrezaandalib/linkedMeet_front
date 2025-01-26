@@ -344,7 +344,7 @@ export default function Home() {
                                 <div className={"w-full flex justify-between items-center gap-1"}>
                                     <input
                                         readOnly
-                                        placeholder="Filter job title..."
+                                        placeholder="Filter by job title"
                                         className="form-input form-input-sm !m-0"
                                         value={selectedJob?.name || ""}
                                         onClick={() =>
@@ -353,7 +353,7 @@ export default function Home() {
                                     />
                                     <input
                                         readOnly
-                                        placeholder="Filter industry..."
+                                        placeholder="Filter by industry"
                                         className="form-input form-input-sm !m-0"
                                         value={selectedIndustry?.name || ""}
                                         onClick={() =>
@@ -489,9 +489,6 @@ export default function Home() {
                 <ModalContent>
                     {(onCloseModal) => (
                         <>
-                            <ModalHeader className="flex flex-col gap-1">
-                                Info
-                            </ModalHeader>
                             <div
                                 className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mt-3"></div>
                             <ModalBody className={"p-3"}>
@@ -523,7 +520,7 @@ export default function Home() {
                                                     "font-semibold w-[50%] p-1"
                                                 }
                                             >
-                                                industry:
+                                                Industry:
                                             </div>
                                             <div className={"text-wrap"}>
                                                 {selectedUser.industry}
@@ -535,7 +532,7 @@ export default function Home() {
                                                     "font-semibold w-[50%] p-1"
                                                 }
                                             >
-                                                title job:
+                                                Job title:
                                             </div>
                                             <div className={"text-wrap"}>
                                                 {selectedUser.job_title}

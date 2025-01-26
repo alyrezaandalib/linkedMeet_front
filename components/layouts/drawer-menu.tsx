@@ -119,7 +119,7 @@ export default function DrawerMenu({ setIsGpsOnAction, isLoading, setIsLoading }
                                 <Button className={"justify-start"} variant={"light"} radius={"sm"}
                                         onPress={() => router.push("/chat")}>
                                     <HiMiniChatBubbleOvalLeftEllipsis className={"text-xl"}/>
-                                    Chat
+                                    Chats
                                 </Button>
                                 <Button className={"justify-start"} variant={"light"} radius={"sm"}
                                         onPress={() => router.push("/profile")}>

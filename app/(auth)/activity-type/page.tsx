@@ -81,9 +81,6 @@ export default function ActivityTypePage() {
                     className="absolute flex flex-col gap-3.5 bottom-0 w-full h-[97.5%] max-w-md bg-white rounded-t-3xl shadow-lg p-8">
                     <div className="flex flex-col gap-1.5">
                         <h2 className="text-2xl font-semibold text-black">Company Activity Type</h2>
-                        <p className="text-sm text-gray-400 max-w-[90%]">
-                            Select the type of activity of your company from the options below
-                        </p>
                     </div>
                     {isLoading ? (
                         <div className="h-full flex justify-center items-center">

@@ -68,6 +68,7 @@ export default function SignUpPage() {
                             <input
                                 {...register("name", {required: "Name is required."})}
                                 className="form-input"
+                                placeholder="e.g. John Doe"
                             />
                             {errors.name && <p className={"text-red-500 text-xs mt-1"}>{errors.name.message}</p>}
                         </div>
@@ -79,7 +80,7 @@ export default function SignUpPage() {
                             <input
                                 {...register("email", {required: "Email is required."})}
                                 type="email"
-                                placeholder="test@gmail.com"
+                                placeholder="e.g. example@email.com"
                                 className="form-input"
                                 autoComplete="email"
                             />
@@ -105,14 +106,15 @@ export default function SignUpPage() {
                                 type="password"
                                 className="form-input"
                                 autoComplete={"new-password"}
+                                placeholder="At least 8 characters"
                             />
                             {errors.password &&
                                 <p className={"text-red-500 text-xs mt-1"}>{errors.password.message}</p>}
                         </div>
 
-                        <p className="text-xs text-gray-400 max-w-[90%]">By clicking Agree & Join or Continue, you agree
-                            to the
-                            LinkedMeet User Agreement, Privacy Policy, and Cookie Policy.</p>
+                        <p className="text-xs text-gray-400 max-w-[90%]">
+                            By Clicking Agree & Join, you agree to LinkedMeet User Agreement, Privacy Policy, and Cookie Policy.
+                        </p>
 
                         <Button color={"primary"} isLoading={isPending} radius={"sm"} type={"submit"}>Agree &
                             Join</Button>
@@ -149,7 +151,7 @@ export default function SignUpPage() {
                         className="py-6"
                     >
                         <Linkedin/>
-                        <div className="text-sm text-gray-600">Linkedin</div>
+                        <div className="text-sm text-gray-600">LinkedIn</div>
                     </Button>
 
                     {/* Footer */}

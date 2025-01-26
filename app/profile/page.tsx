@@ -148,7 +148,7 @@ export default function ProfilePage() {
                     <Link href={"/"} className="rounded-lg btn !shadow !p-2 !border-none hover:bg-gray-200">
                         <IoIosArrowBack className={"text-lg"}/>
                     </Link>
-                    <h1 className="ml-2 text-lg font-bold">Edit Profile</h1>
+                    <h1 className="ml-2 text-lg font-bold">Profile</h1>
                 </div>
                 <div className={"h-full flex flex-col mt-7"}>
                     <div className={"flex flex-col justify-center items-center gap-2"}>
@@ -221,7 +221,7 @@ export default function ProfilePage() {
                                 type={"submit"}
                                 isLoading={isPending}
                                 isDisabled={!isChanged}> {/* دکمه Ok فقط در صورت تغییر فعال می‌شود */}
-                            Ok
+                            Save
                         </Button>
                     </form>
                 </div>
