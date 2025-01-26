@@ -99,7 +99,7 @@ export default function Home() {
     });
 
     useEffect(() => {
-        if (selectedIndustry?.id && selectedJob?.id) {
+        if (selectedIndustry?.id || selectedJob?.id) {
             fetchNearbyUsers();
         }
     }, [selectedIndustry, selectedJob]);
