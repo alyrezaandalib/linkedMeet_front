@@ -1,5 +1,6 @@
 "use client";
 import {Button} from "@heroui/button";
+import {Divider} from "@heroui/divider";
 import useService, {Inputs} from "./service";
 import {Controller, SubmitHandler, useForm} from "react-hook-form";
 import {Checkbox, Spinner} from "@heroui/react";
@@ -81,6 +82,7 @@ export default function ActivityTypePage() {
                     className="absolute flex flex-col gap-3.5 bottom-0 w-full h-[97.5%] max-w-md bg-white rounded-t-3xl shadow-lg p-8">
                     <div className="flex flex-col gap-1.5">
                         <h2 className="text-2xl font-semibold text-black">Company Activity Type</h2>
+                        <Divider className="my-4" />
                     </div>
                     {isLoading ? (
                         <div className="h-full flex justify-center items-center">

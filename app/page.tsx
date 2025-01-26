@@ -77,9 +77,13 @@ export default function Home() {
             const baseUrl = queryKey[0];
 
             const params = new URLSearchParams();
-            if (selectedJob) params.append("job_title_ids[]", selectedJob.id);
-            if (selectedIndustry)
+            if (selectedJob) {
+                params.append("job_title_ids[]", selectedJob.id);
+            }
+
+            if (selectedIndustry) {
                 params.append("industry_ids[]", selectedIndustry.id);
+            }
 
             const url = `${baseUrl}?${params.toString()}`;
 
@@ -126,7 +130,6 @@ export default function Home() {
         if (toastErrorGPS.current) {
             toast.remove(toastErrorGPS.current);
         }
-
 
         if (!navigator.geolocation) {
             toastErrorGPS.current = toast.error("Your device does not support GPS.");
@@ -257,48 +260,31 @@ export default function Home() {
             <div className={"h-[calc(100%-64px)] flex justify-center"}>
                 {/* when location is off ... */}
                 {!isGpsOn && (
-                    <div
-                        className={
-                            "h-full p-10 flex flex-col justify-center items-center gap-4"
-                        }
-                    >
+                    <div className={"h-full p-10 flex flex-col justify-center items-center gap-4"}>
                         <Image
                             src={disabled_location_image}
                             width={500}
                             alt={"disabled location image"}
                         />
-                        <div
-                            className={"font-black text-xl text-center w-full"}
-                        >
+                        <div className={"font-black text-xl text-center w-full"}>
                             Location sharing is disabled.
                         </div>
                         <div className={"text-center"}>
-                            To find nearby people, please enable location
-                            sharing.
+                            To find nearby people, please enable location sharing.
                         </div>
                     </div>
                 )}
-                {isGpsOn && isLoading ? (
-                    <Spinner/>
-                ) : (
+                {isGpsOn && isLoading ? (<Spinner/>) : (
                     <>
                         {/* when not found user nearby ...*/}
                         {isGpsOn && nearbyUsers?.data.length === 0 && (
-                            <div
-                                className={
-                                    "h-full p-14 flex flex-col justify-center items-center gap-4"
-                                }
-                            >
+                            <div className={"h-full p-14 flex flex-col justify-center items-center gap-4"}>
                                 <Image
                                     src={no_user_found_image}
                                     width={500}
                                     alt={"no user found image"}
                                 />
-                                <div
-                                    className={
-                                        "font-black text-xl text-center w-full"
-                                    }
-                                >
+                                <div className={"font-black text-xl text-center w-full"}>
                                     No nearby user found
                                 </div>
                                 <div className={"text-center"}>
@@ -306,8 +292,7 @@ export default function Home() {
                                     nearby users, and they will be displayed if
                                     found.
                                 </div>
-                                {(selectedIndustry !== null ||
-                                    selectedJob !== null) && (
+                                {(selectedIndustry !== null || selectedJob !== null) && (
                                     <Button
                                         radius={"sm"}
                                         color={"primary"}
@@ -320,7 +305,7 @@ export default function Home() {
                                             }, 100);
                                         }}
                                     >
-                                        clear filters
+                                        Clear filters
                                     </Button>
                                 )}
                             </div>
@@ -329,16 +314,9 @@ export default function Home() {
                         {/*when found user nearby ...*/}
                         {isGpsOn && nearbyUsers?.data.length > 0 && (
                             <div
-                                className={
-                                    "h-full p-4 bg-[#f9f9f9] w-full overflow-y-auto flex flex-col items-center gap-4"
-                                }
-                            >
+                                className={"h-full p-4 bg-[#f9f9f9] w-full overflow-y-auto flex flex-col items-center gap-4"}>
                                 <Image src={users_image} alt={"users"}/>
-                                <div
-                                    className={
-                                        "font-black text-xl text-center w-full"
-                                    }
-                                >
+                                <div className={"font-black text-xl text-center w-full"}>
                                     Congratulations!
                                 </div>
                                 <div className={"text-center text-gray-600"}>
@@ -352,61 +330,37 @@ export default function Home() {
                                         placeholder="Filter by job title"
                                         className="form-input form-input-sm !m-0"
                                         value={selectedJob?.name || ""}
-                                        onClick={() =>
-                                            setJobTitleModalOpen(true)
-                                        }
+                                        onClick={() => setJobTitleModalOpen(true)}
                                     />
                                     <input
                                         readOnly
                                         placeholder="Filter by industry"
                                         className="form-input form-input-sm !m-0"
                                         value={selectedIndustry?.name || ""}
-                                        onClick={() =>
-                                            setIndustryModalOpen(true)
-                                        }
+                                        onClick={() => setIndustryModalOpen(true)}
                                     />
                                 </div>
-                                <div
-                                    className={
-                                        "grid grid-cols-2 gap-2.5 w-full"
-                                    }
-                                >
+                                <div className={"grid grid-cols-2 gap-2.5 w-full"}>
                                     {nearbyUsers?.data.map((user: User) => (
                                         <div
                                             key={user.id}
-                                            className={
-                                                "bg-white shadow-sm flex flex-col items-center justify-center gap-2 p-4 rounded-lg"
-                                            }
+                                            className={"bg-white shadow-sm flex flex-col items-center justify-center gap-2 p-4 rounded-lg"}
+                                            onClick={() => router.push(`/chat/${user.id}?user=${encodeURIComponent(JSON.stringify(user))}`)}
                                         >
                                             <div
-                                                className={
-                                                    "w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center"
-                                                }
-                                            >
+                                                className={"w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center"}>
                                                 <img
                                                     alt={user.name}
                                                     src={user.avatar}
-                                                    className={
-                                                        "rounded-full h-full w-full bg-gray-200 border border-gray-300 !max-w-12 !max-h-12"
-                                                    }
+                                                    className={"rounded-full h-full w-full bg-gray-200 border border-gray-300 !max-w-12 !max-h-12"}
                                                 />
                                             </div>
-                                            <div
-                                                className={
-                                                    "font-medium text-center text-gray-800 capitalize"
-                                                }
-                                            >
+                                            <div className={"font-medium text-center text-gray-800 capitalize"}>
                                                 {user.name}
                                             </div>
 
-                                            <div
-                                                className={
-                                                    "text-xs text-gray-500 text-center"
-                                                }
-                                            >
-                                                {user.job_title +
-                                                    " / " +
-                                                    user.industry}
+                                            <div className={"text-xs text-gray-500 text-center"}>
+                                                {user.job_title + " / " + user.industry}
                                             </div>
 
                                             <div className={"flex gap-2"}>
@@ -423,26 +377,6 @@ export default function Home() {
                                                 >
                                                     <IoDocumentTextOutline
                                                         className={"text-lg"}
-                                                    />
-                                                </Button>
-                                                <Button
-                                                    onPress={() =>
-                                                        router.push(
-                                                            `/chat/${
-                                                                user.id
-                                                            }?user=${encodeURIComponent(
-                                                                JSON.stringify(
-                                                                    user
-                                                                )
-                                                            )}`
-                                                        )
-                                                    }
-                                                    size={"sm"}
-                                                    className={"!border-1"}
-                                                    variant={"bordered"}
-                                                >
-                                                    <SendIcon
-                                                        className={"text-black"}
                                                     />
                                                 </Button>
                                             </div>
@@ -494,37 +428,21 @@ export default function Home() {
                 <ModalContent>
                     {(onCloseModal) => (
                         <>
-                            <div
-                                className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mt-3"></div>
                             <ModalBody className={"p-3"}>
                                 <div className="flex flex-col items-center gap-2.5">
-                                    <div
-                                        className={
-                                            "h-16 w-16 border border-gray-200 rounded-full"
-                                        }
-                                    >
+                                    <div className={"h-16 w-16 border border-gray-200 rounded-full"}>
                                         <img
                                             src={selectedUser.avatar}
                                             alt={selectedUser.name}
-                                            className={
-                                                "rounded-full h-full w-full bg-gray-200 border border-gray-300 !max-w-16 !max-h-16"
-                                            }
+                                            className={"rounded-full h-full w-full bg-gray-200 border border-gray-300 !max-w-16 !max-h-16"}
                                         />
                                     </div>
                                     <div className={"font-mono"}>
                                         {selectedUser.name}
                                     </div>
-                                    <div
-                                        className={
-                                            "flex flex-col gap-2 text-xs w-full"
-                                        }
-                                    >
+                                    <div className={"flex flex-col gap-2 text-xs w-full"}>
                                         <div className={"flex gap-2 shadow rounded-lg p-2"}>
-                                            <div
-                                                className={
-                                                    "font-semibold w-[50%] p-1"
-                                                }
-                                            >
+                                            <div className={"font-semibold w-[50%] p-1"}>
                                                 Industry:
                                             </div>
                                             <div className={"text-wrap"}>
@@ -532,11 +450,7 @@ export default function Home() {
                                             </div>
                                         </div>
                                         <div className={"flex gap-2 shadow rounded-lg p-2"}>
-                                            <div
-                                                className={
-                                                    "font-semibold w-[50%] p-1"
-                                                }
-                                            >
+                                            <div className={"font-semibold w-[50%] p-1"}>
                                                 Job title:
                                             </div>
                                             <div className={"text-wrap"}>
@@ -546,15 +460,7 @@ export default function Home() {
                                     </div>
                                 </div>
                                 <Button
-                                    onPress={() =>
-                                        router.push(
-                                            `/chat/${
-                                                selectedUser.id
-                                            }?user=${encodeURIComponent(
-                                                JSON.stringify(selectedUser)
-                                            )}`
-                                        )
-                                    }
+                                    onPress={() => router.push(`/chat/${selectedUser.id}?user=${encodeURIComponent(JSON.stringify(selectedUser))}`)}
                                     className={"w-full mt-4"}
                                     color={"primary"}
                                 >
