@@ -27,7 +27,7 @@ export default function useService() {
         queryKey: [`/v1/chat/history?partner_id=${partner_id}&page=${page}`],
         queryFn: ({queryKey, signal}) =>
             fetchService({url: queryKey.join("")}),
-        refetchOnMount: false,
+        refetchOnMount: true,
         refetchInterval: false,
         refetchIntervalInBackground: false,
         refetchOnReconnect: false,
