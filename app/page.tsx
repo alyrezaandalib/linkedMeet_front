@@ -177,6 +177,7 @@ export default function Home() {
 
     useEffect(() => {
         if (isGpsOn) {
+            setIsLoading(true);
             startTracking();
         }
 
@@ -195,7 +196,6 @@ export default function Home() {
     const [selectedUser, setSelectedUser] = useState<any>();
 
     const onSubmitLocation: SubmitHandler<Location> = (data: any) => {
-        setIsLoading(true);
         sendUserLocation.mutate(data, {
             onSuccess: (response) => {
                 fetchNearbyUsers();
@@ -288,9 +288,7 @@ export default function Home() {
                                     No nearby user found
                                 </div>
                                 <div className={"text-center"}>
-                                    The system is automatically scanning for
-                                    nearby users, and they will be displayed if
-                                    found.
+                                    The system <strong>scans</strong> for nearby users <strong>every 10 seconds</strong>. To avoid excessive refreshing, use the refresh pull-to-refresh.
                                 </div>
                                 {(selectedIndustry !== null || selectedJob !== null) && (
                                     <Button
