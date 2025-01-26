@@ -97,7 +97,7 @@ export default function ChatPage() {
                                             className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
                                     </div>
                                 )) : <div className={"h-full flex justify-center items-center text-sm text-gray-500"}>
-                                    There is no chat to display.
+                                    No users to display.
                                 </div>
                         )
                 }
