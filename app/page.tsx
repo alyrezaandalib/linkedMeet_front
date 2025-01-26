@@ -39,7 +39,6 @@ export default function Home() {
 
     useEffect(() => {
         if (unreadMessagesCount.data) {
-            console.log("home", unreadMessagesCount.data?.unread_messages_count)
             dispatch(updateUnreadMessages({
                 unreadMessagesCount: unreadMessagesCount.data?.unread_messages_count,
             }));
@@ -53,6 +52,7 @@ export default function Home() {
     const [isGpsOn, setIsGpsOn] = useState(getCookie("isLocationSet") === "true");
     const watchId = useRef<number | null>(null);
     const lastSentTime = useRef(0);
+    const toastErrorGPS = useRef<string | null>(null);
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -123,8 +123,13 @@ export default function Home() {
             return;
         }
 
+        if (toastErrorGPS.current) {
+            toast.remove(toastErrorGPS.current);
+        }
+
+
         if (!navigator.geolocation) {
-            toast.error("Your device does not support GPS.");
+            toastErrorGPS.current = toast.error("Your device does not support GPS.");
             setIsGpsOn(false);
             return;
         }
@@ -143,9 +148,9 @@ export default function Home() {
             },
             (error) => {
                 if (error.code === error.PERMISSION_DENIED) {
-                    toast.error("Please enable GPS access.");
+                    toastErrorGPS.current = toast.error("Please enable GPS access.");
                 } else {
-                    toast.error(
+                    toastErrorGPS.current = toast.error(
                         "Error in retrieving location." + error.message
                     );
                 }
@@ -162,7 +167,6 @@ export default function Home() {
 
     const stopTracking = () => {
         if (watchId.current !== null) {
-            console.log("stopTracking NULL");
             navigator.geolocation.clearWatch(watchId.current);
             watchId.current = null;
         }
@@ -235,6 +239,7 @@ export default function Home() {
                         aria-label="location"
                         color={"primary"}
                         defaultSelected={isGpsOn}
+                        isSelected={isGpsOn}
                         isDisabled={sendUserLocation.isPending}
                         thumbIcon={({isSelected, className}) =>
                             isSelected ? <CiLocationOn className={className}/> : <CiLocationOff className={className}/>
