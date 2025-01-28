@@ -20,6 +20,10 @@ export async function middleware(request: NextRequest) {
         return NextResponse.rewrite(new URL('/not-found', request.url));
     }
 
+    if (request.nextUrl.pathname === '/auth/reset-password') {
+        return NextResponse.next();
+    }
+
     // splash screen
     const hasSeenSplash = request.cookies.get('has_seen_splash');
     const splashScreenPath = '/splash-screen';

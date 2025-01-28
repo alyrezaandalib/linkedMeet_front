@@ -12,7 +12,11 @@ export default function SplashScreenPage() {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            router.replace(hasCookie("token") ? '/' : '/sign-in');
+            if (hasCookie("token")) {
+                router.back();
+            } else {
+                router.replace("/sign-in");
+            }
         }, 3000);
 
         return () => clearTimeout(timer);
