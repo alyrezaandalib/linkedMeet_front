@@ -1,11 +1,10 @@
 "use client";
 import Image from "next/image";
-import useService, {Location, User} from "./service";
+import useService, {User} from "./service";
 import DrawerMenu from "@/components/layouts/drawer-menu";
 import React, {useEffect, useRef, useState} from "react";
-import {Button, Modal, ModalBody, ModalContent, ModalHeader, Spinner, Switch} from "@heroui/react";
+import {Button, Modal, ModalBody, ModalContent, Spinner, Switch} from "@heroui/react";
 import toast from "react-hot-toast";
-import {SubmitHandler} from "react-hook-form";
 import SelectableModal from "@/components/selectableModal";
 import {useRouter} from "next/navigation";
 import {useQuery} from "@tanstack/react-query";
@@ -108,7 +107,7 @@ export default function Home() {
 
     // update gps status
     const updateGpsStatus = async (isGpsEnabled: boolean) => {
-        const response = await fetch(
+        await fetch(
             `${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/user/gps-status`,
             {
                 method: "PATCH",
@@ -148,11 +147,10 @@ export default function Home() {
                 if (now - lastSentTime.current >= 10000) {
                     const {latitude, longitude} = position.coords;
                     sendUserLocation.mutate({latitude, longitude}, {
-                        onSuccess: (response) => {
+                        onSuccess: () => {
                             if (isFirstFetchNearbyUsers) {
                                 setIsFirstFetchNearbyUsers(true);
-                                stopTracking();
-                                fetchNearbyUsers().then((res) => {
+                                fetchNearbyUsers().then(() => {
                                     setIsLoading(false);
                                 });
                             }
@@ -211,10 +209,6 @@ export default function Home() {
     // selected user
     const [selectedUser, setSelectedUser] = useState<any>();
 
-    if (isLoggingOut) {
-        return <LogoutPage/>
-    }
-
     useEffect(() => {
         let startY = 0;
 
@@ -248,7 +242,7 @@ export default function Home() {
     };
 
     const bind = useDrag(
-        ({down, movement: [_, my], event}) => {
+        ({down, movement: [_, my]}) => {
 
             if (!isGpsOn) {
                 return;
@@ -261,8 +255,12 @@ export default function Home() {
         {axis: 'y'}
     )
 
+    if (isLoggingOut) {
+        return <LogoutPage/>
+    }
+
     return (
-        <div {...bind()}>
+        <div {...bind()} style={{ touchAction: 'pan-y' }}>
             <motion.div
                 animate={{y: refreshing ? 0 : -100}}
                 transition={{type: "spring", stiffness: 300}}
@@ -294,8 +292,7 @@ export default function Home() {
                 <div className={"w-full overflow-hidden"}>
                     {/* header */}
                     <div className={"flex items-center justify-between px-5 py-3"}>
-                        <DrawerMenu isLoading={isLoggingOut} setIsLoading={setIsLoggingOut}
-                                    setIsGpsOnAction={setIsGpsOn}/>
+                        <DrawerMenu isLoading={isLoggingOut} setIsLoading={setIsLoggingOut} setIsGpsOnAction={setIsGpsOn}/>
                         <div className={"flex items-center justify-center gap-3"}>
                             <Button isIconOnly variant={"light"} onPress={() => router.push("/chat")}>
                                 <div className={"relative"}>
@@ -369,9 +366,8 @@ export default function Home() {
                                             No nearby user found
                                         </div>
                                         <div className={"text-center"}>
-                                            The system <strong>scans</strong> for nearby users <strong>every 10
-                                            seconds</strong>.
-                                            To avoid excessive refreshing, use the refresh pull-to-refresh.
+                                            The system automatically sends your location to the server <strong>every 10 seconds</strong>.
+                                            To see nearby users, pull down the page to refresh <strong>(pull to refresh)</strong>.
                                         </div>
                                         {(selectedIndustry !== null || selectedJob !== null) && (
                                             <Button
@@ -507,7 +503,7 @@ export default function Home() {
                     onOpenChange={setIsUserInfoModalOpen}
                 >
                     <ModalContent>
-                        {(onCloseModal) => (
+                        {() => (
                             <>
                                 <ModalBody className={"p-3"}>
                                     <div className="flex flex-col items-center gap-2.5">
