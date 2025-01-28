@@ -58,10 +58,6 @@ export default function Home() {
 
     const [isLoading, setIsLoading] = useState(false);
 
-    // selected industry and job_title
-    const [selectedIndustry, setSelectedIndustry] = useState<any>(null);
-    const [selectedJob, setSelectedJob] = useState<any>(null);
-
     // get industries and job-titles list
     const getIndustriesListResponse = getIndustriesList();
     const getJobTitlesListResponse = getJobTitlesList();
@@ -70,7 +66,7 @@ export default function Home() {
     const [isIndustryModalOpen, setIndustryModalOpen] = useState(false);
     const [isJobTitleModalOpen, setJobTitleModalOpen] = useState(false);
     const [isUserInfoModalOpen, setIsUserInfoModalOpen] = useState(false);
-    const [isFirstFetchNearbyUsers, setIsFirstFetchNearbyUsers] = useState(true);
+    const isFirstFetchNearbyUsers = useRef(true);
 
     // nearby users
     const {data: nearbyUsers, refetch: fetchNearbyUsers} = useQuery({
@@ -101,7 +97,17 @@ export default function Home() {
         enabled: false,
     });
 
+    // selected industry and job_title
+    const [selectedIndustry, setSelectedIndustry] = useState<any>(null);
+    const [selectedJob, setSelectedJob] = useState<any>(null);
+    const hasMounted = useRef(false);
+
     useEffect(() => {
+        if (!hasMounted.current) {
+            hasMounted.current = true;
+            return;
+        }
+
         fetchNearbyUsers();
     }, [selectedIndustry, selectedJob]);
 
@@ -139,6 +145,7 @@ export default function Home() {
         }
 
         updateGpsStatus(true);
+        isFirstFetchNearbyUsers.current = true;
         setCookie("isLocationSet", true);
 
         watchId.current = navigator.geolocation.watchPosition(
@@ -148,8 +155,8 @@ export default function Home() {
                     const {latitude, longitude} = position.coords;
                     sendUserLocation.mutate({latitude, longitude}, {
                         onSuccess: () => {
-                            if (isFirstFetchNearbyUsers) {
-                                setIsFirstFetchNearbyUsers(true);
+                            if (isFirstFetchNearbyUsers.current) {
+                                isFirstFetchNearbyUsers.current = false;
                                 fetchNearbyUsers().then(() => {
                                     setIsLoading(false);
                                 });
@@ -377,9 +384,6 @@ export default function Home() {
                                                 onPress={() => {
                                                     setSelectedIndustry(null);
                                                     setSelectedJob(null);
-                                                    setTimeout(() => {
-                                                        fetchNearbyUsers()
-                                                    }, 100);
                                                 }}
                                             >
                                                 Clear filters
