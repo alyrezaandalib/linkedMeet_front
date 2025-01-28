@@ -15,7 +15,8 @@ export default function SignUpPage() {
     const {
         register,
         handleSubmit,
-        formState: {errors}
+        formState: {errors},
+        watch
     } = useForm<Inputs>()
 
     const router = useRouter();
@@ -44,7 +45,7 @@ export default function SignUpPage() {
     const {isPending} = signUpUser
 
     return (
-        <div className={"flex flex-col h-screen"}>
+        <div className={"flex flex-col h-screen overflow-y-scroll"}>
             <div
                 className="text-center flex justify-center items-center text-3xl font-bold h-[10%] text-white">LinkedMeet
             </div>
@@ -112,6 +113,31 @@ export default function SignUpPage() {
                                 <p className={"text-red-500 text-xs mt-1"}>{errors.password.message}</p>}
                         </div>
 
+                        <div>
+                            <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">
+                                Confirm Password
+                            </label>
+                            <input
+                                {...register("password_confirmation", {
+                                    required: "Confirm password is required.",
+                                    validate: value => value === watch('password') || 'Password do not match',
+                                    minLength: {
+                                        value: 8,
+                                        message: "Confirm password must be at least 8 characters long.",
+                                    },
+                                    maxLength: {
+                                        value: 32,
+                                        message: "Confirm password must be at lest 32 characters long."
+                                    }
+                                })}
+                                type="password"
+                                className="form-input"
+                                autoComplete={"new-password"}
+                                placeholder="At least 8 characters"
+                            />
+                            {errors.password_confirmation &&
+                                <p className={"text-red-500 text-xs mt-1"}>{errors.password_confirmation.message}</p>}
+                        </div>
                         <p className="text-xs text-gray-400 max-w-[90%]">
                             By Clicking Agree & Join, you agree to LinkedMeet User Agreement, Privacy Policy, and Cookie Policy.
                         </p>
