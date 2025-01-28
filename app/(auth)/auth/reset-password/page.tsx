@@ -46,7 +46,9 @@ export default function SignInPage() {
 
             if (response.ok) {
                 toast.success(data.message);
-                setRedirect(true);
+                setTimeout(() => {
+                    window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL_DEEP_LINK}/sign-in`;
+                }, 1000);
             } else {
                 toast.error(data.message || "An error occurred during Reset Password.");
             }
@@ -56,23 +58,6 @@ export default function SignInPage() {
             setIsLoadingLogin(false);
         }
     };
-
-    const [redirect, setRedirect] = useState<boolean>(false);
-
-    useEffect(() => {
-        if (!redirect) return;
-
-        const deepLink = `${process.env.NEXT_PUBLIC_BASE_URL_DEEP_LINK}/sign-in`;
-        const fallbackLink = `${process.env.NEXT_PUBLIC_BASE_URL}/sign-in`;
-
-        const timer = setTimeout(() => {
-            window.location.href = fallbackLink;
-        }, 1000);
-
-        window.location.href = deepLink;
-
-        return () => clearTimeout(timer);
-    }, [redirect]);
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -96,7 +81,7 @@ export default function SignInPage() {
                             Please enter your email address and a new password to reset your account.
                             <br/>
                             <br/>
-                            After resetting, you'll be redirected to the login page to sign in with your new password.
+                            <strong>Note:</strong> After resetting, if the app is active on your phone, you will be redirected to the app.
                         </p>
                     </div>
 
@@ -177,17 +162,6 @@ export default function SignInPage() {
                             Reset Password
                         </Button>
                     </form>
-
-                    {/* Footer */}
-                    <div className="text-center mt-4 text-sm flex items-center gap-2  justify-center">
-                        <p className="text-gray-400 ">
-                            Go back to
-                        </p>
-                        <Link href={"/sign-in"} prefetch={false}
-                              className="border rounded-lg bg-gray-100 text-gray-600 px-2 py-1.5">
-                            Sign in
-                        </Link>
-                    </div>
                 </div>
             </div>
         </div>
