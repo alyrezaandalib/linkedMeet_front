@@ -107,7 +107,7 @@ export default function SignInPage() {
                     <form className={"flex flex-col gap-3"} onSubmit={handleSubmit(onSubmit)}>
 
                         <div>
-                            <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">
+                            <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">
                                 Email
                             </label>
                             <input
@@ -121,7 +121,7 @@ export default function SignInPage() {
                         </div>
 
                         <div>
-                            <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">
+                            <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">
                                 Password
                             </label>
                             <input
@@ -162,9 +162,18 @@ export default function SignInPage() {
                             )}
                         />
 
+                        <div className="text-sm flex items-center gap-2">
+                            <p className="text-gray-400 ">
+                                Can't log in?
+                            </p>
+                            <Link href={"/auth/forgot-password"} prefetch={false} className="border rounded-lg bg-gray-100 text-gray-600 px-2 py-1.5">
+                                Reset your password
+                            </Link>
+                        </div>
 
-                        <p className="text-xs text-gray-400">By Clicking Sign In, you agree to LinkedMeet User Agreement, Privacy Policy, and Cookie
-                            Policy.</p>
+                        <p className="text-xs text-gray-400 mt-2">
+                            By Clicking Sign In, you agree to LinkedMeet User Agreement, Privacy Policy, and Cookie Policy.
+                        </p>
 
                         <Button color={"primary"} isLoading={isLoadingLogin} radius={"sm"} type={"submit"}>Sign
                             In</Button>

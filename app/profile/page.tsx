@@ -165,7 +165,7 @@ export default function ProfilePage() {
                     <form className={"flex flex-col p-4 mt-7 h-[65%] justify-between"} onSubmit={handleSubmit(onSubmit)}>
                         <div className={"flex flex-col gap-1.5"}>
                             <div>
-                                <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">
+                                <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">
                                     Name
                                 </label>
                                 <input
@@ -177,7 +177,7 @@ export default function ProfilePage() {
                                 {errors.name && <p className={"text-red-500 text-xs mt-1"}>{errors.name.message}</p>}
                             </div>
                             <div>
-                                <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">
+                                <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">
                                     Email
                                 </label>
                                 <input
@@ -187,7 +187,7 @@ export default function ProfilePage() {
                                 />
                             </div>
                             <div>
-                                <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">Industry</label>
+                                <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">Industry</label>
                                 <input
                                     {...register("industry_id", {required: "Industry is required."})}
                                     readOnly
@@ -201,7 +201,7 @@ export default function ProfilePage() {
                             </div>
 
                             <div>
-                                <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">Job
+                                <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">Job
                                     Title</label>
                                 <input
                                     {...register("job_title_id", {required: "Job title is required."})}

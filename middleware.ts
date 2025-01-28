@@ -7,7 +7,9 @@ export async function middleware(request: NextRequest) {
         '/verify-code',
         '/sign-in',
         '/auth/linkedin/callback',
-        '/splash-screen'
+        '/splash-screen',
+        '/auth/forgot-password',
+        '/auth/reset-password',
     ];
 
     console.log('Path:', request.nextUrl.pathname);

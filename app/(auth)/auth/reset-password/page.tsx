@@ -1,0 +1,195 @@
+"use client"
+import Link from "next/link";
+import {Button} from "@heroui/react";
+import {useForm} from "react-hook-form";
+import {useRouter, useSearchParams} from "next/navigation";
+import {useSelector} from "react-redux";
+import toast from "react-hot-toast";
+import {useEffect, useState} from "react";
+
+type Inputs = {
+    email: string;
+    password: string;
+    password_confirmation: string;
+    token: string;
+};
+
+export default function SignInPage() {
+    const searchParams = useSearchParams()
+    const token = searchParams.get("token") ?? 'None';
+
+    const [isLoadingLogin, setIsLoadingLogin] = useState(false);
+    const router = useRouter();
+    const isAuthenticated = useSelector((state: any) => state.user.isAuthenticated);
+
+    const {
+        register,
+        handleSubmit,
+        formState: {errors},
+    } = useForm<Inputs>();
+
+
+    const onSubmit = async (params: Inputs) => {
+        setIsLoadingLogin(true);
+
+        try {
+            const response: Response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/reset-password`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(params),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                toast.success(data.message);
+                setRedirect(true);
+            } else {
+                toast.error(data.message || "An error occurred during Reset Password.");
+            }
+        } catch (error) {
+            toast.error("Invalid response structure from server.");
+        } finally {
+            setIsLoadingLogin(false);
+        }
+    };
+
+    const [redirect, setRedirect] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (!redirect) return;
+
+        const deepLink = `${process.env.NEXT_PUBLIC_BASE_URL_DEEP_LINK}/sign-in`;
+        const fallbackLink = `${process.env.NEXT_PUBLIC_BASE_URL}/sign-in`;
+
+        const timer = setTimeout(() => {
+            window.location.href = fallbackLink;
+        }, 1000);
+
+        window.location.href = deepLink;
+
+        return () => clearTimeout(timer);
+    }, [redirect]);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            router.push("/")
+        }
+    }, []);
+
+    return (
+        <div className={"flex flex-col h-screen"}>
+            <div className="text-center flex justify-center items-center text-3xl font-bold h-[15%] text-white">
+                LinkedMeet
+            </div>
+            <div className="flex relative items-center h-[85%] justify-center">
+                <div className={"w-[90%] bg-gray-500 h-full absolute bottom-0 rounded-t-3xl max-w-[400px]"}></div>
+                <div
+                    className="absolute flex flex-col gap-3.5 bottom-0 w-full h-[97.5%] max-w-md bg-white rounded-t-3xl shadow-lg p-8">
+
+                    <div className={"flex flex-col gap-1.5"}>
+                        <h2 className="text-2xl font-semibold text-black">Reset password</h2>
+                        <p className="text-sm text-gray-400">
+                            Please enter your email address and a new password to reset your account.
+                            <br/>
+                            <br/>
+                            After resetting, you'll be redirected to the login page to sign in with your new password.
+                        </p>
+                    </div>
+
+                    {/* Form */}
+                    <form className={"flex flex-col gap-3"} onSubmit={handleSubmit(onSubmit)}>
+
+                        <input
+                            {...register("token")}
+                            type="hidden"
+                            value={token}
+                        />
+                        <div>
+                            <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">
+                                Email
+                            </label>
+                            <input
+                                {...register("email", {required: "Email is required."})}
+                                type="email"
+                                placeholder="e.g. example@email.com"
+                                className="form-input"
+                                autoComplete="email"
+                            />
+                            {errors.email && <p className={"text-red-500 text-xs mt-1"}>{errors.email.message}</p>}
+                        </div>
+
+                        <div>
+                            <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">
+                                New Password
+                            </label>
+                            <input
+                                {...register("password", {
+                                    required: "Password is required.",
+                                    minLength: {
+                                        value: 8,
+                                        message: "Password must be at least 8 characters long.",
+                                    },
+                                    maxLength: {
+                                        value: 32,
+                                        message: "Password must be at lest 32 characters long."
+                                    }
+                                })}
+                                type="password"
+                                autoComplete="new-password"
+                                className="form-input"
+                                placeholder="At least 8 characters"
+                            />
+                            {errors.password &&
+                                <p className={"text-red-500 text-xs mt-1"}>{errors.password.message}</p>}
+                        </div>
+
+                        <div>
+                            <label className="block !mb-0 text-sm font-medium ml-1 rtl:mr-2 text-gray-700">
+                                Confirm New Password
+                            </label>
+                            <input
+                                {...register("password_confirmation", {
+                                    required: "Password confirmation is required.",
+                                    minLength: {
+                                        value: 8,
+                                        message: "Password confirmation must be at least 8 characters long.",
+                                    },
+                                    maxLength: {
+                                        value: 32,
+                                        message: "Password confirmation must be at lest 32 characters long."
+                                    }
+                                })}
+                                type="password"
+                                autoComplete="new-password"
+                                className="form-input"
+                                placeholder="At least 8 characters"
+                            />
+                            {errors.password_confirmation &&
+                                <p className={"text-red-500 text-xs mt-1"}>{errors.password_confirmation.message}</p>}
+                        </div>
+
+                        <Button className={"mt-4"} color={"primary"} isLoading={isLoadingLogin} radius={"sm"}
+                                type={"submit"}>
+                            Reset Password
+                        </Button>
+                    </form>
+
+                    {/* Footer */}
+                    <div className="text-center mt-4 text-sm flex items-center gap-2  justify-center">
+                        <p className="text-gray-400 ">
+                            Go back to
+                        </p>
+                        <Link href={"/sign-in"} prefetch={false}
+                              className="border rounded-lg bg-gray-100 text-gray-600 px-2 py-1.5">
+                            Sign in
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}

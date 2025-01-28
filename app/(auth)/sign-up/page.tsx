@@ -62,7 +62,7 @@ export default function SignUpPage() {
                     <form className={"flex flex-col gap-3"} onSubmit={handleSubmit(onSubmit)}>
 
                         <div>
-                            <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">
+                            <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">
                                 Name
                             </label>
                             <input
@@ -74,7 +74,7 @@ export default function SignUpPage() {
                         </div>
 
                         <div>
-                            <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">
+                            <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">
                                 Email
                             </label>
                             <input
@@ -88,7 +88,7 @@ export default function SignUpPage() {
                         </div>
 
                         <div>
-                            <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">
+                            <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">
                                 Password
                             </label>
                             <input

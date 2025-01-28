@@ -89,7 +89,7 @@ export default function InformationPage() {
                     <form className="flex flex-col gap-3 mt-5" onSubmit={handleSubmit(onSubmit)}>
                         <div>
                             <label
-                                className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">Industry</label>
+                                className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">Industry</label>
                             <input
                                 {...register("industry_id", {required: "Industry is required."})}
                                 readOnly
@@ -102,7 +102,7 @@ export default function InformationPage() {
                         </div>
 
                         <div>
-                            <label className="block !mb-0 text-sm font-medium ml-4 rtl:mr-4 text-gray-700">Job
+                            <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">Job
                                 Title</label>
                             <input
                                 {...register("job_title_id", {required: "Job title is required."})}
