@@ -96,7 +96,7 @@ export default function SignInPage() {
             <div className="flex relative items-center h-[85%] justify-center">
                 <div className={"w-[90%] bg-gray-500 h-full absolute bottom-0 rounded-t-3xl max-w-[400px]"}></div>
                 <div
-                    className="absolute flex flex-col gap-3.5 bottom-0 w-full h-[97.5%] max-w-md bg-white rounded-t-3xl shadow-lg p-8">
+                    className="absolute flex flex-col gap-3.5 bottom-0 w-full overflow-y-auto h-[97.5%] max-w-md bg-white rounded-t-3xl shadow-lg p-8">
 
                     <div className={"flex flex-col gap-1.5"}>
                         <h2 className="text-2xl font-semibold text-black">Sign In</h2>
