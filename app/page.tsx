@@ -3,7 +3,7 @@ import Image from "next/image";
 import useService, {User} from "./service";
 import DrawerMenu from "@/components/layouts/drawer-menu";
 import React, {useEffect, useRef, useState} from "react";
-import {Button, Modal, ModalBody, ModalContent, Spinner, Switch} from "@heroui/react";
+import {Avatar, Button, Modal, ModalBody, ModalContent, Spinner, Switch} from "@heroui/react";
 import toast from "react-hot-toast";
 import SelectableModal from "@/components/selectableModal";
 import {useRouter} from "next/navigation";
@@ -428,14 +428,7 @@ export default function Home() {
                                                     className={"bg-white shadow-sm flex flex-col items-center justify-center gap-2 p-4 rounded-lg"}
                                                     onClick={() => router.push(`/chat/${user.id}?user=${encodeURIComponent(JSON.stringify(user))}`)}
                                                 >
-                                                    <div
-                                                        className={"w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center"}>
-                                                        <img
-                                                            alt={user.name}
-                                                            src={user.avatar}
-                                                            className={"rounded-full h-full w-full bg-gray-200 border border-gray-300 !max-w-12 !max-h-12"}
-                                                        />
-                                                    </div>
+                                                    <Avatar isBordered  className="min-w-12 w-12 min-h-12 h-12 text-large" src={user.avatar} alt={user.name} />
                                                     <div className={"font-medium text-center text-gray-800 capitalize"}>
                                                         {user.name}
                                                     </div>
@@ -511,13 +504,7 @@ export default function Home() {
                             <>
                                 <ModalBody className={"p-3"}>
                                     <div className="flex flex-col items-center gap-2.5">
-                                        <div className={"h-16 w-16 border border-gray-200 rounded-full"}>
-                                            <img
-                                                src={selectedUser.avatar}
-                                                alt={selectedUser.name}
-                                                className={"rounded-full h-full w-full bg-gray-200 border border-gray-300 !max-w-16 !max-h-16"}
-                                            />
-                                        </div>
+                                        <Avatar isBordered  className="min-w-16 w-16 min-h-16 h-16 text-large" src={selectedUser.avatar} alt={selectedUser.name} />
                                         <div className={"font-mono"}>
                                             {selectedUser.name}
                                         </div>
