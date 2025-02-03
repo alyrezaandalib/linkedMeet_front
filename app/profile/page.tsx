@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link";
-import {Button, Spinner} from "@heroui/react";
+import {Button, Spinner, Avatar} from "@heroui/react";
 import useService, {Inputs} from "./service";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {useDispatch, useSelector} from "react-redux";
@@ -152,10 +152,7 @@ export default function ProfilePage() {
                 </div>
                 <div className={"h-full flex flex-col mt-7"}>
                     <div className={"flex flex-col justify-center items-center gap-2"}>
-                        <div className={"bg-gray-200 rounded-full w-20 h-20 flex items-center justify-center"}>
-                            <img className={"rounded-full h-full w-full bg-gray-200 border border-gray-300 !max-w-20 !max-h-20"} src={user.avatar}
-                                 alt={user?.name}/>
-                        </div>
+                        <Avatar isBordered  className="w-20 h-20 text-large" src={user.avatar} alt={user.name} />
                         <div className={"font-mono capitalize"}>{user?.name}</div>
                         <div className={"flex gap-1"}>
                             <ImgUploader isLoading={isLoading} setImage={setImage}/>

@@ -6,7 +6,7 @@ import {
     DrawerBody,
     DrawerFooter,
     Button,
-    useDisclosure,
+    useDisclosure, Avatar,
 } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
@@ -97,17 +97,7 @@ export default function DrawerMenu({ setIsGpsOnAction, isLoading, setIsLoading }
                     {(onClose) => (
                         <>
                             <DrawerHeader className="flex flex-col gap-2 justify-center items-center m-10 mb-0">
-                                <div
-                                    className={`rounded-full h-20 w-20 flex items-center justify-center bg-gray-200 border border-gray-300 ${!user.avatar && "p-3"}`}>
-                                    {
-                                        user.avatar
-                                            ?
-                                            <img className={"rounded-full w-full h-full !max-w-20 !max-h-20"}
-                                                 src={user.avatar} alt={user.name}/>
-                                            :
-                                            <CiUser className={"text-3xl"}/>
-                                    }
-                                </div>
+                                <Avatar isBordered  className="w-20 h-20 text-large" src={user.avatar} alt={user.name} />
                                 <div className={"capitalize"}>{user.name}</div>
                                 <div className={"text-gray-500 text-sm font-light"}>{user.email}</div>
                             </DrawerHeader>

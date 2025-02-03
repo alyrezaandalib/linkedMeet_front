@@ -1,11 +1,13 @@
 "use client"
 import Link from "next/link";
 import {IoIosArrowBack} from "react-icons/io";
-import {Input, Spinner, Button} from "@heroui/react";
+import {Input, Spinner, Button, Avatar} from "@heroui/react";
 import useService, {Chats} from "./service";
 import React, {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 import truncateMessage from "@/utils/truncateMessage";
+import {formatDateToClientTimezone} from '@/utils/helpers';
+
 // icons
 import {CiSearch} from "react-icons/ci";
 
@@ -70,10 +72,7 @@ export default function ChatPage() {
                                             radius={"sm"}
                                             className={"flex justify-start py-8 w-full px-2"}
                                         >
-                                            <div className={"min-w-10 h-10 rounded-full bg-gray-200/50"}>
-                                                <img src={item.avatar} alt={item.name}
-                                                     className={"rounded-full h-full w-full bg-gray-200 border border-gray-300 !max-w-10 !max-h-10"}/>
-                                            </div>
+                                            <Avatar isBordered  className="min-w-10 w-10 min-h-10 h-10 text-large" src={item.avatar} alt={item.name} />
                                             <div className={"flex w-full items-end"}>
                                                 <div className={"flex flex-col items-start gap-1 w-full"}>
                                                     <div className={"capitalize"}>{item.name}</div>
@@ -89,7 +88,7 @@ export default function ChatPage() {
                                                         </div>
                                                     }
                                                     <div
-                                                        className={"text-gray-400 w-fit text-xs"}>{item.last_message_at}</div>
+                                                        className={"text-gray-400 w-fit text-xs"}>{formatDateToClientTimezone(item.last_message_at, true)}</div>
                                                 </div>
                                             </div>
                                         </Button>

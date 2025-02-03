@@ -1,13 +1,15 @@
 "use client";
 import {useRouter, useSearchParams} from "next/navigation";
-import {Button, Spinner} from "@heroui/react";
+import {Avatar, Button, Spinner} from "@heroui/react";
 import useService, {IMessage, IChat} from "./service";
 import {SubmitHandler, useForm} from "react-hook-form";
 import toast from "react-hot-toast";
-import {useEffect, useState, useRef} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import {useSelector} from "react-redux";
 import {getCookie} from "cookies-next";
 import {initializeEcho} from "@/utils/echo";
+import {formatDateToClientTimezone} from '@/utils/helpers';
+
 // icons
 import {IoIosArrowBack} from "react-icons/io";
 import SendIcon from "@/public/tsx-icons/send";
@@ -207,14 +209,7 @@ const ChatPage = () => {
                     <IoIosArrowBack className={"text-lg"}/>
                 </button>
                 <div className="flex items-center ml-4">
-                    <div
-                        className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                        <img
-                            alt={parsedUser?.name}
-                            src={parsedUser?.avatar}
-                            className={"rounded-full h-full w-full bg-gray-200 border border-gray-300 !max-w-10 !max-h-10"}
-                        />
-                    </div>
+                    <Avatar isBordered  className="min-w-10 w-10 min-h-10 h-10 text-large" src={parsedUser.avatar} alt={parsedUser.name} />
                     <div className="ml-3">
                         <p className="text-sm font-semibold text-gray-800 capitalize">
                             {parsedUser?.name}
@@ -255,7 +250,7 @@ const ChatPage = () => {
                                                 {chat?.message}
                                             </div>
                                             <p className="text-xs text-gray-400 mt-1">
-                                                {chat?.created_at}
+                                                {formatDateToClientTimezone(chat?.created_at)}
                                             </p>
                                         </div>
                                     ) : (
@@ -268,7 +263,7 @@ const ChatPage = () => {
                                                 {chat?.message}
                                             </div>
                                             <p className="text-xs text-gray-400 mt-1 text-right">
-                                                {chat?.created_at}
+                                                {formatDateToClientTimezone(chat?.created_at)}
                                             </p>
                                         </div>
                                     )
