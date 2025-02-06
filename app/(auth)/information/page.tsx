@@ -33,11 +33,15 @@ export default function InformationPage() {
     const getJobTitlesListResponse = getJobTitlesList(modalsSearchInput.job_title)
 
     useEffect(() => {
-        getIndustriesListResponse.refetch()
+        setTimeout(() => {
+            getIndustriesListResponse.refetch()
+        }, 500)
     }, [modalsSearchInput?.industry])
 
     useEffect(() => {
-        getJobTitlesListResponse.refetch()
+        setTimeout(() => {
+            getJobTitlesListResponse.refetch()
+        }, 500)
     }, [modalsSearchInput?.job_title])
 
 
@@ -82,11 +86,11 @@ export default function InformationPage() {
         });
     };
 
-    // useEffect(() => {
-    //     if (hasIndustry !== "null" && hasJobTitle !== "null") {
-    //         window.location.href = '/';
-    //     }
-    // }, [hasIndustry , hasJobTitle]);
+    useEffect(() => {
+        if (hasIndustry !== "null" && hasJobTitle !== "null") {
+            window.location.href = '/';
+        }
+    }, [hasIndustry , hasJobTitle]);
 
     return (
         <div className="flex flex-col h-screen">

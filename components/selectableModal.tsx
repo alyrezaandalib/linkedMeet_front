@@ -30,7 +30,7 @@ export default function SelectableModal({
                         <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
                         <div
                             className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mt-3"></div>
-                        <ModalBody className={"overflow-auto"}>
+                        <ModalBody>
 
                             {/* search ...*/}
                             <Input
@@ -54,7 +54,28 @@ export default function SelectableModal({
                                         className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
                                 </>
                             }
-                            <div className="overflow-y-auto pb-20">
+                            <div className="flex flex-col bg-red-400 overflow-y-scroll">
+                                {items?.map((item: any, index) => (
+                                    <div key={index}>
+                                        <Button
+                                            onPress={() => {
+                                                onSelect(item);
+                                                onCloseModal();
+                                            }}
+                                            variant="light"
+                                            size="lg"
+                                            radius="sm"
+                                            className={"flex justify-between py-6 w-full text-sm"}
+                                        >
+                                            {item.name}
+                                            {selectedItem === item && (
+                                                <IoMdCheckmark className="text-blue-500 text-xl"/>
+                                            )}
+                                        </Button>
+                                        <div
+                                            className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+                                    </div>
+                                ))}
                                 {items?.map((item: any, index) => (
                                     <div key={index}>
                                         <Button
