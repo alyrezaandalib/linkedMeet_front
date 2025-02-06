@@ -24,10 +24,12 @@ export async function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
+    const isiOSWebView = /(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)/i.test(userAgent);
+
     // splash screen
     const hasSeenSplash = request.cookies.get('has_seen_splash');
     const splashScreenPath = '/splash-screen';
-    if (!hasSeenSplash && request.nextUrl.pathname !== splashScreenPath) {
+    if (!isiOSWebView && !hasSeenSplash && request.nextUrl.pathname !== splashScreenPath) {
         console.log('Redirecting to splash-screen.');
         const response = NextResponse.redirect(new URL(splashScreenPath, request.url));
         response.cookies.set('has_seen_splash', 'true');
