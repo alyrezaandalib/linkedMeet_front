@@ -37,12 +37,17 @@ export default function useService() {
         enabled: true,
     })
 
-    const getIndustriesList = () => useQuery({
+    const fetchData = (url: string, searchKey: string) => {
+        const params = new URLSearchParams();
+        if (searchKey) {
+            params.append("q", searchKey);
+        }
+        return fetchService({url: `${url}?${params.toString()}`});
+    };
+
+    const getIndustriesList = (value : any) => useQuery({
         queryKey: ["/v1/app/industries"],
-        queryFn: ({queryKey}) =>
-            fetchService({
-                url: queryKey.join(""),
-            }),
+        queryFn: () => fetchData("/v1/app/industries", value),
         refetchOnMount: false,
         refetchInterval: false,
         refetchIntervalInBackground: false,
@@ -51,12 +56,9 @@ export default function useService() {
         enabled: true,
     })
 
-    const getJobTitlesList = () => useQuery({
+    const getJobTitlesList = (value : any) => useQuery({
         queryKey: ["/v1/app/job-titles"],
-        queryFn: ({queryKey}) =>
-            fetchService({
-                url: queryKey.join(""),
-            }),
+        queryFn: () => fetchData("/v1/app/job-titles", value),
         refetchOnMount: false,
         refetchInterval: false,
         refetchIntervalInBackground: false,

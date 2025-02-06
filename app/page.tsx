@@ -58,9 +58,22 @@ export default function Home() {
 
     const [isLoading, setIsLoading] = useState(false);
 
+    const [modalsSearchInput, setModalsSearchInput] = useState<any>({
+        job_title: "",
+        industry: ""
+    })
+
     // get industries and job-titles list
-    const getIndustriesListResponse = getIndustriesList();
-    const getJobTitlesListResponse = getJobTitlesList();
+    const getIndustriesListResponse = getIndustriesList(modalsSearchInput.industry)
+    const getJobTitlesListResponse = getJobTitlesList(modalsSearchInput.job_title)
+
+    useEffect(() => {
+        getIndustriesListResponse.refetch()
+    }, [modalsSearchInput?.industry])
+
+    useEffect(() => {
+        getJobTitlesListResponse.refetch()
+    }, [modalsSearchInput?.job_title])
 
     // modals
     const [isIndustryModalOpen, setIndustryModalOpen] = useState(false);
@@ -267,7 +280,7 @@ export default function Home() {
     }
 
     return (
-        <div {...bind()} style={{ touchAction: 'pan-y' }}>
+        <div {...bind()} style={{touchAction: 'pan-y'}}>
             <motion.div
                 animate={{y: refreshing ? 0 : -100}}
                 transition={{type: "spring", stiffness: 300}}
@@ -299,7 +312,8 @@ export default function Home() {
                 <div className={"w-full overflow-hidden"}>
                     {/* header */}
                     <div className={"flex items-center justify-between px-5 py-3"}>
-                        <DrawerMenu isLoading={isLoggingOut} setIsLoading={setIsLoggingOut} setIsGpsOnAction={setIsGpsOn}/>
+                        <DrawerMenu isLoading={isLoggingOut} setIsLoading={setIsLoggingOut}
+                                    setIsGpsOnAction={setIsGpsOn}/>
                         <div className={"flex items-center justify-center gap-3"}>
                             <Button isIconOnly variant={"light"} onPress={() => router.push("/chat")}>
                                 <div className={"relative"}>
@@ -373,8 +387,10 @@ export default function Home() {
                                             No nearby user found
                                         </div>
                                         <div className={"text-center"}>
-                                            The system automatically sends your location to the server <strong>every 10 seconds</strong>.
-                                            To see nearby users, pull down the page to refresh <strong>(pull to refresh)</strong>.
+                                            The system automatically sends your location to the server <strong>every 10
+                                            seconds</strong>.
+                                            To see nearby users, pull down the page to refresh <strong>(pull to
+                                            refresh)</strong>.
                                         </div>
                                         {(selectedIndustry !== null || selectedJob !== null) && (
                                             <Button
@@ -428,7 +444,9 @@ export default function Home() {
                                                     className={"bg-white shadow-sm flex flex-col items-center justify-center gap-2 p-4 rounded-lg"}
                                                     onClick={() => router.push(`/chat/${user.id}?user=${encodeURIComponent(JSON.stringify(user))}`)}
                                                 >
-                                                    <Avatar isBordered  className="min-w-12 w-12 min-h-12 h-12 text-large" src={user.avatar} alt={user.name} />
+                                                    <Avatar isBordered
+                                                            className="min-w-12 w-12 min-h-12 h-12 text-large"
+                                                            src={user.avatar} alt={user.name}/>
                                                     <div className={"font-medium text-center text-gray-800 capitalize"}>
                                                         {user.name}
                                                     </div>
@@ -467,12 +485,26 @@ export default function Home() {
                             {/* Industry Modal */}
                             <SelectableModal
                                 title="Industry"
+                                handleSearch={(searchValue: string) => setModalsSearchInput({
+                                    ...modalsSearchInput,
+                                    industry: searchValue
+                                })}
                                 items={getIndustriesListResponse.data?.data || []}
                                 selectedItem={selectedIndustry}
                                 isOpen={isIndustryModalOpen}
-                                onClose={() => setIndustryModalOpen(false)}
+                                onClose={() => {
+                                    setIndustryModalOpen(false)
+                                    setModalsSearchInput({
+                                        ...modalsSearchInput,
+                                        industry: ""
+                                    })
+                                }}
                                 onSelect={(item) => {
                                     setSelectedIndustry(item);
+                                    setModalsSearchInput({
+                                        ...modalsSearchInput,
+                                        industry: ""
+                                    })
                                     setIndustryModalOpen(false);
                                 }}
                             />
@@ -480,12 +512,26 @@ export default function Home() {
                             {/* Job Title Modal */}
                             <SelectableModal
                                 title="Job Title"
+                                handleSearch={(searchValue: string) => setModalsSearchInput({
+                                    ...modalsSearchInput,
+                                    job_title: searchValue
+                                })}
                                 items={getJobTitlesListResponse.data?.data || []}
                                 selectedItem={selectedJob}
                                 isOpen={isJobTitleModalOpen}
-                                onClose={() => setJobTitleModalOpen(false)}
+                                onClose={() => {
+                                    setJobTitleModalOpen(false)
+                                    setModalsSearchInput({
+                                        ...modalsSearchInput,
+                                        job_title: ""
+                                    })
+                                }}
                                 onSelect={(item) => {
                                     setSelectedJob(item);
+                                    setModalsSearchInput({
+                                        ...modalsSearchInput,
+                                        job_title: ""
+                                    })
                                     setJobTitleModalOpen(false);
                                 }}
                             />
@@ -504,7 +550,8 @@ export default function Home() {
                             <>
                                 <ModalBody className={"p-3"}>
                                     <div className="flex flex-col items-center gap-2.5">
-                                        <Avatar isBordered  className="min-w-16 w-16 min-h-16 h-16 text-large" src={selectedUser.avatar} alt={selectedUser.name} />
+                                        <Avatar isBordered className="min-w-16 w-16 min-h-16 h-16 text-large"
+                                                src={selectedUser.avatar} alt={selectedUser.name}/>
                                         <div className={"font-mono"}>
                                             {selectedUser.name}
                                         </div>

@@ -76,10 +76,24 @@ export default function ProfilePage() {
         }
     }, [image]);
 
-    // get industries and job-titles list
-    const getIndustriesListResponse = getIndustriesList()
-    const getJobTitlesListResponse = getJobTitlesList()
+    const [modalsSearchInput, setModalsSearchInput] = useState<any>({
+        job_title: "",
+        industry: ""
+    })
 
+    // get industries and job-titles list
+    const getIndustriesListResponse = getIndustriesList(modalsSearchInput.industry)
+    const getJobTitlesListResponse = getJobTitlesList(modalsSearchInput.job_title)
+
+    useEffect(() => {
+        getIndustriesListResponse.refetch()
+    }, [modalsSearchInput?.industry])
+
+    useEffect(() => {
+        getJobTitlesListResponse.refetch()
+    }, [modalsSearchInput?.job_title])
+
+    // selected industry and selected job_title
     const [selectedIndustry, setSelectedIndustry] = useState<any>(null);
     const [selectedJob, setSelectedJob] = useState<any>(null);
 
@@ -152,14 +166,15 @@ export default function ProfilePage() {
                 </div>
                 <div className={"h-full flex flex-col mt-7"}>
                     <div className={"flex flex-col justify-center items-center gap-2"}>
-                        <Avatar isBordered  className="w-20 h-20 text-large" src={user.avatar} alt={user.name} />
+                        <Avatar isBordered className="w-20 h-20 text-large" src={user.avatar} alt={user.name}/>
                         <div className={"font-mono capitalize"}>{user?.name}</div>
                         <div className={"flex gap-1"}>
                             <ImgUploader isLoading={isLoading} setImage={setImage}/>
                         </div>
                     </div>
 
-                    <form className={"flex flex-col p-4 mt-7 h-[65%] justify-between"} onSubmit={handleSubmit(onSubmit)}>
+                    <form className={"flex flex-col p-4 mt-7 h-[65%] justify-between"}
+                          onSubmit={handleSubmit(onSubmit)}>
                         <div className={"flex flex-col gap-1.5"}>
                             <div>
                                 <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">
@@ -184,7 +199,8 @@ export default function ProfilePage() {
                                 />
                             </div>
                             <div>
-                                <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">Industry</label>
+                                <label
+                                    className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">Industry</label>
                                 <input
                                     {...register("industry_id", {required: "Industry is required."})}
                                     readOnly
@@ -229,27 +245,55 @@ export default function ProfilePage() {
                             {/* Industry Modal */}
                             <SelectableModal
                                 title="Industry"
+                                handleSearch={(searchValue: string) => setModalsSearchInput({
+                                    ...modalsSearchInput,
+                                    industry: searchValue
+                                })}
                                 items={getIndustriesListResponse.data?.data || []}
                                 selectedItem={selectedIndustry}
                                 isOpen={isIndustryModalOpen}
-                                onClose={() => setIndustryModalOpen(false)}
+                                onClose={() => {
+                                    setIndustryModalOpen(false)
+                                    setModalsSearchInput({
+                                        ...modalsSearchInput,
+                                        industry: ""
+                                    })
+                                }}
                                 onSelect={(item: any) => {
                                     setSelectedIndustry(item);
+                                    setModalsSearchInput({
+                                        ...modalsSearchInput,
+                                        industry: ""
+                                    })
                                     setIndustryModalOpen(false);
-                                    setIsChanged(true); // تغییرات ایجاد شده است
+                                    setIsChanged(true);
                                 }}
                             />
 
                             <SelectableModal
                                 title="Job Title"
+                                handleSearch={(searchValue: string) => setModalsSearchInput({
+                                    ...modalsSearchInput,
+                                    job_title: searchValue
+                                })}
                                 items={getJobTitlesListResponse.data?.data || []}
                                 selectedItem={selectedJob}
                                 isOpen={isJobTitleModalOpen}
-                                onClose={() => setJobTitleModalOpen(false)}
+                                onClose={() => {
+                                    setJobTitleModalOpen(false)
+                                    setModalsSearchInput({
+                                        ...modalsSearchInput,
+                                        job_title: ""
+                                    })
+                                }}
                                 onSelect={(item: any) => {
                                     setSelectedJob(item);
+                                    setModalsSearchInput({
+                                        ...modalsSearchInput,
+                                        job_title: ""
+                                    })
                                     setJobTitleModalOpen(false);
-                                    setIsChanged(true); // تغییرات ایجاد شده است
+                                    setIsChanged(true);
                                 }}
                             />
 
