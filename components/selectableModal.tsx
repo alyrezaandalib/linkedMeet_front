@@ -30,7 +30,7 @@ export default function SelectableModal({
                         <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
                         <div
                             className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mt-3"></div>
-                        <ModalBody>
+                        <ModalBody className={"overflow-auto"}>
 
                             {/* search ...*/}
                             <Input
@@ -54,7 +54,7 @@ export default function SelectableModal({
                                         className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
                                 </>
                             }
-                            <div className="flex flex-col">
+                            <div className="overflow-y-auto pb-20">
                                 {items?.map((item: any, index) => (
                                     <div key={index}>
                                         <Button
