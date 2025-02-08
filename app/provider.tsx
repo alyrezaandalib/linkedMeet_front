@@ -42,10 +42,15 @@ export default function CustomProvider({children}: { children: ReactNode }) {
         const userAgent = navigator.userAgent || '';
         const { os } = UAParser(userAgent);
 
-        setIsStandalone(window.matchMedia('(display-mode: standalone)').matches);
-        setCookie('isStandalone', isStandalone);
+        const standalone =
+            window.matchMedia("(display-mode: standalone)").matches ||
+            (window.navigator as any).standalone === true;
 
-        if (!isStandalone && os.name === 'Android') {
+        setIsStandalone(standalone);
+
+        setCookie('isStandalone', standalone );
+
+        if (!standalone  && os.name === 'Android') {
             router.push('/download-app');
         }
     }, []);
