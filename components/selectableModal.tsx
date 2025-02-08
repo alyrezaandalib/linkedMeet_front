@@ -2,6 +2,7 @@ import {Button, Input, Modal, ModalBody, ModalContent, ModalHeader} from "@herou
 // icons
 import {IoMdCheckmark} from "react-icons/io";
 import {IoIosClose} from "react-icons/io";
+import {useEffect} from "react";
 
 interface SelectableModalProps {
     title: string;
@@ -22,15 +23,23 @@ export default function SelectableModal({
                                             onClose,
                                             onSelect
                                         }: SelectableModalProps) {
+    // useEffect(() => {
+    //     if (isOpen) {
+    //         document.body.style.overflow = "hidden";
+    //     } else {
+    //         document.body.style.overflow = "auto";
+    //     }
+    // }, [isOpen]);
+
     return (
         <Modal size="full" isOpen={isOpen} onOpenChange={onClose}>
-            <ModalContent>
-                {(onCloseModal) => (
+            <ModalContent className="fixed inset-0 bg-white">
+            {(onCloseModal) => (
                     <>
                         <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
                         <div
                             className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mt-3"></div>
-                        <ModalBody>
+                        <ModalBody className={"overflow-auto pb-20"}>
 
                             {/* search ...*/}
                             <Input
