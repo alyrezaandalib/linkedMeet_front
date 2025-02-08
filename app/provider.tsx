@@ -37,13 +37,11 @@ export default function CustomProvider({children}: { children: ReactNode }) {
     const queryClient = new QueryClient();
     const router = useRouter();
     const [isStandalone, setIsStandalone] = useState(false);
-    const [isApp, setIsApp] = useState(false);
 
     useEffect(() => {
         const userAgent = navigator.userAgent || '';
         const { os } = UAParser(userAgent);
 
-        setIsApp(userAgent.includes('LinkedMeet'));
         setIsStandalone(window.matchMedia('(display-mode: standalone)').matches);
         setCookie('isStandalone', isStandalone);
 
@@ -52,21 +50,13 @@ export default function CustomProvider({children}: { children: ReactNode }) {
         }
     }, []);
 
-    if (isStandalone || isApp) {
-        return (
-            <QueryClientProvider client={queryClient}>
-                <Toaster position="top-center" reverseOrder={false} gutter={8}/>
-                <Provider store={store}>
-                    <NotificationListener/>
-                    {children}
-                </Provider>
-            </QueryClientProvider>
-        );
-    }
-
     return (
-        <div>
-            {children}
-        </div>
-    )
+        <QueryClientProvider client={queryClient}>
+            <Toaster position="top-center" reverseOrder={false} gutter={8}/>
+            <Provider store={store}>
+                <NotificationListener/>
+                {children}
+            </Provider>
+        </QueryClientProvider>
+    );
 }

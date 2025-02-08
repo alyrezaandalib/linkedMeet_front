@@ -4,9 +4,10 @@ import Image from "next/image";
 import {useEffect, useState} from "react";
 import {UAParser} from "ua-parser-js";
 import {Spinner} from "@heroui/react";
+import {useRouter} from "next/navigation";
 
 export default function Page() {
-
+    const router = useRouter();
     const [isAndroid, setIsAndroid] = useState(false);
     const [isIos, setIsIos] = useState(false);
 
@@ -15,6 +16,10 @@ export default function Page() {
         const { os } = UAParser(userAgent);
         setIsAndroid(os.name === 'Android');
         setIsIos(os.name === 'iOS');
+
+        if (!userAgent.includes('Mobile')) {
+            router.push('/use-mobile');
+        }
     }, []);
 
     if (isAndroid) {
@@ -52,7 +57,7 @@ export default function Page() {
             <div className="bg-background text-foreground min-h-screen flex flex-col justify-center items-center">
                 <Image src={LinkedMeetIcon} alt={"LinkedMeet"} className="w-24 h-24 mb-4" />
                 <h1 className="text-3xl font-bold mb-2">Welcome to LinkedMeet!</h1>
-                <p className="text-center mb-4">To start using LinkedMeet, download it from the Apple App Store.</p>
+                <p className="text-center mb-4 ml-4 mr-4">To start using LinkedMeet, download it from the Apple App Store.</p>
                 <a href="#"
                    className="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/80 transition-colors">
                     Download on the App Store
