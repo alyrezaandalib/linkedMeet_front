@@ -36,7 +36,6 @@ function NotificationListener() {
 export default function CustomProvider({children}: { children: ReactNode }) {
     const queryClient = new QueryClient();
     const router = useRouter();
-    const [isStandalone, setIsStandalone] = useState(false);
 
     useEffect(() => {
         const userAgent = navigator.userAgent || '';
@@ -45,10 +44,6 @@ export default function CustomProvider({children}: { children: ReactNode }) {
         const standalone =
             window.matchMedia("(display-mode: standalone)").matches ||
             (window.navigator as any).standalone === true;
-
-        setIsStandalone(standalone);
-
-        setCookie('isStandalone', standalone );
 
         if (!standalone  && os.name === 'Android') {
             router.push('/download-app');
