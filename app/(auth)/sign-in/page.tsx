@@ -164,7 +164,7 @@ export default function SignInPage() {
 
                         <div className="text-sm flex items-center gap-2">
                             <p className="text-gray-400 ">
-                                Can't log in?
+                                Can't sing in?
                             </p>
                             <Link href={"/auth/forgot-password"} prefetch={false} className="border rounded-lg bg-gray-100 text-gray-600 px-2 py-1.5">
                                 Reset your password

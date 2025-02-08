@@ -1,4 +1,5 @@
 import {NextRequest, NextResponse} from 'next/server';
+import {UAParser} from "ua-parser-js";
 
 export async function middleware(request: NextRequest) {
     const userAgent = request.headers.get('user-agent') || '';
@@ -9,27 +10,32 @@ export async function middleware(request: NextRequest) {
         '/auth/linkedin/callback',
         '/splash-screen',
         '/auth/forgot-password',
-        '/auth/reset-password',
     ];
 
     console.log('Path:', request.nextUrl.pathname);
 
     // Check if the device is mobile
     if (!userAgent.includes('Mobile')) {
-        console.log('Non-mobile device detected. Redirecting to not-found.');
-        return NextResponse.rewrite(new URL('/not-found', request.url));
+        console.log('Non-mobile device detected. Redirecting to use-mobile.');
+        return NextResponse.redirect(new URL('/use-mobile', request.url));
     }
 
-    if (request.nextUrl.pathname === '/auth/reset-password') {
-        return NextResponse.next();
+    const isApp = userAgent.includes('LinkedMeet');
+    const {os} = UAParser(userAgent);
+    const isStandalone = request.cookies.get('isStandalone');
+
+    if (isStandalone?.value === 'false' && os.name === 'Android') {
+        return NextResponse.redirect(new URL('/download-app', request.url));
     }
 
-    const isiOSWebView = /(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)/i.test(userAgent);
+    if (!isApp && os.name === 'iOS') {
+        return NextResponse.redirect(new URL('/download-app', request.url));
+    }
 
     // splash screen
     const hasSeenSplash = request.cookies.get('has_seen_splash');
     const splashScreenPath = '/splash-screen';
-    if (!isiOSWebView && !hasSeenSplash && request.nextUrl.pathname !== splashScreenPath) {
+    if (!isApp && !hasSeenSplash && request.nextUrl.pathname !== splashScreenPath) {
         console.log('Redirecting to splash-screen.');
         const response = NextResponse.redirect(new URL(splashScreenPath, request.url));
         response.cookies.set('has_seen_splash', 'true');
@@ -77,5 +83,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: '/((?!_next/static|_next/image|manifest.webmanifest|icon.png|icon.svg|web-app-manifest-192x192.png|web-app-manifest-512x512.png|favicon.ico|apple-icon.png|manifest.json|activity-type|information).*)',
+    matcher: '/((?!_next/static|_next/image|manifest.webmanifest|icon.png|icon.svg|web-app-manifest-192x192.png|web-app-manifest-512x512.png|favicon.ico|apple-icon.png|manifest.json|activity-type|information|use-mobile|download-app|auth/reset-password).*)',
 };

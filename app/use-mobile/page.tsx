@@ -1,4 +1,4 @@
-export default function NotFound(){
+export default function Page(){
     return (
         <div className={"h-screen w-full flex justify-center items-center"}>
             <p>

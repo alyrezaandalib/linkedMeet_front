@@ -1,11 +1,14 @@
 "use client";
-import {ReactNode, useEffect} from "react";
+import {ReactNode, useEffect, useState} from "react";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {Provider, useDispatch, useSelector} from "react-redux";
 import store from "../store/index";
 import {Toaster} from "react-hot-toast";
 import {initializeEcho} from "@/utils/echo";
 import {updateUnreadMessages} from "@/store/notificationSlice";
+import { UAParser } from "ua-parser-js";
+import {useRouter} from "next/navigation";
+import {setCookie} from "cookies-next/client";
 
 // Notification listener component
 function NotificationListener() {
@@ -32,14 +35,38 @@ function NotificationListener() {
 
 export default function CustomProvider({children}: { children: ReactNode }) {
     const queryClient = new QueryClient();
+    const router = useRouter();
+    const [isStandalone, setIsStandalone] = useState(false);
+    const [isApp, setIsApp] = useState(false);
+
+    useEffect(() => {
+        const userAgent = navigator.userAgent || '';
+        const { os } = UAParser(userAgent);
+
+        setIsApp(userAgent.includes('LinkedMeet'));
+        setIsStandalone(window.matchMedia('(display-mode: standalone)').matches);
+        setCookie('isStandalone', isStandalone);
+
+        if (!isStandalone && os.name === 'Android') {
+            router.push('/download-app');
+        }
+    }, []);
+
+    if (isStandalone || isApp) {
+        return (
+            <QueryClientProvider client={queryClient}>
+                <Toaster position="top-center" reverseOrder={false} gutter={8}/>
+                <Provider store={store}>
+                    <NotificationListener/>
+                    {children}
+                </Provider>
+            </QueryClientProvider>
+        );
+    }
 
     return (
-        <QueryClientProvider client={queryClient}>
-            <Toaster position="top-center" reverseOrder={false} gutter={8}/>
-            <Provider store={store}>
-                <NotificationListener/>
-                {children}
-            </Provider>
-        </QueryClientProvider>
-    );
+        <div>
+            {children}
+        </div>
+    )
 }

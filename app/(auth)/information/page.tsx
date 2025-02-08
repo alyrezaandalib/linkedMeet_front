@@ -82,11 +82,11 @@ export default function InformationPage() {
         });
     };
 
-    // useEffect(() => {
-    //     if (hasIndustry !== "null" && hasJobTitle !== "null") {
-    //         window.location.href = '/';
-    //     }
-    // }, [hasIndustry , hasJobTitle]);
+    useEffect(() => {
+        if (hasIndustry !== "null" && hasJobTitle !== "null") {
+            window.location.href = '/';
+        }
+    }, [hasIndustry , hasJobTitle]);
 
     return (
         <div className="flex flex-col h-screen">
