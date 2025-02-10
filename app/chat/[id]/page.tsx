@@ -71,7 +71,7 @@ const ChatPage = () => {
 
     useEffect(() => {
         if (echo) {
-            echo.private(`chat.received.${userId}`).listen("MessageSent", (data: any) => {
+            echo.private(`chat.received.${userId}-${parsedUser.id}`).listen("MessageSent", (data: any) => {
                 setChatHistory((prevHistory = []) => [
                     ...prevHistory,
                     {
@@ -91,7 +91,19 @@ const ChatPage = () => {
 
         return () => {
             if (echo) {
-                echo.leaveChannel(`private-chat.received.${userId}`);
+                echo.leaveChannel(`private-chat.received.${userId}-${parsedUser.id}`);
+                fetch(
+                    `${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/chat/clear-active`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${getCookie("token")}`,
+                            Accept: "application/json",
+                        },
+                        body: JSON.stringify({'sender_id': parsedUser.id}),
+                    }
+                );
             }
         };
     }, []);

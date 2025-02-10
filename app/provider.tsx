@@ -7,8 +7,7 @@ import {Toaster} from "react-hot-toast";
 import {initializeEcho} from "@/utils/echo";
 import {updateUnreadMessages} from "@/store/notificationSlice";
 import { UAParser } from "ua-parser-js";
-import {useRouter} from "next/navigation";
-import {setCookie} from "cookies-next/client";
+import {useRouter, usePathname} from "next/navigation";
 
 // Notification listener component
 function NotificationListener() {
@@ -36,6 +35,7 @@ function NotificationListener() {
 export default function CustomProvider({children}: { children: ReactNode }) {
     const queryClient = new QueryClient();
     const router = useRouter();
+    const pathname = usePathname();
 
     useEffect(() => {
         const userAgent = navigator.userAgent || '';
@@ -45,7 +45,7 @@ export default function CustomProvider({children}: { children: ReactNode }) {
             window.matchMedia("(display-mode: standalone)").matches ||
             (window.navigator as any).standalone === true;
 
-        if (!standalone  && os.name === 'Android') {
+        if (!standalone  && os.name === 'Android' && pathname != '/auth/reset-password') {
             router.push('/download-app');
         }
     }, []);
