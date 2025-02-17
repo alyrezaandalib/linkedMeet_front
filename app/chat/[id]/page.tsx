@@ -324,17 +324,18 @@ const ChatPage = () => {
                     className="flex items-center gap-2 px-4 py-3 fixed bottom-0 w-full bg-[#fdfdfd]"
                     onSubmit={handleSubmit(onSubmit)}
                 >
-                    <input
-                        {...register("message", {required: true})}
-                        className={"form-input !border-0 shadow-sm"}
-                        placeholder={"type a message..."}
-                        onKeyDown={(event) => {
-                            if (event.key === "Enter" && !event.shiftKey) {
-                                event.preventDefault();
-                                handleSubmit(onSubmit)();
-                            }
-                        }}
-                    />
+              <textarea
+                  {...register("message", {required: true})}
+                  className={"form-input !border-0 shadow-sm"}
+                  placeholder={"type a message..."}
+                  rows={1}
+                  onKeyDown={(event) => {
+                      if (event.key === "Enter" && !event.shiftKey) {
+                          event.preventDefault(); // جلوگیری از ایجاد خط جدید
+                          handleSubmit(onSubmit)(); // ارسال فرم
+                      }
+                  }}
+              ></textarea>
                     <Button
                         isDisabled={sendMessage?.isPending || watch("message")?.trim() == ""}
                         type={"submit"}
