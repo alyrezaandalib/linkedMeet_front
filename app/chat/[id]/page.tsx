@@ -328,6 +328,12 @@ const ChatPage = () => {
                         {...register("message", {required: true})}
                         className={"form-input !border-0 shadow-sm"}
                         placeholder={"type a message..."}
+                        onKeyDown={(event) => {
+                            if (event.key === "Enter" && !event.shiftKey) {
+                                event.preventDefault();
+                                handleSubmit(onSubmit)();
+                            }
+                        }}
                     />
                     <Button
                         isDisabled={sendMessage?.isPending || watch("message")?.trim() == ""}
@@ -341,6 +347,7 @@ const ChatPage = () => {
                     </Button>
                 </form>
             </footer>
+
         </div>
     );
 };
