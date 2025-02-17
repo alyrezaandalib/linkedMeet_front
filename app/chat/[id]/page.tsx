@@ -217,7 +217,7 @@ const ChatPage = () => {
     return (
         <div className="h-screen flex flex-col bg-gray-100">
             {/* Header */}
-            <header className="flex items-center bg-white px-4 py-3 shadow-sm fixed top-0 w-full">
+            <header className="fixed top-0 left-0 w-full bg-white shadow-sm px-4 py-3 z-50 flex items-center">
                 <button
                     onClick={() => router.back()}
                     className="rounded-lg btn !shadow !p-2 !border-none hover:bg-gray-200"
@@ -319,7 +319,7 @@ const ChatPage = () => {
             </main>
 
             {/* Message Input */}
-            <footer>
+            <footer className="fixed bottom-0 left-0 w-full z-50 pb-[env(safe-area-inset-bottom)]">
                 <form
                     className="flex items-center gap-2 px-4 py-3 fixed bottom-0 w-full bg-[#fdfdfd]"
                     onSubmit={handleSubmit(onSubmit)}
