@@ -27,7 +27,11 @@ const ChatPage = () => {
     const parsedUser = user ? JSON.parse(decodeURIComponent(user)) : null;
 
     // Form handling
-    const {register, handleSubmit, resetField} = useForm<IMessage>();
+    const { register, handleSubmit, resetField, watch } = useForm<IMessage>({
+        defaultValues: {
+            message: "",
+        },
+    });
 
     // Service hooks
     const {
@@ -326,14 +330,14 @@ const ChatPage = () => {
                         placeholder={"type a message..."}
                     />
                     <Button
-                        isDisabled={sendMessage?.isPending}
+                        isDisabled={sendMessage?.isPending || watch("message")?.trim() == ""}
                         type={"submit"}
                         isIconOnly
                         radius={"full"}
                         variant={"light"}
                         className={"bg-white shadow mt-2"}
                     >
-                        <SendIcon className={"text-gray-400"}/>
+                        <SendIcon className={"text-gray-600"}/>
                     </Button>
                 </form>
             </footer>
