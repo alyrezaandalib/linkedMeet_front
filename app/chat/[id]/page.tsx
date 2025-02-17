@@ -335,6 +335,7 @@ const ChatPage = () => {
                           handleSubmit(onSubmit)(); // ارسال فرم
                       }
                   }}
+                  onBlur={(e) => setTimeout(() => e.target.focus(), 100)}
               ></textarea>
                     <Button
                         isDisabled={sendMessage?.isPending || watch("message")?.trim() == ""}
@@ -343,6 +344,11 @@ const ChatPage = () => {
                         radius={"full"}
                         variant={"light"}
                         className={"bg-white shadow mt-2"}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onTouchEnd={(e) => {
+                            e.preventDefault();
+                            handleSubmit(onSubmit)();
+                        }}
                     >
                         <SendIcon className={"text-gray-600"}/>
                     </Button>
