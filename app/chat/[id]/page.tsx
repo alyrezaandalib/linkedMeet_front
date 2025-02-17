@@ -214,8 +214,21 @@ const ChatPage = () => {
         }
     };
 
+    const [viewportHeight, setViewportHeight] = useState(0);
+
+    useEffect(() => {
+        setViewportHeight(window.innerHeight);
+
+        const updateHeight = () => {
+            setViewportHeight(window.innerHeight);
+        };
+
+        window.addEventListener("resize", updateHeight);
+        return () => window.removeEventListener("resize", updateHeight);
+    }, []);
+
     return (
-        <div className="h-screen flex flex-col bg-gray-100">
+        <div className="h-screen flex flex-col bg-gray-100" style={{ height: viewportHeight || "100vh" }}>
             {/* Header */}
             <header className="fixed top-0 left-0 w-full bg-white shadow-sm px-4 py-3 z-50 flex items-center">
                 <button
@@ -319,7 +332,7 @@ const ChatPage = () => {
             </main>
 
             {/* Message Input */}
-            <footer className="fixed bottom-0 left-0 w-full z-50 pb-[env(safe-area-inset-bottom)]">
+            <footer className="fixed bottom-0 left-0 w-full z-50" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
                 <form
                     className="flex items-center gap-2 px-4 py-3 fixed bottom-0 w-full bg-[#fdfdfd]"
                     onSubmit={handleSubmit(onSubmit)}
