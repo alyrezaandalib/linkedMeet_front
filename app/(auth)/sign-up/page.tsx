@@ -7,6 +7,7 @@ import {SubmitHandler, useForm} from "react-hook-form";
 import {useRouter} from "next/navigation";
 import toast from "react-hot-toast";
 import {useEffect, useState} from "react";
+import {EyeFilledIcon, EyeSlashFilledIcon} from "@heroui/shared-icons";
 
 export default function SignUpPage() {
 
@@ -18,6 +19,9 @@ export default function SignUpPage() {
         formState: {errors},
         watch
     } = useForm<Inputs>()
+
+    const [isVisible, setIsVisible] = useState(false);
+    const toggleVisibility = () => setIsVisible(!isVisible);
 
     const router = useRouter();
 
@@ -88,27 +92,41 @@ export default function SignUpPage() {
                             {errors.email && <p className={"text-red-500 text-xs mt-1"}>{errors.email.message}</p>}
                         </div>
 
-                        <div>
+                        <div className="relative">
                             <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">
                                 Password
                             </label>
-                            <input
-                                {...register("password", {
-                                    required: "Password is required.",
-                                    minLength: {
-                                        value: 8,
-                                        message: "Password must be at least 8 characters long.",
-                                    },
-                                    maxLength: {
-                                        value: 32,
-                                        message: "Password must be at lest 32 characters long."
-                                    }
-                                })}
-                                type="password"
-                                className="form-input"
-                                autoComplete={"new-password"}
-                                placeholder="At least 8 characters"
-                            />
+                            <div className="relative">
+                                <input
+                                    {...register("password", {
+                                        required: "Password is required.",
+                                        minLength: {
+                                            value: 8,
+                                            message: "Password must be at least 8 characters long.",
+                                        },
+                                        maxLength: {
+                                            value: 32,
+                                            message: "Password must be at lest 32 characters long."
+                                        }
+                                    })}
+                                    type={isVisible ? "text" : "password"}
+                                    autoComplete="new-password"
+                                    className="form-input w-full !pr-10"
+                                    placeholder="At least 8 characters"
+                                />
+                                <button
+                                    aria-label="toggle password visibility"
+                                    className="absolute top-1/2 right-2 -translate-y-1/3 flex items-center focus:outline-none"
+                                    type="button"
+                                    onClick={toggleVisibility}
+                                >
+                                    {isVisible ? (
+                                        <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                                    ) : (
+                                        <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                                    )}
+                                </button>
+                            </div>
                             {errors.password &&
                                 <p className={"text-red-500 text-xs mt-1"}>{errors.password.message}</p>}
                         </div>
@@ -130,7 +148,7 @@ export default function SignUpPage() {
                                         message: "Confirm password must be at lest 32 characters long."
                                     }
                                 })}
-                                type="password"
+                                type={isVisible ? "text" : "password"}
                                 className="form-input"
                                 autoComplete={"new-password"}
                                 placeholder="At least 8 characters"
@@ -139,7 +157,7 @@ export default function SignUpPage() {
                                 <p className={"text-red-500 text-xs mt-1"}>{errors.password_confirmation.message}</p>}
                         </div>
                         <p className="text-xs text-gray-400 max-w-[90%]">
-                            By Clicking Agree & Join, you agree to LinkedMeet User Agreement, Privacy Policy, and Cookie Policy.
+                            By clicking Agree & Join, you agree to LinkedMeet User Agreement, Privacy Policy, and Cookie Policy.
                         </p>
 
                         <Button color={"primary"} isLoading={isPending} radius={"sm"} type={"submit"}>Agree &

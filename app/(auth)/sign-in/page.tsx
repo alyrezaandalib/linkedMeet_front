@@ -8,6 +8,7 @@ import {useDispatch, useSelector} from "react-redux";
 import toast from "react-hot-toast";
 import {useEffect, useState} from "react";
 import {Authentication} from "@/store/userSlice";
+import {EyeFilledIcon, EyeSlashFilledIcon} from "@heroui/shared-icons";
 
 type Inputs = {
     email: string;
@@ -22,6 +23,9 @@ export default function SignInPage() {
     const router = useRouter();
 
     const isAuthenticated = useSelector((state: any) => state.user.isAuthenticated);
+
+    const [isVisible, setIsVisible] = useState(false);
+    const toggleVisibility = () => setIsVisible(!isVisible);
 
     const {
         register,
@@ -120,27 +124,41 @@ export default function SignInPage() {
                             {errors.email && <p className={"text-red-500 text-xs mt-1"}>{errors.email.message}</p>}
                         </div>
 
-                        <div>
+                        <div className="relative">
                             <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">
                                 Password
                             </label>
-                            <input
-                                {...register("password", {
-                                    required: "Password is required.",
-                                    minLength: {
-                                        value: 8,
-                                        message: "Password must be at least 8 characters long.",
-                                    },
-                                    maxLength: {
-                                        value: 32,
-                                        message: "Password must be at lest 32 characters long."
-                                    }
-                                })}
-                                type="password"
-                                autoComplete="current-password"
-                                className="form-input"
-                                placeholder="At least 8 characters"
-                            />
+                            <div className="relative">
+                                <input
+                                    {...register("password", {
+                                        required: "Password is required.",
+                                        minLength: {
+                                            value: 8,
+                                            message: "Password must be at least 8 characters long.",
+                                        },
+                                        maxLength: {
+                                            value: 32,
+                                            message: "Password must be at lest 32 characters long."
+                                        }
+                                    })}
+                                    type={isVisible ? "text" : "password"}
+                                    autoComplete="current-password"
+                                    className="form-input w-full !pr-10"
+                                    placeholder="At least 8 characters"
+                                />
+                                <button
+                                    aria-label="toggle password visibility"
+                                    className="absolute top-1/2 right-2 -translate-y-1/3 flex items-center focus:outline-none"
+                                    type="button"
+                                    onClick={toggleVisibility}
+                                >
+                                    {isVisible ? (
+                                        <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                                    ) : (
+                                        <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                                    )}
+                                </button>
+                            </div>
                             {errors.password &&
                                 <p className={"text-red-500 text-xs mt-1"}>{errors.password.message}</p>}
                         </div>
@@ -164,7 +182,7 @@ export default function SignInPage() {
 
                         <div className="text-sm flex items-center gap-2">
                             <p className="text-gray-400 ">
-                                Can't sing in?
+                                Can’t sign in?
                             </p>
                             <Link href={"/auth/forgot-password"} prefetch={false} className="border rounded-lg bg-gray-100 text-gray-600 px-2 py-1.5">
                                 Reset your password
@@ -172,7 +190,7 @@ export default function SignInPage() {
                         </div>
 
                         <p className="text-xs text-gray-400 mt-2">
-                            By Clicking Sign In, you agree to LinkedMeet User Agreement, Privacy Policy, and Cookie Policy.
+                            By clicking Sign In, you agree to LinkedMeet User Agreement, Privacy Policy, and Cookie Policy.
                         </p>
 
                         <Button color={"primary"} isLoading={isLoadingLogin} radius={"sm"} type={"submit"}>Sign
