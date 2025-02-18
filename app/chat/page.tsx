@@ -7,9 +7,11 @@ import React, {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 import truncateMessage from "@/utils/truncateMessage";
 import {formatDateToClientTimezone} from '@/utils/helpers';
+import {updateUnreadMessages} from "@/store/notificationSlice";
 
 // icons
 import {CiSearch} from "react-icons/ci";
+import {useSelector} from "react-redux";
 
 export default function ChatPage() {
 
@@ -18,15 +20,24 @@ export default function ChatPage() {
     const [chatHistory, setChatHistory] = useState<Chats[]>([]);
     const [searchQuery, setSearchQuery] = useState<string>(""); // State for search input
 
+    // check notifications
+    const notification = useSelector((state: any) => state.notification);
+
     // services
     const {getChatsList} = useService();
-    const {data, isLoading} = getChatsList();
+    const {data, isLoading, refetch} = getChatsList();
 
     useEffect(() => {
         if (data) {
             setChatHistory(data?.data);
         }
     }, [data]);
+
+    useEffect(() => {
+        if (notification.unreadMessagesCount > 0) {
+            refetch();
+        }
+    }, [notification.unreadMessagesCount, refetch]);
 
     // Filtered chat list based on search query
     const filteredChats = chatHistory.filter((chat) =>
