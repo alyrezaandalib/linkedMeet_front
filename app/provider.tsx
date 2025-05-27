@@ -45,9 +45,9 @@ export default function CustomProvider({children}: { children: ReactNode }) {
             window.matchMedia("(display-mode: standalone)").matches ||
             (window.navigator as any).standalone === true;
 
-        if (!standalone  && os.name === 'Android' && pathname != '/auth/reset-password') {
-            router.push('/download-app');
-        }
+        // if (!standalone  && os.name === 'Android' && pathname != '/auth/reset-password') {
+        //     router.push('/download-app');
+        // }
     }, []);
 
     return (

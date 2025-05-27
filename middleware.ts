@@ -23,9 +23,9 @@ export async function middleware(request: NextRequest) {
     const isApp = userAgent.includes('LinkedMeet');
     const {os} = UAParser(userAgent);
 
-    if (!isApp && os.name === 'iOS') {
-        return NextResponse.redirect(new URL('/download-app', request.url));
-    }
+    // if (!isApp && os.name === 'iOS') {
+    //     return NextResponse.redirect(new URL('/download-app', request.url));
+    // }
 
     // splash screen
     const hasSeenSplash = request.cookies.get('has_seen_splash');

@@ -360,7 +360,7 @@ export default function Home() {
                     <div id={"div-content"} className={"h-[calc(100vh-64px)] flex justify-center"}>
                         {/* when location is off ... */}
                         {!isGpsOn && (
-                            <div className={"mt-28 p-10 flex flex-col justify-center items-center gap-4"}>
+                            <div className={"p-10 flex flex-col justify-center items-center gap-4"}>
                                 <Image
                                     src={disabled_location_image}
                                     width={500}
@@ -375,13 +375,13 @@ export default function Home() {
                             </div>
                         )}
                         {isGpsOn && isLoading ? (
-                            <div className={"mt-56 p-10 flex flex-col justify-center items-center gap-4"}>
+                            <div className={"p-10 flex flex-col justify-center items-center gap-4"}>
                                 <Spinner/>
                             </div>) : (
                             <>
                                 {/* when not found user nearby ...*/}
                                 {isGpsOn && nearbyUsers?.data.length === 0 && (
-                                    <div className={"mt-28 p-14 flex flex-col justify-center items-center gap-4"}>
+                                    <div className={" p-14 flex flex-col justify-center items-center gap-4"}>
                                         <Image
                                             src={no_user_found_image}
                                             width={500}
