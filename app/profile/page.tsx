@@ -180,7 +180,7 @@ export default function ProfilePage() {
                         <div className="flex flex-col justify-center items-start gap-2">
                             <div className={"font-mono  text-black capitalize"}>{user?.name}</div>
                             <div className="text-sm underline cursor-pointer"
-                                 onClick={() => router.push("/auth/change-password")}>Change Password
+                                 onClick={() => router.push("/change-password")}>Change Password
                             </div>
                         </div>
 

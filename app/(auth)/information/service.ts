@@ -1,7 +1,6 @@
 import {useMutation, useQuery} from "@tanstack/react-query";
 import {fetchService} from "@/services/crud-services/fetch-service";
 import {patchService} from "@/services/crud-services/patch-service";
-import {useEffect, useState} from "react";
 
 export interface Inputs {
     industry_id: string | number;
