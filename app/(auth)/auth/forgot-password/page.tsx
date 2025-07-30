@@ -41,6 +41,7 @@ export default function ForgotPasswordPage() {
 
             if (response.ok) {
                 toast.success(data.message);
+                router.push("/auth/reset-password");
             } else {
                 toast.error(data.message || "An error occurred during forgot password.");
             }

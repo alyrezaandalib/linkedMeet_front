@@ -10,14 +10,15 @@ import {EyeFilledIcon, EyeSlashFilledIcon} from "@heroui/shared-icons";
 
 type Inputs = {
     email: string;
+    verification_code: string;
     password: string;
     password_confirmation: string;
-    token: string;
 };
 
 export default function SignInPage() {
     const searchParams = useSearchParams()
-    const token = searchParams.get("token") ?? 'None';
+    // اگر توکن نیاز نیست، حذفش کن
+    // const token = searchParams.get("token") ?? 'None';
 
     const [isVisible, setIsVisible] = useState(false);
     const toggleVisibility = () => setIsVisible(!isVisible);
@@ -33,12 +34,11 @@ export default function SignInPage() {
         watch
     } = useForm<Inputs>();
 
-
     const onSubmit = async (params: Inputs) => {
         setIsLoadingLogin(true);
 
         try {
-            const response: Response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/reset-password`, {
+            const response: Response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/reset-forgotten-password`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -51,9 +51,10 @@ export default function SignInPage() {
 
             if (response.ok) {
                 toast.success(data.message);
-                setTimeout(() => {
-                    window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL_DEEP_LINK}/sign-in`;
-                }, 1000);
+                router.push("/sign-in");
+                // setTimeout(() => {
+                //     window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL_DEEP_LINK}/sign-in`;
+                // }, 1000);
             } else {
                 toast.error(data.message || "An error occurred during Reset Password.");
             }
@@ -86,18 +87,14 @@ export default function SignInPage() {
                             Please enter your email address and a new password to reset your account.
                             <br/>
                             <br/>
-                            <strong>Note:</strong> After resetting, if the app is active on your phone, you will be redirected to the app.
+                            <strong>Note:</strong> After resetting, if the app is active on your phone, you will be
+                            redirected to the app.
                         </p>
                     </div>
 
                     {/* Form */}
                     <form className={"flex flex-col gap-3"} onSubmit={handleSubmit(onSubmit)}>
 
-                        <input
-                            {...register("token")}
-                            type="hidden"
-                            value={token}
-                        />
                         <div>
                             <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">
                                 Email
@@ -110,6 +107,30 @@ export default function SignInPage() {
                                 autoComplete="email"
                             />
                             {errors.email && <p className={"text-red-500 text-xs mt-1"}>{errors.email.message}</p>}
+                        </div>
+
+                        <div>
+                            <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">
+                                Verification Code
+                            </label>
+                            <input
+                                {...register("verification_code", {
+                                    required: "Verification Code is required.",
+                                    minLength: {
+                                        value: 6,
+                                        message: "Verification code must be 6 digits.",
+                                    },
+                                    maxLength: {
+                                        value: 6,
+                                        message: "Verification code must be 6 digits."
+                                    }
+                                })}
+                                type="text"
+                                className="form-input"
+                                placeholder="6-digit code sent to your email"
+                                autoComplete="off"
+                            />
+                            {errors.verification_code && <p className={"text-red-500 text-xs mt-1"}>{errors.verification_code.message}</p>}
                         </div>
 
                         <div className="relative">
@@ -126,7 +147,7 @@ export default function SignInPage() {
                                         },
                                         maxLength: {
                                             value: 32,
-                                            message: "Password must be at lest 32 characters long."
+                                            message: "Password must be at most 32 characters long."
                                         }
                                     })}
                                     type={isVisible ? "text" : "password"}
@@ -141,9 +162,9 @@ export default function SignInPage() {
                                     onClick={toggleVisibility}
                                 >
                                     {isVisible ? (
-                                        <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                                        <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none"/>
                                     ) : (
-                                        <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                                        <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none"/>
                                     )}
                                 </button>
                             </div>
@@ -158,14 +179,14 @@ export default function SignInPage() {
                             <input
                                 {...register("password_confirmation", {
                                     required: "Password confirmation is required.",
-                                    validate: value => value === watch('password') || 'Password do not match',
+                                    validate: value => value === watch('password') || 'Passwords do not match',
                                     minLength: {
                                         value: 8,
                                         message: "Password confirmation must be at least 8 characters long.",
                                     },
                                     maxLength: {
                                         value: 32,
-                                        message: "Password confirmation must be at lest 32 characters long."
+                                        message: "Password confirmation must be at most 32 characters long."
                                     }
                                 })}
                                 type={isVisible ? "text" : "password"}
