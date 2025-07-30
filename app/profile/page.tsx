@@ -10,11 +10,12 @@ import toast from "react-hot-toast";
 import {UpdateProfile, UpdateUserAvatar} from "@/store/userSlice";
 import ImgUploader from "@/components/img-uploader";
 import {getCookie} from "cookies-next";
+import {useRouter} from "next/navigation";
 // icons
 import {IoIosArrowBack} from "react-icons/io";
 
 export default function ProfilePage() {
-
+    const router = useRouter();
     const user = useSelector((state: any) => state.user.user);
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(false)
@@ -169,13 +170,20 @@ export default function ProfilePage() {
                     <h1 className="ml-2 text-lg font-bold">Profile</h1>
                 </div>
                 <div className={"h-full flex flex-col mt-7"}>
-                    <div className={"flex flex-col justify-center items-center gap-2"}>
-                        <Avatar isBordered className="w-20 h-20 text-large" src={user.avatar} alt={user.name}/>
-                        <div className={"font-mono capitalize"}>{user?.name}</div>
-                        <div className={"flex gap-1"}>
-                            <ImgUploader isLoading={isLoading} setImage={setImage}/>
+                    <div className={"flex justify-start items-center gap-5 p-5"}>
+                        <div className="relative w-32 h-32">
+                            <Avatar isBordered className="w-32 h-32 text-large" src={user.avatar} alt={user.name} />
+                            <div className="absolute bottom-0 right-0">
+                                <ImgUploader isLoading={isLoading} setImage={setImage} />
+                            </div>
                         </div>
+                        <div className="flex flex-col justify-center items-start gap-2">
+                            <div className={"font-mono  text-black capitalize"}>{user?.name}</div>
+                            <div className="text-sm underline" onClick={() => router.push("/auth/change-password")}>Change Password</div>
+                        </div>
+
                     </div>
+
 
                     <form className={"flex flex-col p-4 mt-7 h-[65%] justify-between"}
                           onSubmit={handleSubmit(onSubmit)}>

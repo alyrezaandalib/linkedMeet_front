@@ -1,8 +1,8 @@
 "use client"
-import Link from "next/link";
+
 import {Button} from "@heroui/react";
 import {useForm} from "react-hook-form";
-import {useRouter, useSearchParams} from "next/navigation";
+import {useRouter} from "next/navigation";
 import {useSelector} from "react-redux";
 import toast from "react-hot-toast";
 import {useEffect, useState} from "react";
@@ -15,11 +15,7 @@ type Inputs = {
     password_confirmation: string;
 };
 
-export default function SignInPage() {
-    const searchParams = useSearchParams()
-    // اگر توکن نیاز نیست، حذفش کن
-    // const token = searchParams.get("token") ?? 'None';
-
+export default function ResetForgottenPasswordPage() {
     const [isVisible, setIsVisible] = useState(false);
     const toggleVisibility = () => setIsVisible(!isVisible);
 
@@ -51,7 +47,7 @@ export default function SignInPage() {
 
             if (response.ok) {
                 toast.success(data.message);
-                router.push("/sign-in");
+                router.push("/");
                 // setTimeout(() => {
                 //     window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL_DEEP_LINK}/sign-in`;
                 // }, 1000);

@@ -45,7 +45,7 @@ export default function CustomProvider({children}: { children: ReactNode }) {
             window.matchMedia("(display-mode: standalone)").matches ||
             (window.navigator as any).standalone === true;
 
-        // if (!standalone  && os.name === 'Android' && pathname != '/auth/reset-password') {
+        // if (!standalone  && os.name === 'Android' && pathname != '/auth/reset-forgotten-password') {
         //     router.push('/download-app');
         // }
     }, []);

@@ -1,6 +1,8 @@
 "use client";
 import {useRef} from "react";
 import {Button} from "@heroui/button";
+import {CiEdit} from "react-icons/ci";
+
 
 export default function ImgUploader({setImage, isLoading}: any) {
     const inputRef = useRef<HTMLInputElement>(null);
@@ -16,8 +18,8 @@ export default function ImgUploader({setImage, isLoading}: any) {
     };
 
     return (
-        <Button onPress={handleImageClick} isLoading={isLoading}>
-            Upload new picture
+        <Button isIconOnly radius={"full"} variant={"faded"} onPress={handleImageClick} isLoading={isLoading}>
+            <CiEdit/>
             <input
                 type="file"
                 ref={inputRef}
