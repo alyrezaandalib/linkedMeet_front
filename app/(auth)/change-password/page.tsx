@@ -1,4 +1,12 @@
 "use client";
+
+import { Button } from "@heroui/react";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import useService, { Inputs } from "./service";
+// icons 
 import { IoIosArrowBack } from "react-icons/io";
 import {
     IoEye,
@@ -6,21 +14,13 @@ import {
     IoLockClosed,
     IoShieldCheckmark,
 } from "react-icons/io5";
-import { Button } from "@heroui/react";
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
-import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import useService , { Inputs } from "./service";
+
 
 export default function ChangePasswordPage() {
     const { changePassword } = useService();
     const router = useRouter();
     const [isVisible, setIsVisible] = useState(false);
     const toggleVisibility = () => setIsVisible(!isVisible);
-
-    const user = useSelector((state: any) => state.user.user);
 
     const changePasswordMutiation = changePassword;
 
@@ -33,7 +33,6 @@ export default function ChangePasswordPage() {
     } = useForm<Inputs>();
 
     const onSubmit = async (data: Inputs) => {
-
         changePassword.mutate(data, {
             onSuccess: () => {
                 toast.success("Password changed successfully");
@@ -42,44 +41,8 @@ export default function ChangePasswordPage() {
             },
             onError: (error) => {
                 toast.error(error.message);
-            }
+            },
         });
-
-        // try {
-        //     const response: Response = await fetch(
-        //         `${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/change-password`,
-        //         {
-        //             method: "PATCH",
-        //             headers: {
-        //                 Accept: "application/json",
-        //                 "Content-Type": "application/json",
-        //                 Authorization: `Bearer ${localStorage.getItem(
-        //                     "token"
-        //                 )}`,
-        //             },
-        //             body: JSON.stringify({
-        //                 current_password: data.current_password,
-        //                 password: data.password,
-        //             }),
-        //         }
-        //     );
-
-        //     const responseData = await response.json();
-
-        //     if (response.ok) {
-        //         toast.success(responseData.message);
-        //         reset();
-        //     } else {
-        //         toast.error(
-        //             responseData.message ||
-        //                 "An error occurred during password change."
-        //         );
-        //     }
-        // } catch (error) {
-        //     toast.error("Network error occurred.");
-        // } finally {
-        //     setIsLoading(false);
-        // }
     };
 
     return (
@@ -114,7 +77,7 @@ export default function ChangePasswordPage() {
 
                     <form
                         onSubmit={handleSubmit(onSubmit)}
-                        className="space-y-6"
+                        className="space-y-6 bg-white "
                     >
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-gray-700 flex items-center">

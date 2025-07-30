@@ -17,7 +17,7 @@ import { UAParser } from "ua-parser-js";
 // icons
 import {CiUser} from "react-icons/ci";
 import {HiMiniChatBubbleOvalLeftEllipsis} from "react-icons/hi2";
-import {IoExit} from "react-icons/io5";
+import {IoExit, IoPerson, IoChatbubbleOutline, IoInformationCircle, IoShieldCheckmark, IoCall} from "react-icons/io5";
 import {PiInfoFill} from "react-icons/pi";
 import {TiUser} from "react-icons/ti";
 import {LuMenu} from "react-icons/lu";
@@ -84,94 +84,194 @@ export default function DrawerMenu({ setIsGpsOnAction, isLoading, setIsLoading }
 
     return (
         <>
-            <Button isIconOnly onPress={onOpen} variant={"light"}><LuMenu className={"text-2xl"}/></Button>
+            <Button 
+                isIconOnly 
+                onPress={onOpen} 
+                variant="light"
+                className="rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+            >
+                <LuMenu className="text-xl text-gray-700"/>
+            </Button>
             <Drawer
-                size={"xs"}
+                size="sm"
                 placement="left"
-                radius={"none"}
-                backdrop={"blur"}
+                radius="none"
+                backdrop="blur"
                 isOpen={isOpen}
                 onOpenChange={onOpenChange}
             >
-                <DrawerContent>
+                <DrawerContent className="bg-gradient-to-br from-blue-50 via-white to-purple-50">
                     {(onClose) => (
                         <>
-                            <DrawerHeader className="flex flex-col gap-2 justify-center items-center m-10 mb-0">
-                                <Avatar isBordered  className="w-20 h-20 text-large" src={user.avatar} alt={user.name} />
-                                <div className={"capitalize"}>{user.name}</div>
-                                <div className={"text-gray-500 text-sm font-light"}>{user.email}</div>
+                            <DrawerHeader className="flex flex-col gap-4 justify-center items-center p-8">
+                                <Avatar 
+                                    isBordered 
+                                    className="w-24 h-24 text-large border-4 border-white shadow-lg" 
+                                    src={user.avatar} 
+                                    alt={user.name} 
+                                />
+                                <div className="text-center">
+                                    <h3 className="text-xl font-semibold text-gray-800 capitalize mb-1">
+                                        {user.name}
+                                    </h3>
+                                    <p className="text-gray-500 text-sm">
+                                        {user.email}
+                                    </p>
+                                </div>
                             </DrawerHeader>
-                            <div
-                                className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-3"></div>
 
+                            <DrawerBody className="px-6 py-4">
+                                <div className="space-y-3">
+                                    <Button 
+                                        className="w-full justify-start bg-white hover:bg-gray-50 shadow-sm border border-gray-100 rounded-xl p-4 h-auto"
+                                        variant="light" 
+                                        radius="lg"
+                                        onPress={() => {
+                                            router.push("/chat");
+                                            onClose();
+                                        }}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                                                <IoChatbubbleOutline className="text-xl text-white"/>
+                                            </div>
+                                            <div className="text-left">
+                                                <div className="font-semibold text-gray-800">Chats</div>
+                                                <div className="text-xs text-gray-500">View your conversations</div>
+                                            </div>
+                                        </div>
+                                    </Button>
 
-                            <DrawerBody>
-                                <Button className={"justify-start"} variant={"light"} radius={"sm"}
-                                        onPress={() => router.push("/chat")}>
-                                    <HiMiniChatBubbleOvalLeftEllipsis className={"text-xl"}/>
-                                    Chats
-                                </Button>
-                                <Button className={"justify-start"} variant={"light"} radius={"sm"}
-                                        onPress={() => router.push("/profile")}>
-                                    <TiUser className={"text-xl"}/>
-                                    Profile
-                                </Button>
-                                <Button className={"justify-start"} variant={"light"} radius={"sm"}
-                                        onPress={() => router.push("/about-us")}>
-                                    <PiInfoFill className={"text-xl"}/>
-                                    About Us
-                                </Button>
-                                <Button
-                                    className={"justify-start text-red-500"}
-                                    variant={"light"}
-                                    radius={"sm"}
-                                    onPress={() => {
-                                        setIsLoading(true);
-                                        fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/user/gps-status`, {
-                                            method: 'PATCH',
-                                            headers: {
-                                                'Authorization': `Bearer ${getCookie("token")}`,
-                                                'Accept': 'application/json',
-                                                'Content-Type': 'application/json',
-                                            },
-                                            body: JSON.stringify({
-                                                is_gps_enabled: false,
-                                            }),
-                                        })
-                                            .then(() => {
-                                                deleteCookie("isLocationSet");
-                                                fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/logout`, {
-                                                    method: "POST",
-                                                    headers: {
-                                                        'Content-Type': 'application/json',
-                                                        'Authorization': `Bearer ${getCookie("token")}`,
-                                                        'Accept': 'application/json',
-                                                    },
-                                                })
-                                                    .then(response => {
-                                                        if (!response.ok) {
-                                                            toast.error(`HTTP error! status: ${response.status}`);
-                                                            throw new Error(`HTTP error! status: ${response.status}`);
-                                                        }
-                                                        return response.json();
+                                    <Button 
+                                        className="w-full justify-start bg-white hover:bg-gray-50 shadow-sm border border-gray-100 rounded-xl p-4 h-auto"
+                                        variant="light" 
+                                        radius="lg"
+                                        onPress={() => {
+                                            router.push("/profile");
+                                            onClose();
+                                        }}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center">
+                                                <IoPerson className="text-xl text-white"/>
+                                            </div>
+                                            <div className="text-left">
+                                                <div className="font-semibold text-gray-800">Profile</div>
+                                                <div className="text-xs text-gray-500">Manage your account</div>
+                                            </div>
+                                        </div>
+                                    </Button>
+
+                                    <Button 
+                                        className="w-full justify-start bg-white hover:bg-gray-50 shadow-sm border border-gray-100 rounded-xl p-4 h-auto"
+                                        variant="light" 
+                                        radius="lg"
+                                        onPress={() => {
+                                            router.push("/about-us");
+                                            onClose();
+                                        }}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                                                <IoInformationCircle className="text-xl text-white"/>
+                                            </div>
+                                            <div className="text-left">
+                                                <div className="font-semibold text-gray-800">About Us</div>
+                                                <div className="text-xs text-gray-500">Learn more about LinkedMeet</div>
+                                            </div>
+                                        </div>
+                                    </Button>
+
+                                    <Button 
+                                        className="w-full justify-start bg-white hover:bg-gray-50 shadow-sm border border-gray-100 rounded-xl p-4 h-auto"
+                                        variant="light" 
+                                        radius="lg"
+                                        onPress={() => {
+                                            router.push("/contact");
+                                            onClose();
+                                        }}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
+                                                <IoCall className="text-xl text-white"/>
+                                            </div>
+                                            <div className="text-left">
+                                                <div className="font-semibold text-gray-800">Contact</div>
+                                                <div className="text-xs text-gray-500">Get in touch with us</div>
+                                            </div>
+                                        </div>
+                                    </Button>
+
+                                    <Button
+                                        className="w-full justify-start bg-white hover:bg-red-50 shadow-sm border border-red-200 rounded-xl p-4 h-auto text-red-600"
+                                        variant="light"
+                                        radius="lg"
+                                        onPress={() => {
+                                            setIsLoading(true);
+                                            fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/user/gps-status`, {
+                                                method: 'PATCH',
+                                                headers: {
+                                                    'Authorization': `Bearer ${getCookie("token")}`,
+                                                    'Accept': 'application/json',
+                                                    'Content-Type': 'application/json',
+                                                },
+                                                body: JSON.stringify({
+                                                    is_gps_enabled: false,
+                                                }),
+                                            })
+                                                .then(() => {
+                                                    deleteCookie("isLocationSet");
+                                                    fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/logout`, {
+                                                        method: "POST",
+                                                        headers: {
+                                                            'Content-Type': 'application/json',
+                                                            'Authorization': `Bearer ${getCookie("token")}`,
+                                                            'Accept': 'application/json',
+                                                        },
                                                     })
-                                                    .then(() => {
-                                                        dispatch(Logout());
-                                                        router.refresh();
-                                                    })
-                                                    .catch(error => {
-                                                        toast.error(`Error during logout: ${error}`);
-                                                        setIsLoading(false);
-                                                    });
-                                            });
-                                    }}>
-                                    <IoExit className={"text-xl"}/>
-                                    Sign out
-                                </Button>
+                                                        .then(response => {
+                                                            if (!response.ok) {
+                                                                toast.error(`HTTP error! status: ${response.status}`);
+                                                                throw new Error(`HTTP error! status: ${response.status}`);
+                                                            }
+                                                            return response.json();
+                                                        })
+                                                        .then(() => {
+                                                            dispatch(Logout());
+                                                            router.refresh();
+                                                        })
+                                                        .catch(error => {
+                                                            toast.error(`Error during logout: ${error}`);
+                                                            setIsLoading(false);
+                                                        });
+                                                });
+                                        }}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center">
+                                                <IoExit className="text-xl text-white"/>
+                                            </div>
+                                            <div className="text-left">
+                                                <div className="font-semibold text-red-600">Sign Out</div>
+                                                <div className="text-xs text-red-400">Logout from your account</div>
+                                            </div>
+                                        </div>
+                                    </Button>
+                                </div>
                             </DrawerBody>
 
-                            <DrawerFooter className={"justify-start text-xs text-gray-400"}>
-                                Version {appVersion}
+                            <DrawerFooter className="px-6 py-4">
+                                <div className="w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 bg-gradient-to-r from-gray-500 to-gray-600 rounded-full flex items-center justify-center">
+                                            <IoShieldCheckmark className="text-sm text-white"/>
+                                        </div>
+                                        <div className="text-left">
+                                            <div className="text-xs font-medium text-gray-600">App Version</div>
+                                            <div className="text-sm text-gray-800">v{appVersion}</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </DrawerFooter>
                         </>
                     )}

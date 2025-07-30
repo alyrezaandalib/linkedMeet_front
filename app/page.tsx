@@ -11,6 +11,10 @@ import {useQuery} from "@tanstack/react-query";
 import {fetchService} from "@/services/crud-services/fetch-service";
 import {deleteCookie, getCookie, setCookie} from "cookies-next";
 import LogoutPage from "@/components/logout";
+import {motion} from "framer-motion";
+import {useDrag} from '@use-gesture/react';
+import {updateUnreadMessages} from "@/store/notificationSlice";
+import {useDispatch, useSelector} from "react-redux";
 // images
 import disabled_location_image from "../public/images/disabled_location.png";
 import no_user_found_image from "../public/images/no_user_found.png";
@@ -19,10 +23,7 @@ import users_image from "../public/images/users.png";
 import SendIcon from "@/public/tsx-icons/send";
 import {IoChatbubbleOutline, IoDocumentTextOutline} from "react-icons/io5";
 import {CiLocationOff, CiLocationOn} from "react-icons/ci";
-import {useDispatch, useSelector} from "react-redux";
-import {updateUnreadMessages} from "@/store/notificationSlice";
-import {motion} from "framer-motion";
-import {useDrag} from '@use-gesture/react';
+
 
 
 export default function Home() {

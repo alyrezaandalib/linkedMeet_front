@@ -13,6 +13,7 @@ import {getCookie} from "cookies-next";
 import {useRouter} from "next/navigation";
 // icons
 import {IoIosArrowBack, IoIosArrowForward} from "react-icons/io";
+import { IoPerson, IoMail, IoBriefcase, IoBusiness } from "react-icons/io5";
 
 export default function ProfilePage() {
     const router = useRouter();
@@ -20,7 +21,7 @@ export default function ProfilePage() {
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(false)
     const [isLoaded, setIsLoaded] = useState(false);
-    const [isChanged, setIsChanged] = useState(false); // اضافه کردن state برای تغییرات
+    const [isChanged, setIsChanged] = useState(false);
 
     // service
     const {editUserInfo, getIndustriesList, getJobTitlesList} = useService();
@@ -131,7 +132,7 @@ export default function ProfilePage() {
                         industry: selectedIndustry?.name ? selectedIndustry?.name : user.industry,
                         job_title: selectedJob?.name ? selectedJob?.name : user.job_title,
                     }));
-                    setIsChanged(false); // بازنشانی state پس از ارسال اطلاعات
+                    setIsChanged(false);
                 },
                 onError: (error) => {
                     toast.error(error.message);
@@ -140,7 +141,6 @@ export default function ProfilePage() {
         }
     };
 
-    // چک کردن اینکه آیا تغییرات ایجاد شده است یا نه
     const handleFieldChange = () => {
         setIsChanged(true);
     };
@@ -155,172 +155,235 @@ export default function ProfilePage() {
 
     if (!isLoaded) {
         return (
-            <div className={"h-screen w-[100%] flex justify-center items-center gap-2 text-sm z-50"}>
-                <Spinner size={"sm"}/>
-                Loading...
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex justify-center items-center">
+                <div className="flex items-center gap-2 text-sm">
+                    <Spinner size="sm"/>
+                    Loading...
+                </div>
             </div>
         );
     } else {
         return (
-            <div className={"px-5 pt-4 h-screen flex flex-col"}>
-                <div className="flex items-center">
-                    <Link href={"/"} className="rounded-lg btn !shadow !p-2 !border-none hover:bg-gray-200">
-                        <IoIosArrowBack className={"text-lg"}/>
-                    </Link>
-                    <h1 className="ml-2 text-lg font-bold">Profile</h1>
-                </div>
-                <div className={"h-full flex flex-col mt-7"}>
-                    <div className={"flex justify-start items-center gap-5 p-5"}>
-                        <div className="relative w-32 h-32">
-                            <Avatar isBordered className="w-32 h-32 text-large" src={user.avatar} alt={user.name}/>
-                            <div className="absolute bottom-0 right-0">
-                                <ImgUploader isLoading={isLoading} setImage={setImage}/>
-                            </div>
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+                <div className="px-5 pt-4">
+                    <div className="flex items-center mb-6">
+                        <div
+                            onClick={() => router.back()}
+                            className="rounded-xl bg-white shadow-lg p-3 hover:shadow-xl transition-all duration-300 hover:scale-105"
+                        >
+                            <IoIosArrowBack className="text-xl text-gray-700" />
                         </div>
-                        <div className="flex flex-col justify-center items-start gap-2">
-                            <div className={"font-mono  text-black capitalize"}>{user?.name}</div>
-                            <div className="text-sm underline cursor-pointer"
-                                 onClick={() => router.push("/change-password")}>Change Password
-                            </div>
-                        </div>
-
+                        <h1 className="ml-4 text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            Profile
+                        </h1>
                     </div>
+                </div>
 
+                <div className="flex justify-center items-start px-5">
+                    <div className="w-full max-w-md px-3">
+                        <div className="text-center mb-8">
+                            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <IoPerson className="text-3xl text-white" />
+                            </div>
+                            <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                                Your Profile
+                            </h2>
+                            <p className="text-gray-500 text-sm">
+                                Manage your personal information and preferences
+                            </p>
+                        </div>
 
-                    <form className={"flex flex-col p-4 mt-7 h-[65%] justify-between"}
-                          onSubmit={handleSubmit(onSubmit)}>
-                        <div className={"flex flex-col gap-1.5"}>
-                            <div>
-                                <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">
-                                    Name
-                                </label>
-                                <input
-                                    defaultValue={user?.name}
-                                    {...register("name", {required: "Name is required."})}
-                                    className="form-input"
-                                    onChange={handleFieldChange} // فراخوانی متد handleFieldChange
-                                />
-                                {errors.name && <p className={"text-red-500 text-xs mt-1"}>{errors.name.message}</p>}
-                            </div>
-                            <div>
-                                <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">
-                                    Email
-                                </label>
-                                <input
-                                    value={user.email}
-                                    readOnly
-                                    className="form-input bg-gray-200/50"
-                                />
-                            </div>
-                            <div>
-                                <label
-                                    className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">Industry</label>
+                        {/* Avatar Section */}
+                        <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 mb-6">
+                            <div className="flex items-center space-x-4">
                                 <div className="relative">
-                                    <input
-                                        {...register("industry_id", {required: "Industry is required."})}
-                                        readOnly
-                                        className="form-input pr-10" // فضای راست برای آیکون
-                                        value={selectedIndustry?.name || (user.industry === "null" ? "" : user.industry)}
-                                        onClick={() => setIndustryModalOpen(true)}
-                                        onChange={handleFieldChange}
+                                    <Avatar 
+                                        isBordered 
+                                        className="w-20 h-20 text-large" 
+                                        src={user.avatar} 
+                                        alt={user.name}
                                     />
-                                    <IoIosArrowForward className="absolute inset-y-0 right-2 text-gray-500 top-5 flex items-center pointer-events-none"/>
+                                    <div className="absolute -bottom-1 -right-1">
+                                        <ImgUploader isLoading={isLoading} setImage={setImage}/>
+                                    </div>
                                 </div>
-                                {errors.industry_id &&
-                                    <p className="text-red-500 text-xs mt-1">{errors.industry_id.message}</p>}
-                            </div>
-
-                            <div>
-                                <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">Job
-                                    Title</label>
-                                <div className="relative">
-                                    <input
-                                        {...register("job_title_id", {required: "Job title is required."})}
-                                        readOnly
-                                        className="form-input"
-                                        value={selectedJob?.name || (user.job_title === "null" ? "" : user.job_title)}
-                                        onClick={() => setJobTitleModalOpen(true)}
-                                        onChange={handleFieldChange} // فراخوانی متد handleFieldChange
-                                    />
-                                    <IoIosArrowForward className="absolute inset-y-0 right-2 text-gray-500 top-5 flex items-center pointer-events-none"/>
+                                <div className="flex-1">
+                                    <h3 className="font-semibold text-gray-800 text-lg capitalize">{user?.name}</h3>
+                                    <button
+                                        onClick={() => router.push("/change-password")}
+                                        className="text-blue-600 text-sm hover:text-blue-700 transition-colors duration-200"
+                                    >
+                                        Change Password
+                                    </button>
                                 </div>
-                                {errors.job_title_id &&
-                                    <p className="text-red-500 text-xs mt-1">{errors.job_title_id.message}</p>}
                             </div>
                         </div>
 
-                        <Button radius={"sm"}
-                                color={"primary"}
-                                type={"submit"}
+                        {/* Form Section */}
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-700 flex items-center mb-2">
+                                            <IoPerson className="mr-2 text-gray-500" />
+                                            Name
+                                        </label>
+                                        <input
+                                            defaultValue={user?.name}
+                                            {...register("name", {required: "Name is required."})}
+                                            onChange={handleFieldChange}
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-gray-50 focus:bg-white"
+                                            placeholder="Enter your name"
+                                        />
+                                        {errors.name && (
+                                            <p className="text-red-500 text-xs mt-1 flex items-center">
+                                                <span className="w-1 h-1 bg-red-500 rounded-full mr-2"></span>
+                                                {errors.name.message}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-700 flex items-center mb-2">
+                                            <IoMail className="mr-2 text-gray-500" />
+                                            Email
+                                        </label>
+                                        <input
+                                            value={user.email}
+                                            readOnly
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-100 text-gray-500"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-700 flex items-center mb-2">
+                                            <IoBusiness className="mr-2 text-gray-500" />
+                                            Industry
+                                        </label>
+                                        <div className="relative">
+                                            <input
+                                                {...register("industry_id", {required: "Industry is required."})}
+                                                readOnly
+                                                value={selectedIndustry?.name || (user.industry === "null" ? "" : user.industry)}
+                                                onClick={() => setIndustryModalOpen(true)}
+                                                onChange={handleFieldChange}
+                                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-gray-50 focus:bg-white pr-10 cursor-pointer"
+                                                placeholder="Select your industry"
+                                            />
+                                            <IoIosArrowForward className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"/>
+                                        </div>
+                                        {errors.industry_id && (
+                                            <p className="text-red-500 text-xs mt-1 flex items-center">
+                                                <span className="w-1 h-1 bg-red-500 rounded-full mr-2"></span>
+                                                {errors.industry_id.message}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-700 flex items-center mb-2">
+                                            <IoBriefcase className="mr-2 text-gray-500" />
+                                            Job Title
+                                        </label>
+                                        <div className="relative">
+                                            <input
+                                                {...register("job_title_id", {required: "Job title is required."})}
+                                                readOnly
+                                                value={selectedJob?.name || (user.job_title === "null" ? "" : user.job_title)}
+                                                onClick={() => setJobTitleModalOpen(true)}
+                                                onChange={handleFieldChange}
+                                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-gray-50 focus:bg-white pr-10 cursor-pointer"
+                                                placeholder="Select your job title"
+                                            />
+                                            <IoIosArrowForward className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"/>
+                                        </div>
+                                        {errors.job_title_id && (
+                                            <p className="text-red-500 text-xs mt-1 flex items-center">
+                                                <span className="w-1 h-1 bg-red-500 rounded-full mr-2"></span>
+                                                {errors.job_title_id.message}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <Button
+                                type="submit"
                                 isLoading={isPending}
-                                isDisabled={!isChanged}> {/* دکمه Ok فقط در صورت تغییر فعال می‌شود */}
-                            Save
-                        </Button>
-                    </form>
+                                isDisabled={!isChanged}
+                                className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold py-3 rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                                size="lg"
+                            >
+                                {isPending ? "Saving..." : "Save Changes"}
+                            </Button>
+                        </form>
+
+                        <div className="mt-6 text-center">
+                            <p className="text-xs text-gray-400">
+                                Your profile information is secure and private
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
-                {
-                    getIndustriesListResponse.data?.data && getJobTitlesListResponse.data?.data && (
-                        <>
-                            {/* Industry Modal */}
-                            <SelectableModal
-                                title="Industry"
-                                handleSearch={(searchValue: string) => setModalsSearchInput({
+                {/* Modals */}
+                {getIndustriesListResponse.data?.data && getJobTitlesListResponse.data?.data && (
+                    <>
+                        <SelectableModal
+                            title="Industry"
+                            handleSearch={(searchValue: string) => setModalsSearchInput({
+                                ...modalsSearchInput,
+                                industry: searchValue
+                            })}
+                            items={getIndustriesListResponse.data?.data || []}
+                            selectedItem={selectedIndustry}
+                            isOpen={isIndustryModalOpen}
+                            onClose={() => {
+                                setIndustryModalOpen(false)
+                                setModalsSearchInput({
                                     ...modalsSearchInput,
-                                    industry: searchValue
-                                })}
-                                items={getIndustriesListResponse.data?.data || []}
-                                selectedItem={selectedIndustry}
-                                isOpen={isIndustryModalOpen}
-                                onClose={() => {
-                                    setIndustryModalOpen(false)
-                                    setModalsSearchInput({
-                                        ...modalsSearchInput,
-                                        industry: ""
-                                    })
-                                }}
-                                onSelect={(item: any) => {
-                                    setSelectedIndustry(item);
-                                    setModalsSearchInput({
-                                        ...modalsSearchInput,
-                                        industry: ""
-                                    })
-                                    setIndustryModalOpen(false);
-                                    setIsChanged(true);
-                                }}
-                            />
-
-                            <SelectableModal
-                                title="Job Title"
-                                handleSearch={(searchValue: string) => setModalsSearchInput({
+                                    industry: ""
+                                })
+                            }}
+                            onSelect={(item: any) => {
+                                setSelectedIndustry(item);
+                                setModalsSearchInput({
                                     ...modalsSearchInput,
-                                    job_title: searchValue
-                                })}
-                                items={getJobTitlesListResponse.data?.data || []}
-                                selectedItem={selectedJob}
-                                isOpen={isJobTitleModalOpen}
-                                onClose={() => {
-                                    setJobTitleModalOpen(false)
-                                    setModalsSearchInput({
-                                        ...modalsSearchInput,
-                                        job_title: ""
-                                    })
-                                }}
-                                onSelect={(item: any) => {
-                                    setSelectedJob(item);
-                                    setModalsSearchInput({
-                                        ...modalsSearchInput,
-                                        job_title: ""
-                                    })
-                                    setJobTitleModalOpen(false);
-                                    setIsChanged(true);
-                                }}
-                            />
+                                    industry: ""
+                                })
+                                setIndustryModalOpen(false);
+                                setIsChanged(true);
+                            }}
+                        />
 
-                        </>
-                    )
-                }
-
+                        <SelectableModal
+                            title="Job Title"
+                            handleSearch={(searchValue: string) => setModalsSearchInput({
+                                ...modalsSearchInput,
+                                job_title: searchValue
+                            })}
+                            items={getJobTitlesListResponse.data?.data || []}
+                            selectedItem={selectedJob}
+                            isOpen={isJobTitleModalOpen}
+                            onClose={() => {
+                                setJobTitleModalOpen(false)
+                                setModalsSearchInput({
+                                    ...modalsSearchInput,
+                                    job_title: ""
+                                })
+                            }}
+                            onSelect={(item: any) => {
+                                setSelectedJob(item);
+                                setModalsSearchInput({
+                                    ...modalsSearchInput,
+                                    job_title: ""
+                                })
+                                setJobTitleModalOpen(false);
+                                setIsChanged(true);
+                            }}
+                        />
+                    </>
+                )}
             </div>
         )
     }
