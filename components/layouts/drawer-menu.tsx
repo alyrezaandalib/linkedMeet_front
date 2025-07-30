@@ -15,11 +15,7 @@ import { Logout } from "@/store/userSlice";
 import { deleteCookie, getCookie } from "cookies-next";
 import { UAParser } from "ua-parser-js";
 // icons
-import {CiUser} from "react-icons/ci";
-import {HiMiniChatBubbleOvalLeftEllipsis} from "react-icons/hi2";
 import {IoExit, IoPerson, IoChatbubbleOutline, IoInformationCircle, IoShieldCheckmark, IoCall} from "react-icons/io5";
-import {PiInfoFill} from "react-icons/pi";
-import {TiUser} from "react-icons/ti";
 import {LuMenu} from "react-icons/lu";
 
 interface DrawerMenuProps {
