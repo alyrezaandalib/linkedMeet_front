@@ -87,7 +87,7 @@ export default function DrawerMenu({ setIsGpsOnAction, isLoading, setIsLoading }
             <Button 
                 isIconOnly 
                 onPress={onOpen} 
-                variant="light"
+                variant="bordered"
                 className="rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             >
                 <LuMenu className="text-xl text-gray-700"/>
