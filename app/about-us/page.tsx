@@ -82,7 +82,7 @@ export default function AboutUsPage() {
                         </div>
                     </div>
 
-                    <div className="mt-8 text-center">
+                    <div className="mt-8 mb-2 text-center">
                         <p className="text-xs text-gray-400">
                             Building meaningful connections for a better future
                         </p>

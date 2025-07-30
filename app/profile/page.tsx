@@ -181,129 +181,116 @@ export default function ProfilePage() {
 
                 <div className="flex justify-center items-start px-5">
                     <div className="w-full max-w-md px-3">
-                        <div className="text-center mb-8">
-                            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <IoPerson className="text-3xl text-white" />
-                            </div>
-                            <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                                Your Profile
-                            </h2>
-                            <p className="text-gray-500 text-sm">
-                                Manage your personal information and preferences
-                            </p>
-                        </div>
 
                         {/* Avatar Section */}
-                        <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 mb-6">
-                            <div className="flex items-center space-x-4">
-                                <div className="relative">
-                                    <Avatar 
-                                        isBordered 
-                                        className="w-20 h-20 text-large" 
-                                        src={user.avatar} 
-                                        alt={user.name}
-                                    />
-                                    <div className="absolute -bottom-1 -right-1">
-                                        <ImgUploader isLoading={isLoading} setImage={setImage}/>
-                                    </div>
+                        <div className="flex items-center space-x-4 py-8">
+                            <div className="relative">
+                                <Avatar
+                                    isBordered
+                                    className="w-24 h-24 text-large"
+                                    src={user.avatar}
+                                    alt={user.name}
+                                />
+                                <div className="absolute -bottom-1 -right-1">
+                                    <ImgUploader isLoading={isLoading} setImage={setImage}/>
                                 </div>
-                                <div className="flex-1">
-                                    <h3 className="font-semibold text-gray-800 text-lg capitalize">{user?.name}</h3>
-                                    <button
-                                        onClick={() => router.push("/change-password")}
-                                        className="text-blue-600 text-sm hover:text-blue-700 transition-colors duration-200"
-                                    >
-                                        Change Password
-                                    </button>
-                                </div>
+                            </div>
+                            <div className="flex-1">
+                                <h3 className="font-semibold text-gray-800 text-lg capitalize">{user?.name}</h3>
+                                <button
+                                    onClick={() => router.push("/change-password")}
+                                    className="text-blue-600 text-sm hover:text-blue-700 transition-colors duration-200"
+                                >
+                                    Change Password
+                                </button>
                             </div>
                         </div>
 
                         {/* Form Section */}
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="text-sm font-medium text-gray-700 flex items-center mb-2">
-                                            <IoPerson className="mr-2 text-gray-500" />
-                                            Name
-                                        </label>
-                                        <input
-                                            defaultValue={user?.name}
-                                            {...register("name", {required: "Name is required."})}
-                                            onChange={handleFieldChange}
-                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-gray-50 focus:bg-white"
-                                            placeholder="Enter your name"
-                                        />
-                                        {errors.name && (
-                                            <p className="text-red-500 text-xs mt-1 flex items-center">
-                                                <span className="w-1 h-1 bg-red-500 rounded-full mr-2"></span>
-                                                {errors.name.message}
-                                            </p>
-                                        )}
-                                    </div>
+                            <div className="space-y-4 py-4">
+                                <div>
+                                    <label className="text-sm font-medium text-gray-700 flex items-center mb-2">
+                                        <IoPerson className="mr-2 text-gray-500"/>
+                                        Name
+                                    </label>
+                                    <input
+                                        defaultValue={user?.name}
+                                        {...register("name", {required: "Name is required."})}
+                                        onChange={handleFieldChange}
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-gray-50 focus:bg-white"
+                                        placeholder="Enter your name"
+                                    />
+                                    {errors.name && (
+                                        <p className="text-red-500 text-xs mt-1 flex items-center">
+                                            <span className="w-1 h-1 bg-red-500 rounded-full mr-2"></span>
+                                            {errors.name.message}
+                                        </p>
+                                    )}
+                                </div>
 
-                                    <div>
-                                        <label className="text-sm font-medium text-gray-700 flex items-center mb-2">
-                                            <IoMail className="mr-2 text-gray-500" />
-                                            Email
-                                        </label>
+                                <div>
+                                    <label className="text-sm font-medium text-gray-700 flex items-center mb-2">
+                                        <IoMail className="mr-2 text-gray-500"/>
+                                        Email
+                                    </label>
+                                    <input
+                                        value={user.email}
+                                        readOnly
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-100 text-gray-500"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-sm font-medium text-gray-700 flex items-center mb-2">
+                                        <IoBusiness className="mr-2 text-gray-500"/>
+                                        Industry
+                                    </label>
+                                    <div className="relative">
                                         <input
-                                            value={user.email}
+                                            {...register("industry_id", {required: "Industry is required."})}
                                             readOnly
-                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-100 text-gray-500"
+                                            value={selectedIndustry?.name || (user.industry === "null" ? "" : user.industry)}
+                                            onClick={() => setIndustryModalOpen(true)}
+                                            onChange={handleFieldChange}
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-gray-50 focus:bg-white pr-10 cursor-pointer"
+                                            placeholder="Select your industry"
                                         />
+                                        <IoIosArrowForward
+                                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"/>
                                     </div>
+                                    {errors.industry_id && (
+                                        <p className="text-red-500 text-xs mt-1 flex items-center">
+                                            <span className="w-1 h-1 bg-red-500 rounded-full mr-2"></span>
+                                            {errors.industry_id.message}
+                                        </p>
+                                    )}
+                                </div>
 
-                                    <div>
-                                        <label className="text-sm font-medium text-gray-700 flex items-center mb-2">
-                                            <IoBusiness className="mr-2 text-gray-500" />
-                                            Industry
-                                        </label>
-                                        <div className="relative">
-                                            <input
-                                                {...register("industry_id", {required: "Industry is required."})}
-                                                readOnly
-                                                value={selectedIndustry?.name || (user.industry === "null" ? "" : user.industry)}
-                                                onClick={() => setIndustryModalOpen(true)}
-                                                onChange={handleFieldChange}
-                                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-gray-50 focus:bg-white pr-10 cursor-pointer"
-                                                placeholder="Select your industry"
-                                            />
-                                            <IoIosArrowForward className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"/>
-                                        </div>
-                                        {errors.industry_id && (
-                                            <p className="text-red-500 text-xs mt-1 flex items-center">
-                                                <span className="w-1 h-1 bg-red-500 rounded-full mr-2"></span>
-                                                {errors.industry_id.message}
-                                            </p>
-                                        )}
+                                <div>
+                                    <label className="text-sm font-medium text-gray-700 flex items-center mb-2">
+                                        <IoBriefcase className="mr-2 text-gray-500"/>
+                                        Job Title
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            {...register("job_title_id", {required: "Job title is required."})}
+                                            readOnly
+                                            value={selectedJob?.name || (user.job_title === "null" ? "" : user.job_title)}
+                                            onClick={() => setJobTitleModalOpen(true)}
+                                            onChange={handleFieldChange}
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-gray-50 focus:bg-white pr-10 cursor-pointer"
+                                            placeholder="Select your job title"
+                                        />
+                                        <IoIosArrowForward
+                                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"/>
                                     </div>
-
-                                    <div>
-                                        <label className="text-sm font-medium text-gray-700 flex items-center mb-2">
-                                            <IoBriefcase className="mr-2 text-gray-500" />
-                                            Job Title
-                                        </label>
-                                        <div className="relative">
-                                            <input
-                                                {...register("job_title_id", {required: "Job title is required."})}
-                                                readOnly
-                                                value={selectedJob?.name || (user.job_title === "null" ? "" : user.job_title)}
-                                                onClick={() => setJobTitleModalOpen(true)}
-                                                onChange={handleFieldChange}
-                                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-gray-50 focus:bg-white pr-10 cursor-pointer"
-                                                placeholder="Select your job title"
-                                            />
-                                            <IoIosArrowForward className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"/>
-                                        </div>
-                                        {errors.job_title_id && (
-                                            <p className="text-red-500 text-xs mt-1 flex items-center">
-                                                <span className="w-1 h-1 bg-red-500 rounded-full mr-2"></span>
-                                                {errors.job_title_id.message}
-                                            </p>
-                                        )}
-                                    </div>
+                                    {errors.job_title_id && (
+                                        <p className="text-red-500 text-xs mt-1 flex items-center">
+                                            <span className="w-1 h-1 bg-red-500 rounded-full mr-2"></span>
+                                            {errors.job_title_id.message}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
 
@@ -318,7 +305,7 @@ export default function ProfilePage() {
                             </Button>
                         </form>
 
-                        <div className="mt-6 text-center">
+                        <div className="mt-6 mb-2 text-center">
                             <p className="text-xs text-gray-400">
                                 Your profile information is secure and private
                             </p>
