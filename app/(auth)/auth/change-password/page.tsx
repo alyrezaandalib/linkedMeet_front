@@ -1,129 +1,101 @@
 "use client"
+import Link from "next/link";
+import {IoIosArrowBack} from "react-icons/io";
+import {IoEye, IoEyeOff} from "react-icons/io5";
 import {Button} from "@heroui/react";
+import React, {useState} from "react";
 import {useForm} from "react-hook-form";
-import {useRouter} from "next/navigation";
 import {useSelector} from "react-redux";
 import toast from "react-hot-toast";
-import {useEffect, useState} from "react";
-import {EyeFilledIcon, EyeSlashFilledIcon} from "@heroui/shared-icons";
 
 type Inputs = {
-    email: string;
-    verification_code: string;
+    current_password: string;
     password: string;
     password_confirmation: string;
 };
 
 export default function ChangePasswordPage() {
     const [isVisible, setIsVisible] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const toggleVisibility = () => setIsVisible(!isVisible);
 
-    const [isLoadingLogin, setIsLoadingLogin] = useState(false);
-    const router = useRouter();
-    const isAuthenticated = useSelector((state: any) => state.user.isAuthenticated);
+    const user = useSelector((state: any) => state.user.user);
 
     const {
         register,
         handleSubmit,
         formState: {errors},
-        watch
+        watch,
+        reset
     } = useForm<Inputs>();
 
-    const onSubmit = async (params: Inputs) => {
-        setIsLoadingLogin(true);
+    const onSubmit = async (data: Inputs) => {
+        setIsLoading(true);
 
         try {
-            const response: Response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/reset-forgotten-password`, {
-                method: 'POST',
+            const response: Response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/auth/change-password`, {
+                method: 'PATCH',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
-                body: JSON.stringify(params),
+                body: JSON.stringify({
+                    current_password: data.current_password,
+                    password: data.password
+                }),
             });
 
-            const data = await response.json();
+            const responseData = await response.json();
 
             if (response.ok) {
-                toast.success(data.message);
-                router.push("/");
+                toast.success(responseData.message);
+                reset(); // پاک کردن فرم بعد از موفقیت
             } else {
-                toast.error(data.message || "An error occurred during Reset Password.");
+                toast.error(responseData.message || "An error occurred during password change.");
             }
         } catch (error) {
-            toast.error("Invalid response structure from server.");
+            toast.error("Network error occurred.");
         } finally {
-            setIsLoadingLogin(false);
+            setIsLoading(false);
         }
     };
 
-    useEffect(() => {
-        if (isAuthenticated) {
-            router.push("/")
-        }
-    }, []);
-
     return (
-        <div className={"flex flex-col h-screen"}>
-            <div className="text-center flex justify-center items-center text-3xl font-bold h-[15%] text-white">
-                LinkedMeet
+        <div className={"px-5 pt-4 h-screen flex flex-col bg-white"}>
+            <div className="flex items-center">
+                <Link href={"/"} className="rounded-lg btn !shadow !p-2 !border-none hover:bg-gray-200">
+                    <IoIosArrowBack className={"text-lg"}/>
+                </Link>
+                <h1 className="ml-2 text-lg font-bold">Change Password</h1>
             </div>
-            <div className="flex relative items-center h-[85%] justify-center">
-                <div className={"w-[90%] bg-gray-500 h-full absolute bottom-0 rounded-t-3xl max-w-[400px]"}></div>
-                <div
-                    className="absolute flex flex-col gap-3.5 bottom-0 w-full h-[97.5%] max-w-md bg-white rounded-t-3xl shadow-lg p-8">
-
-                    <div className={"flex flex-col gap-1.5"}>
-                        <h2 className="text-2xl font-semibold text-black">Reset password</h2>
-                        <p className="text-sm text-gray-400">
-                            Please enter your email address and a new password to reset your account.
-                            <br/>
-                            <br/>
-                            <strong>Note:</strong> After resetting, if the app is active on your phone, you will be
-                            redirected to the app.
-                        </p>
-                    </div>
-
-                    {/* Form */}
-                    <form className={"flex flex-col gap-3"} onSubmit={handleSubmit(onSubmit)}>
-
+            <div className={"h-full flex flex-col mt-7"}>
+                <form className={"flex flex-col p-4 mt-7 h-[65%] justify-between"}
+                      onSubmit={handleSubmit(onSubmit)}>
+                    <div className={"flex flex-col gap-4"}>
                         <div>
                             <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">
-                                Email
+                                Current Password
                             </label>
                             <input
-                                {...register("email", {required: "Email is required."})}
-                                type="email"
-                                placeholder="e.g. example@email.com"
-                                className="form-input"
-                                autoComplete="email"
-                            />
-                            {errors.email && <p className={"text-red-500 text-xs mt-1"}>{errors.email.message}</p>}
-                        </div>
-
-                        <div>
-                            <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">
-                                Verification Code
-                            </label>
-                            <input
-                                {...register("verification_code", {
-                                    required: "Verification Code is required.",
+                                {...register("current_password", {
+                                    required: "Current password is required.",
                                     minLength: {
-                                        value: 6,
-                                        message: "Verification code must be 6 digits.",
+                                        value: 8,
+                                        message: "Password must be at least 8 characters long.",
                                     },
                                     maxLength: {
-                                        value: 6,
-                                        message: "Verification code must be 6 digits."
+                                        value: 32,
+                                        message: "Password must be at most 32 characters long."
                                     }
                                 })}
-                                type="text"
+                                type={isVisible ? "text" : "password"}
                                 className="form-input"
-                                placeholder="6-digit code sent to your email"
-                                autoComplete="off"
+                                placeholder="Enter your current password"
+                                autoComplete="current-password"
                             />
-                            {errors.verification_code &&
-                                <p className={"text-red-500 text-xs mt-1"}>{errors.verification_code.message}</p>}
+                            {errors.current_password &&
+                                <p className={"text-red-500 text-xs mt-1"}>{errors.current_password.message}</p>}
                         </div>
 
                         <div className="relative">
@@ -133,7 +105,7 @@ export default function ChangePasswordPage() {
                             <div className="relative">
                                 <input
                                     {...register("password", {
-                                        required: "Password is required.",
+                                        required: "New password is required.",
                                         minLength: {
                                             value: 8,
                                             message: "Password must be at least 8 characters long.",
@@ -146,7 +118,7 @@ export default function ChangePasswordPage() {
                                     type={isVisible ? "text" : "password"}
                                     autoComplete="new-password"
                                     className="form-input w-full !pr-10"
-                                    placeholder="At least 8 characters"
+                                    placeholder="Enter your new password"
                                 />
                                 <button
                                     aria-label="toggle password visibility"
@@ -155,9 +127,9 @@ export default function ChangePasswordPage() {
                                     onClick={toggleVisibility}
                                 >
                                     {isVisible ? (
-                                        <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none"/>
+                                        <IoEyeOff className="text-2xl text-gray-400"/>
                                     ) : (
-                                        <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none"/>
+                                        <IoEye className="text-2xl text-gray-400"/>
                                     )}
                                 </button>
                             </div>
@@ -185,18 +157,23 @@ export default function ChangePasswordPage() {
                                 type={isVisible ? "text" : "password"}
                                 autoComplete="new-password"
                                 className="form-input"
-                                placeholder="At least 8 characters"
+                                placeholder="Confirm your new password"
                             />
                             {errors.password_confirmation &&
                                 <p className={"text-red-500 text-xs mt-1"}>{errors.password_confirmation.message}</p>}
                         </div>
+                    </div>
 
-                        <Button className={"mt-4"} color={"primary"} isLoading={isLoadingLogin} radius={"sm"}
-                                type={"submit"}>
-                            Reset Password
-                        </Button>
-                    </form>
-                </div>
+                    <Button
+                        radius={"sm"}
+                        color={"primary"}
+                        type={"submit"}
+                        isLoading={isLoading}
+                        className="mt-4"
+                    >
+                        Change Password
+                    </Button>
+                </form>
             </div>
         </div>
     )

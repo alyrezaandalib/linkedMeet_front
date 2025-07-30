@@ -1,5 +1,5 @@
 "use client"
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {Button} from "@heroui/react";
 import useService, {Inputs} from "./service";
@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import {useRouter} from "next/navigation";
 import {useDispatch, useSelector} from "react-redux";
 import {UpdateIndustryAndJobTitle} from "@/store/userSlice";
+import {IoIosArrowForward} from "react-icons/io";
 
 type ItemType = {
     id: string;
@@ -112,13 +113,16 @@ export default function InformationPage() {
                         <div>
                             <label
                                 className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">Industry</label>
-                            <input
-                                {...register("industry_id", {required: "Industry is required."})}
-                                readOnly
-                                className="form-input"
-                                value={selectedIndustry?.name || ""}
-                                onClick={() => setIndustryModalOpen(true)} // Open Industry Modal
-                            />
+                            <div className="relative">
+                                <input
+                                    {...register("industry_id", {required: "Industry is required."})}
+                                    readOnly
+                                    className="form-input"
+                                    value={selectedIndustry?.name || ""}
+                                    onClick={() => setIndustryModalOpen(true)} // Open Industry Modal
+                                />
+                                <IoIosArrowForward className="absolute inset-y-0 right-2 text-gray-500 top-5 flex items-center pointer-events-none"/>
+                            </div>
                             {errors.industry_id &&
                                 <p className="text-red-500 text-xs mt-1">{errors.industry_id.message}</p>}
                         </div>
@@ -126,13 +130,16 @@ export default function InformationPage() {
                         <div>
                             <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">Job
                                 Title</label>
-                            <input
-                                {...register("job_title_id", {required: "Job title is required."})}
-                                readOnly
-                                className="form-input"
-                                value={selectedJob?.name || ""}
-                                onClick={() => setJobTitleModalOpen(true)} // Open Job Title Modal
-                            />
+                            <div className="relative">
+                                <input
+                                    {...register("job_title_id", {required: "Job title is required."})}
+                                    readOnly
+                                    className="form-input"
+                                    value={selectedJob?.name || ""}
+                                    onClick={() => setJobTitleModalOpen(true)} // Open Job Title Modal
+                                />
+                                <IoIosArrowForward className="absolute inset-y-0 right-2 text-gray-500 top-5 flex items-center pointer-events-none"/>
+                            </div>
                             {errors.job_title_id &&
                                 <p className="text-red-500 text-xs mt-1">{errors.job_title_id.message}</p>}
                         </div>

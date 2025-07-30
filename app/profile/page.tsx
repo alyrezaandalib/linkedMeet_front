@@ -12,7 +12,7 @@ import ImgUploader from "@/components/img-uploader";
 import {getCookie} from "cookies-next";
 import {useRouter} from "next/navigation";
 // icons
-import {IoIosArrowBack} from "react-icons/io";
+import {IoIosArrowBack, IoIosArrowForward} from "react-icons/io";
 
 export default function ProfilePage() {
     const router = useRouter();
@@ -172,14 +172,16 @@ export default function ProfilePage() {
                 <div className={"h-full flex flex-col mt-7"}>
                     <div className={"flex justify-start items-center gap-5 p-5"}>
                         <div className="relative w-32 h-32">
-                            <Avatar isBordered className="w-32 h-32 text-large" src={user.avatar} alt={user.name} />
+                            <Avatar isBordered className="w-32 h-32 text-large" src={user.avatar} alt={user.name}/>
                             <div className="absolute bottom-0 right-0">
-                                <ImgUploader isLoading={isLoading} setImage={setImage} />
+                                <ImgUploader isLoading={isLoading} setImage={setImage}/>
                             </div>
                         </div>
                         <div className="flex flex-col justify-center items-start gap-2">
                             <div className={"font-mono  text-black capitalize"}>{user?.name}</div>
-                            <div className="text-sm underline" onClick={() => router.push("/auth/change-password")}>Change Password</div>
+                            <div className="text-sm underline cursor-pointer"
+                                 onClick={() => router.push("/auth/change-password")}>Change Password
+                            </div>
                         </div>
 
                     </div>
@@ -213,14 +215,17 @@ export default function ProfilePage() {
                             <div>
                                 <label
                                     className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">Industry</label>
-                                <input
-                                    {...register("industry_id", {required: "Industry is required."})}
-                                    readOnly
-                                    className="form-input"
-                                    value={selectedIndustry?.name || (user.industry === "null" ? "" : user.industry)}
-                                    onClick={() => setIndustryModalOpen(true)}
-                                    onChange={handleFieldChange} // فراخوانی متد handleFieldChange
-                                />
+                                <div className="relative">
+                                    <input
+                                        {...register("industry_id", {required: "Industry is required."})}
+                                        readOnly
+                                        className="form-input pr-10" // فضای راست برای آیکون
+                                        value={selectedIndustry?.name || (user.industry === "null" ? "" : user.industry)}
+                                        onClick={() => setIndustryModalOpen(true)}
+                                        onChange={handleFieldChange}
+                                    />
+                                    <IoIosArrowForward className="absolute inset-y-0 right-2 text-gray-500 top-5 flex items-center pointer-events-none"/>
+                                </div>
                                 {errors.industry_id &&
                                     <p className="text-red-500 text-xs mt-1">{errors.industry_id.message}</p>}
                             </div>
@@ -228,14 +233,17 @@ export default function ProfilePage() {
                             <div>
                                 <label className="block !mb-0 text-sm font-medium ml-2 rtl:mr-2 text-gray-700">Job
                                     Title</label>
-                                <input
-                                    {...register("job_title_id", {required: "Job title is required."})}
-                                    readOnly
-                                    className="form-input"
-                                    value={selectedJob?.name || (user.job_title === "null" ? "" : user.job_title)}
-                                    onClick={() => setJobTitleModalOpen(true)}
-                                    onChange={handleFieldChange} // فراخوانی متد handleFieldChange
-                                />
+                                <div className="relative">
+                                    <input
+                                        {...register("job_title_id", {required: "Job title is required."})}
+                                        readOnly
+                                        className="form-input"
+                                        value={selectedJob?.name || (user.job_title === "null" ? "" : user.job_title)}
+                                        onClick={() => setJobTitleModalOpen(true)}
+                                        onChange={handleFieldChange} // فراخوانی متد handleFieldChange
+                                    />
+                                    <IoIosArrowForward className="absolute inset-y-0 right-2 text-gray-500 top-5 flex items-center pointer-events-none"/>
+                                </div>
                                 {errors.job_title_id &&
                                     <p className="text-red-500 text-xs mt-1">{errors.job_title_id.message}</p>}
                             </div>
