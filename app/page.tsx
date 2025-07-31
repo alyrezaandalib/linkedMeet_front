@@ -48,6 +48,8 @@ export default function Home() {
         getIndustriesList,
     } = useService();
 
+
+    // todo
     // set unread messages
     const unreadMessagesCount = getUnreadMessagesCount();
 
@@ -150,6 +152,7 @@ export default function Home() {
     }, [selectedIndustry, selectedJob]);
 
     // update gps status
+    // todo
     const updateGpsStatus = async (isGpsEnabled: boolean) => {
         await fetch(
             `${process.env.NEXT_PUBLIC_BASE_URL_API}/v1/user/gps-status`,

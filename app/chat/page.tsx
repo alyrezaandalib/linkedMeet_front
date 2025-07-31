@@ -108,9 +108,9 @@ export default function ChatPage() {
                                 <div className="h-64 flex justify-center items-center">
                                     <Spinner size="lg" />
                                 </div>
-                            ) : filteredChats && filteredChats.length > 0 ? (
+                            ) : filteredChats && filteredChats?.length > 0 ? (
                                 <div className="divide-y divide-gray-100">
-                                    {filteredChats.map((item: Chats) => (
+                                    {filteredChats?.map((item: Chats) => (
                                         <div key={item.id} className="p-4 hover:bg-gray-50 transition-all duration-300">
                                             <Button
                                                 onPress={() => router.push(`/chat/${item.id}?user=${encodeURIComponent(JSON.stringify(item))}`)}
@@ -119,11 +119,11 @@ export default function ChatPage() {
                                                 radius="lg"
                                                 className="flex justify-start py-3 w-full px-3 h-auto"
                                             >
-                                                <Avatar 
-                                                    isBordered 
-                                                    className="min-w-10 w-10 min-h-10 h-10 text-large" 
-                                                    src={item.avatar} 
-                                                    alt={item.name} 
+                                                <Avatar
+                                                    isBordered
+                                                    className="min-w-10 w-10 min-h-10 h-10 text-large"
+                                                    src={item.avatar}
+                                                    alt={item.name}
                                                 />
                                                 <div className="flex w-full items-center ml-3">
                                                     <div className="flex flex-col items-start gap-1 flex-1">
