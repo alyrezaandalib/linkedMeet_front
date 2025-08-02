@@ -1,8 +1,8 @@
 "use client";
 import Image from "next/image";
-import useService, { User } from "./service";
+import useService, {User} from "./service";
 import DrawerMenu from "@/components/layouts/drawer-menu";
-import React, { useEffect, useRef, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {
     Avatar,
     Button,
@@ -14,23 +14,23 @@ import {
 } from "@heroui/react";
 import toast from "react-hot-toast";
 import SelectableModal from "@/components/selectableModal";
-import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { fetchService } from "@/services/crud-services/fetch-service";
-import { deleteCookie, getCookie, setCookie } from "cookies-next";
+import {useRouter} from "next/navigation";
+import {useQuery} from "@tanstack/react-query";
+import {fetchService} from "@/services/crud-services/fetch-service";
+import {deleteCookie, getCookie, setCookie} from "cookies-next";
 import LogoutPage from "@/components/logout";
-import { motion } from "framer-motion";
-import { useDrag } from "@use-gesture/react";
-import { updateUnreadMessages } from "@/store/notificationSlice";
-import { useDispatch, useSelector } from "react-redux";
+import {motion} from "framer-motion";
+import {useDrag} from "@use-gesture/react";
+import {updateUnreadMessages} from "@/store/notificationSlice";
+import {useDispatch, useSelector} from "react-redux";
 // images
 import disabled_location_image from "../public/images/disabled_location.png";
 import no_user_found_image from "../public/images/no_user_found.png";
 import users_image from "../public/images/users.png";
 // icons
 import SendIcon from "@/public/tsx-icons/send";
-import { IoChatbubbleOutline, IoDocumentTextOutline } from "react-icons/io5";
-import { CiLocationOff, CiLocationOn } from "react-icons/ci";
+import {IoChatbubbleOutline, IoDocumentTextOutline} from "react-icons/io5";
+import {CiLocationOff, CiLocationOn} from "react-icons/ci";
 
 export default function Home() {
     const router = useRouter();
@@ -58,7 +58,7 @@ export default function Home() {
             dispatch(
                 updateUnreadMessages({
                     unreadMessagesCount:
-                        unreadMessagesCount.data?.unread_messages_count,
+                    unreadMessagesCount.data?.unread_messages_count,
                 })
             );
         }
@@ -109,10 +109,10 @@ export default function Home() {
     const isFirstFetchNearbyUsers = useRef(true);
 
     // nearby users
-    const { data: nearbyUsers, refetch: fetchNearbyUsers } = useQuery({
+    const {data: nearbyUsers, refetch: fetchNearbyUsers} = useQuery({
         queryKey: ["/v1/user/nearby-users"],
 
-        queryFn: ({ queryKey }) => {
+        queryFn: ({queryKey}) => {
             const baseUrl = queryKey[0];
 
             const params = new URLSearchParams();
@@ -126,7 +126,7 @@ export default function Home() {
 
             const url = `${baseUrl}?${params.toString()}`;
 
-            return fetchService({ url });
+            return fetchService({url});
         },
 
         refetchOnMount: false,
@@ -195,9 +195,9 @@ export default function Home() {
             (position) => {
                 const now = Date.now();
                 if (now - lastSentTime.current >= 10000) {
-                    const { latitude, longitude } = position.coords;
+                    const {latitude, longitude} = position.coords;
                     sendUserLocation.mutate(
-                        { latitude, longitude },
+                        {latitude, longitude},
                         {
                             onSuccess: () => {
                                 if (isFirstFetchNearbyUsers.current) {
@@ -301,7 +301,7 @@ export default function Home() {
     };
 
     const bind = useDrag(
-        ({ down, movement: [_, my] }) => {
+        ({down, movement: [_, my]}) => {
             if (!isGpsOn) {
                 return;
             }
@@ -310,18 +310,18 @@ export default function Home() {
                 handleRefresh();
             }
         },
-        { axis: "y" }
+        {axis: "y"}
     );
 
     if (isLoggingOut) {
-        return <LogoutPage />;
+        return <LogoutPage/>;
     }
 
     return (
-        <div {...bind()} style={{ touchAction: "pan-y" }}>
+        <div {...bind()} style={{touchAction: "pan-y"}}>
             <motion.div
-                animate={{ y: refreshing ? 0 : -100 }}
-                transition={{ type: "spring", stiffness: 300 }}
+                animate={{y: refreshing ? 0 : -100}}
+                transition={{type: "spring", stiffness: 300}}
                 style={{
                     position: "absolute",
                     top: 0,
@@ -342,7 +342,7 @@ export default function Home() {
                             "flex justify-center items-center gap-2 text-white text-sm z-50"
                         }
                     >
-                        <Spinner color={"white"} size={"sm"} /> Fetching nearby
+                        <Spinner color={"white"} size={"sm"}/> Fetching nearby
                         users, Please wait...
                     </div>
                 )}
@@ -352,7 +352,7 @@ export default function Home() {
                 animate={{
                     marginTop: refreshing ? 50 : 0,
                 }}
-                transition={{ type: "spring", stiffness: 300 }}
+                transition={{type: "spring", stiffness: 300}}
             >
                 <div className={"w-full overflow-hidden"}>
                     {/* header */}
@@ -398,11 +398,11 @@ export default function Home() {
                                 defaultSelected={isGpsOn}
                                 isSelected={isGpsOn}
                                 isDisabled={sendUserLocation.isPending}
-                                thumbIcon={({ isSelected, className }) =>
+                                thumbIcon={({isSelected, className}) =>
                                     isSelected ? (
-                                        <CiLocationOn className={className} />
+                                        <CiLocationOn className={className}/>
                                     ) : (
-                                        <CiLocationOff className={className} />
+                                        <CiLocationOff className={className}/>
                                     )
                                 }
                                 onValueChange={(E) => {
@@ -450,7 +450,7 @@ export default function Home() {
                                     "p-10 flex flex-col justify-center items-center gap-4"
                                 }
                             >
-                                <Spinner />
+                                <Spinner/>
                             </div>
                         ) : (
                             <>
@@ -775,7 +775,7 @@ export default function Home() {
                                         }
                                         className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold py-3 rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300"
                                     >
-                                        <SendIcon />
+                                        <SendIcon/>
                                         Chat
                                     </Button>
                                 </ModalBody>

@@ -187,11 +187,11 @@ const ChatPage = () => {
                 setChatHistory((prevHistory = []) => [
                     ...prevHistory,
                     {
-                        id: data.id,
-                        receiver_id: data.receiver_id,
-                        sender_id: data.sender_id,
-                        message: data.message,
-                        created_at: data.created_at,
+                        id: data?.id,
+                        receiver_id: data?.receiver_id,
+                        sender_id: data?.sender_id,
+                        message: data?.message,
+                        created_at: data?.created_at,
                     },
                 ]);
                 setTimeout(() => {
@@ -279,7 +279,7 @@ const ChatPage = () => {
                                                 {chat?.message}
                                             </div>
                                             <p className="text-xs text-gray-400 mt-1">
-                                                {formatDateToClientTimezone(chat?.created_at)}
+                                                {chat.created_at && formatDateToClientTimezone(chat?.created_at)}
                                             </p>
                                         </div>
                                     ) : (
@@ -292,7 +292,7 @@ const ChatPage = () => {
                                                 {chat?.message}
                                             </div>
                                             <p className="text-xs text-gray-400 mt-1 text-right">
-                                                {formatDateToClientTimezone(chat?.created_at)}
+                                                {chat.created_at && formatDateToClientTimezone(chat?.created_at)}
                                             </p>
                                         </div>
                                     )
