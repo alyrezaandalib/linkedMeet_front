@@ -15,8 +15,8 @@ import { IoIosArrowBack } from "react-icons/io";
 import SendIcon from "@/public/tsx-icons/send";
 
 const ChatPage = () => {
-    // customeId
-    const customeId = useId();
+    // customId
+    const customId = useId();
 
     // router
     const router = useRouter();
@@ -183,10 +183,6 @@ const ChatPage = () => {
         }
     };
 
-    useEffect(() => {
-        console.log(chatHistory);
-    }, [chatHistory]);
-
     // Handle message send
     const onSubmit: SubmitHandler<IMessage> = (data: any) => {
 
@@ -198,7 +194,7 @@ const ChatPage = () => {
                 setChatHistory((prevHistory = []) => [
                     ...prevHistory,
                     {
-                        id: customeId,
+                        id: customId,
                         message: data?.message,
                         receiver_id: data?.receiver_id,
                         sender_id: userId,
@@ -282,7 +278,7 @@ const ChatPage = () => {
                                 chatHistory?.map((chat: IChat) =>
                                     chat?.sender_id === parsedUser?.id ? (
                                         <div
-                                            key={chat?.id}
+                                            key={chat?.id + chat?.sender_id}
                                             className="flex flex-col gap-0.5 items-start"
                                         >
                                             <div
@@ -295,7 +291,7 @@ const ChatPage = () => {
                                         </div>
                                     ) : (
                                         <div
-                                            key={chat?.id}
+                                            key={chat?.id + chat?.receiver_id}
                                             className="flex flex-col gap-0.5 items-end"
                                         >
                                             <div
