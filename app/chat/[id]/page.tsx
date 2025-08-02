@@ -1,24 +1,31 @@
 "use client";
-import {useRouter, useSearchParams} from "next/navigation";
-import {Avatar, Button, Spinner} from "@heroui/react";
-import useService, {IMessage, IChat} from "./service";
-import {SubmitHandler, useForm} from "react-hook-form";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Avatar, Button, Spinner } from "@heroui/react";
+import useService, { IMessage, IChat } from "./service";
+import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import React, {useEffect, useState, useRef} from "react";
-import {useSelector} from "react-redux";
-import {getCookie} from "cookies-next";
-import {initializeEcho} from "@/utils/echo";
-import {formatDateToClientTimezone} from '@/utils/helpers';
+import React, { useEffect, useState, useRef, useId } from "react";
+import { useSelector } from "react-redux";
+import { getCookie } from "cookies-next";
+import { initializeEcho } from "@/utils/echo";
+import { formatDateToClientTimezone } from '@/utils/helpers';
 
 // icons
-import {IoIosArrowBack} from "react-icons/io";
+import { IoIosArrowBack } from "react-icons/io";
 import SendIcon from "@/public/tsx-icons/send";
 
 const ChatPage = () => {
+    // customeId
+    const customeId = useId();
+
+    // router
     const router = useRouter();
 
+    // stored date
     const userId = useSelector((state: any) => state.user.user.id);
     const userToken = useSelector((state: any) => state.user.token);
+
+    // echo
     const echo = initializeEcho(userToken);
 
     // Get user info from route query
@@ -50,14 +57,14 @@ const ChatPage = () => {
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [isLoadingInitial, setIsLoadingInitial] = useState(true);
 
-    const {data: chatHistoryResponse, isLoading} = getChatHistory(
+    const { data: chatHistoryResponse, isLoading } = getChatHistory(
         parsedUser.id,
         currentPage
     );
 
     useEffect(() => {
         if (chatHistoryResponse) {
-            markAsRead.mutate({"sender_id": parsedUser.id})
+            markAsRead.mutate({ "sender_id": parsedUser.id })
         }
     }, [chatHistoryResponse]);
 
@@ -65,8 +72,8 @@ const ChatPage = () => {
     const scrollToBottom = () => {
         if (chatEndRef?.current) {
             chatEndRef?.current?.children?.[0]?.children?.[
-            chatEndRef?.current?.children?.[0].children?.length - 1
-                ]?.scrollIntoView({behavior: "smooth"});
+                chatEndRef?.current?.children?.[0].children?.length - 1
+            ]?.scrollIntoView({ behavior: "smooth" });
         }
     };
 
@@ -86,7 +93,7 @@ const ChatPage = () => {
                         created_at: data.created_at,
                     },
                 ]);
-                markAsRead.mutate({"sender_id": data.sender_id})
+                markAsRead.mutate({ "sender_id": data.sender_id })
                 setTimeout(() => {
                     scrollToBottom();
                 }, 100);
@@ -105,7 +112,7 @@ const ChatPage = () => {
                             Authorization: `Bearer ${getCookie("token")}`,
                             Accept: "application/json",
                         },
-                        body: JSON.stringify({'sender_id': parsedUser.id}),
+                        body: JSON.stringify({ 'sender_id': parsedUser.id }),
                     }
                 );
             }
@@ -176,22 +183,26 @@ const ChatPage = () => {
         }
     };
 
+    useEffect(() => {
+        console.log(chatHistory);
+    }, [chatHistory]);
+
     // Handle message send
     const onSubmit: SubmitHandler<IMessage> = (data: any) => {
+
         data.receiver_id = parsedUser?.id;
 
         sendMessage.mutate(data, {
             onSuccess: (response) => {
-                const data = response.data;
                 resetField("message");
                 setChatHistory((prevHistory = []) => [
                     ...prevHistory,
                     {
-                        id: data?.id,
-                        receiver_id: data?.receiver_id,
-                        sender_id: data?.sender_id,
+                        id: customeId,
                         message: data?.message,
-                        created_at: data?.created_at,
+                        receiver_id: data?.receiver_id,
+                        sender_id: userId,
+                        created_at: new Date().toISOString(),
                     },
                 ]);
                 setTimeout(() => {
@@ -235,10 +246,10 @@ const ChatPage = () => {
                     onClick={() => router.back()}
                     className="rounded-lg btn !shadow !p-2 !border-none hover:bg-gray-200"
                 >
-                    <IoIosArrowBack className={"text-lg"}/>
+                    <IoIosArrowBack className={"text-lg"} />
                 </button>
                 <div className="flex items-center ml-4">
-                    <Avatar isBordered  className="min-w-10 w-10 min-h-10 h-10 text-large" src={parsedUser.avatar} alt={parsedUser.name} />
+                    <Avatar isBordered className="min-w-10 w-10 min-h-10 h-10 text-large" src={parsedUser.avatar} alt={parsedUser.name} />
                     <div className="ml-3">
                         <p className="text-sm font-semibold text-gray-800 capitalize">
                             {parsedUser?.name}
@@ -257,7 +268,7 @@ const ChatPage = () => {
             >
                 {isLoading ? (
                     <div className="flex h-full justify-center items-center">
-                        <Spinner/>
+                        <Spinner />
                     </div>
                 ) : (
                     <div
@@ -279,7 +290,7 @@ const ChatPage = () => {
                                                 {chat?.message}
                                             </div>
                                             <p className="text-xs text-gray-400 mt-1">
-                                                {chat.created_at && formatDateToClientTimezone(chat?.created_at)}
+                                                {formatDateToClientTimezone(chat?.created_at)}
                                             </p>
                                         </div>
                                     ) : (
@@ -292,7 +303,7 @@ const ChatPage = () => {
                                                 {chat?.message}
                                             </div>
                                             <p className="text-xs text-gray-400 mt-1 text-right">
-                                                {chat.created_at && formatDateToClientTimezone(chat?.created_at)}
+                                                {formatDateToClientTimezone(chat?.created_at)}
                                             </p>
                                         </div>
                                     )
@@ -319,7 +330,7 @@ const ChatPage = () => {
                                             "flex gap-2 justify-center items-center"
                                         }
                                     >
-                                        <Spinner size={"sm"}/>
+                                        <Spinner size={"sm"} />
                                         Loading...
                                     </div>
                                 ) : (
@@ -337,19 +348,19 @@ const ChatPage = () => {
                     className="flex items-center gap-2 px-4 py-3 fixed bottom-0 w-full bg-[#fdfdfd]"
                     onSubmit={handleSubmit(onSubmit)}
                 >
-              <textarea
-                  {...register("message", {required: true})}
-                  className={"form-input !border-0 shadow-sm"}
-                  placeholder={"type a message..."}
-                  rows={1}
-                  onKeyDown={(event) => {
-                      if (event.key === "Enter" && !event.shiftKey) {
-                          event.preventDefault(); // جلوگیری از ایجاد خط جدید
-                          handleSubmit(onSubmit)(); // ارسال فرم
-                      }
-                  }}
-                  onBlur={(e) => setTimeout(() => e.target.focus(), 100)}
-              ></textarea>
+                    <textarea
+                        {...register("message", { required: true })}
+                        className={"form-input !border-0 shadow-sm"}
+                        placeholder={"type a message..."}
+                        rows={1}
+                        onKeyDown={(event) => {
+                            if (event.key === "Enter" && !event.shiftKey) {
+                                event.preventDefault(); // جلوگیری از ایجاد خط جدید
+                                handleSubmit(onSubmit)(); // ارسال فرم
+                            }
+                        }}
+                        onBlur={(e) => setTimeout(() => e.target.focus(), 100)}
+                    ></textarea>
                     <Button
                         isDisabled={sendMessage?.isPending || watch("message")?.trim() == ""}
                         type={"submit"}
@@ -363,7 +374,7 @@ const ChatPage = () => {
                             handleSubmit(onSubmit)();
                         }}
                     >
-                        <SendIcon className={"text-gray-600"}/>
+                        <SendIcon className={"text-gray-600"} />
                     </Button>
                 </form>
             </footer>
