@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import useService, { Inputs } from "./service";
-// icons 
+// icons
 import { IoIosArrowBack } from "react-icons/io";
 import {
     IoEye,
@@ -115,7 +115,7 @@ export default function ChangePasswordPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-700 flex items-center">
+                            <label className=" text-sm font-medium text-gray-700 flex items-center">
                                 <IoLockClosed className="mr-2 text-gray-500" />
                                 New Password
                             </label>
